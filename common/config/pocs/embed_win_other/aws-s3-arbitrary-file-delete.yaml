@@ -1,0 +1,18 @@
+id: aws-s3-arbitrary-file-delete
+
+info:
+  name: aws-s3-Arbitrary-File-Delete
+  author: aws
+  severity: high
+  tags: s3,edb,misconfig,aws,amazon
+
+requests:
+  - method: DELETE
+    path:
+      - "{{BaseURL}}/{{randstr}}.txt"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 204

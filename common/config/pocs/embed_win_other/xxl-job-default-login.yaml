@@ -1,0 +1,41 @@
+id: xxl-job-default-login
+
+info:
+  name: xxl-job-default-login
+  author: xxl-job
+  severity: high
+  tags: default-login,xxljob
+
+http:
+  - raw:
+      - |
+        POST /xxl-job-admin/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        userName={{username}}&password={{password}}
+      - |
+        POST /login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        userName={{username}}&password={{password}}
+
+    attack: pitchfork
+    payloads:
+      username:
+        - admin
+      password:
+        - 123456
+    stop-at-first-match: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "\"code\":200")'
+          - 'contains(body, "\"msg\"")'
+          - 'contains(body, "\"content\"")'
+          - 'contains(header, "application/json")'
+          - 'contains(header, "XXL_JOB_LOGIN_IDENTITY")'
+        condition: and

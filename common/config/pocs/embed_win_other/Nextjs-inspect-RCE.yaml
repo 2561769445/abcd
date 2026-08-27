@@ -1,0 +1,26 @@
+id: Nextjs-inspect-RCE
+
+info:
+  name: Nextjs inspect 远程命令执行漏洞
+  author: Nextjs
+  severity: critical
+  tags: RCE
+
+http:
+  - raw:
+      - |
+        GET /json HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"description":'
+          - '"devtoolsFrontendUrl":'
+          - '"devtoolsFrontendUrlCompat":'
+          - '"webSocketDebuggerUrl":'
+        condition: and
+      - type: status
+        status: 
+          - 200

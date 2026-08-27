@@ -1,0 +1,22 @@
+id: shiro-detect
+
+info:
+  name: Detect Shiro Framework
+  author: shiro
+  severity: info
+  tags: shiro
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}'
+
+    headers:
+      Cookie: JSESSIONID={{randstr}};rememberMe=123;
+    host-redirects: false
+
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "=deleteMe"

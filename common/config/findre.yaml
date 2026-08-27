@@ -1,0 +1,81 @@
+rules:
+- name: 用户名-密码
+  f_regex: username\s*:\s*"([^"]+)"\s*,\s*password\s*:\s*"([^"]+)"
+- name: OneMapCfg sysPassword
+  f_regex: oneMapCfg\.sysPassword\s*=\s*window\.atob\(['\"]([A-Za-z0-9+/=]+)['\"]\)
+- name: Ueditor
+  f_regex: (ueditor\.(config|all)\.js)
+- name: PDF.js Viewer
+  f_regex: (pdf.worker)
+- name: 中国身份证ID
+  f_regex: '[^0-9]((\d{8}(0\d|10|11|12)([0-2]\d|30|31)\d{3}$)|(\d{6}(18|19|20)\d{2}(0[1-9]|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)))[^0-9]'
+- name: 中国手机号
+  f_regex: '[^\w]((?:(?:\+|0{0,2})86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8})[^\w]'
+- name: 内部IP地址
+  f_regex: '[^0-9]((10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3}))'
+- name: 云主机密钥-Env
+  f_regex: (?i)[A-Z0-9_]*?(?:access_key_id|access_key|secret_key|secret_access_key|accesskeyid|accesskeysecret)[A-Z0-9_]*?([0-9A-Za-z_+/=-]{16,64})
+- name: 云主机密钥-Page
+  f_regex: (?is)(?:[A-Z0-9_]*_)?ACCESS_KEY.*?([0-9A-Za-z_+/=-]{32,64})
+- name: WeCom Key
+  f_regex: ((corp)(id|secret))
+- name: JDBC Connection
+  f_regex: (jdbc:[a-z:]+://[a-z0-9\.\-_:;=/@?,&]+)
+- name: Authorization Header
+  f_regex: ((basic [a-z0-9=:_\+\/\-]{5,100})|(bearer [a-z0-9_.=:_\+\/\-]{5,100}))
+- name: OSKeys
+  f_regex: <Key>(.*?)</Key>
+- name: 微信开放平台密钥
+  f_regex: (wx[a-z0-9]{15,18})
+- name: AWS密钥
+  f_regex: (AKIA[0-9A-Z]{16})
+- name: 阿里云密钥
+  f_regex: (LTAI[A-Za-z\d]{12,30})
+- name: Google API密钥
+  f_regex: (AIza[0-9A-Za-z_\-]{35})
+- name: 腾讯云密钥
+  f_regex: (AKID[A-Za-z\d]{13,40})
+- name: 京东云密钥
+  f_regex: (JDC_[0-9A-Z]{25,40})
+- name: 其他AWS密钥
+  f_regex: ((?:A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})
+- name: 支付宝开放平台密钥
+  f_regex: ((?:AKLT|AKTP)[a-zA-Z0-9]{35,50})
+- name: GitLab Token
+  f_regex: (glpat-[a-zA-Z0-9\-=_]{20,22})
+- name: GitHub Token
+  f_regex: ((?:ghp|gho|ghu|ghs|ghr|github_pat)_[a-zA-Z0-9_]{36,255})
+- name: Apple开发者密钥
+  f_regex: (APID[a-zA-Z0-9]{32,42})
+- name: 企业微信密钥
+  f_regex: (ww[a-z0-9]{15,18})
+- name: 密码凭证 (通用)
+  f_regex: (?i)(['"]?\b[a-zA-Z0-9_]*(?:pwd|pass|user|member|account|password|passwd|admin|root|system)[a-zA-Z0-9_]*\b['"]?\s*[:=]\s*(?:['"][^'"\s\,]{3,}['"]|(?:[a-zA-Z0-9_.$()]*\d[a-zA-Z0-9_.$()]*|_[a-zA-Z0-9_.$()]{2,})))
+- name: JSON Web Token (JWT)
+  f_regex: (?i)(?:ey[A-Za-z0-9_-]{10,}\.[A-Za-z0-9._-]{10,}|ey[A-Za-z0-9_\/+-]{10,}\.[A-Za-z0-9._\/+-]{10,})
+- name: Cookie信息
+  f_regex: (?i)(\b\w*(?:token|PHPSESSID|JSESSIONID)\s*[:=]\s*["']?(?!localStorage)(?:[a-zA-Z0-9-._]{4,})["']?)
+- name: 通用Key凭据
+  f_regex: (?i)(?:['"]?(?:[\w-]*(?:secret|oss|bucket|key)[\w-]*)|ak["']?)\s*[:=]\s*(?:"(?!\+)[^\,\s\"\(\>\<]{6,}"|'(?!\+)[^\,\s\'\(\>\<]{6,}'|[0-9a-zA-Z_-]{16,})
+- name: Windows路径泄露
+  f_regex: (?i)(?:c|d|e|f|g):(?:\\\\[\w\u4e00-\u9fa5_@.-]+)+
+- name: OSSBucket-阿里云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.oss-[0-9a-z-]+\.aliyuncs\.com[^\s'"<>]*)
+- name: OSSBucket-腾讯云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.cos\.[0-9a-z-]+\.myqcloud\.com[^\s'"<>]*)
+- name: OSSBucket-华为云
+  f_regex: (?i)(https?://[0-9a-z.-]*obs\.[0-9a-z-]+\.[0-9a-z.-]*myhuaweicloud\.com[^\s'"<>]*)
+- name: OSSBucket-AmazonS3
+  f_regex: (?i)(https?://[0-9a-z.-]+\.s3[.-][0-9a-z-]*\.amazonaws\.com(\.cn)?[^\s'"<>]*)
+- name: OSSBucket-七牛云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.(qiniucs\.com|clouddn\.com|qcloudcdn\.com)[^\s'"<>]*)
+- name: OSSBucket-青云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.qingstor\.com[^\s'"<>]*)
+- name: OSSBucket-又拍云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.(upaiyun\.com|upyun\.com|upcdn\.net)[^\s'"<>]*)
+- name: OSSBucket-京东云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.jcloudcs\.com[^\s'"<>]*)
+- name: OSSBucket-金山云
+  f_regex: (?i)(https?://[0-9a-z.-]+\.ksyuncs\.com[^\s'"<>]*)
+- name: OSSBucket-天翼云
+  f_regex: (?i)(https?://([0-9a-z.-]*\.?obs\.[0-9a-z-]+\.[0-9a-z.-]*ctyun\.cn|oos-[0-9a-z.-]+\.ctyunapi\.cn)[^\s'"<>]*)

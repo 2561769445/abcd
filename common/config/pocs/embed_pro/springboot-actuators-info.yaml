@@ -1,0 +1,26 @@
+id: springboot-actuators-info
+info:
+  tags: springboot-actuators-info
+  name: springboot-actuators-info
+  author: xc
+  severity: medium
+  description: springboot-actuators-info.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/actuator"
+      - "{{BaseURL}}/actuator/"
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '_links'
+        condition: or
+      - type: status
+        status: 
+          - 200

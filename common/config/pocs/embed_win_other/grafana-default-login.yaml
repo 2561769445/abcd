@@ -1,0 +1,66 @@
+id: grafana-default-login
+
+info:
+  name: Grafana默认口令检测
+  author: grafana
+  severity: high
+  tags: grafana, weakpass, default-creds, monitoring
+
+http:
+  - raw:
+      - |
+        POST /grafana/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: application/json
+
+        {"user":"{{username}}","password":"{{password}}"}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "admin"
+      password:
+        - "123456"
+        - "admin"
+        - "admin123"
+        - "admin@123"
+        - "prom-operator"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "Logged in")'
+          - 'contains(header, "grafana_session")'
+        condition: and
+
+  - raw:
+      - |
+        POST /login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: application/json
+
+        {"user":"{{username}}","password":"{{password}}"}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "admin"
+      password:
+        - "123456"
+        - "admin"
+        - "admin123"
+        - "admin@123"
+        - "prom-operator"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "Logged in")'
+          - 'contains(header, "grafana_session")'
+        condition: and

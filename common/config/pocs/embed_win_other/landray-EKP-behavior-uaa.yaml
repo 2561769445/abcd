@@ -1,0 +1,23 @@
+id: landray-EKP-behavior-uaa
+
+info:
+  name: 蓝凌EKP行为日志信息泄露漏洞
+  author: Co5mos
+  severity: critical
+  description: 检测蓝凌EKP系统是否存在行为日志信息泄露漏洞
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/./ui-ext/./behavior/"
+
+    matchers-condition: and
+    matchers:
+      - type: regex  # 使用regex类型匹配器
+        part: body
+        regex:
+          - "ekp_server.log"  # 匹配响应体中的日志文件名
+
+      - type: status
+        status:
+          - 200  # 确保响应状态码为200

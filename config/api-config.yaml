@@ -1,0 +1,33 @@
+bevigil: []
+binaryedge: []
+bufferover: []
+c99: []
+#https://censys.io/api
+censys: []
+certspotter: []
+chaos: []
+chinaz: []
+dnsdb: []
+dnsrepo: []
+# fofa: ["123455@qq.com:key"]
+fofa: []
+# 自定义 FOFA API 地址，可选。不填写则默认使用 https://fofa.info/api/v1/search/all
+fofa_api_url:
+  - "https://fofa.info/api/v1/search/all"
+fullhunt: []
+github: []
+# hunter: ["123"]
+hunter: []
+intelx: []
+leakix: []
+passivetotal: []
+quake: []
+robtex: []
+# https://securitytrails.com
+securitytrails: []
+shodan: []
+threatbook: []
+virustotal: []
+whoisxmlapi: []
+zoomeye: []
+zoomeyeapi: []

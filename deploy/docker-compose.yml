@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: abcd-pg
+    environment:
+      POSTGRES_USER: abcd
+      POSTGRES_PASSWORD: abcd123
+      POSTGRES_DB: abcd
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    # 如需外部访问PG取消注释:
+    # ports: ["5432:5432"]
+
+  redis:
+    image: redis:7-alpine
+    container_name: abcd-redis
+    command: redis-server --requirepass ${ABCD_REDIS_PASS:-abcd-redis-2026} --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"   # 分节点直连Redis领任务/上报结果
+    restart: unless-stopped
+
+  master:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: abcd-master
+    depends_on: [postgres, redis]
+    environment:
+      ABCD_LISTEN: ":8080"
+      ABCD_PG_DSN: "postgres://abcd:abcd123@postgres:5432/abcd?sslmode=disable"
+      ABCD_REDIS: "redis:6379"
+      ABCD_REDIS_PASS: ${ABCD_REDIS_PASS:-abcd-redis-2026}
+      ABCD_ADMIN_USER: admin
+      ABCD_ADMIN_PASS: ${ABCD_ADMIN_PASS:-abcd@2026}
+      ABCD_JWT_SECRET: ${ABCD_JWT_SECRET:-change-me-in-prod}
+    ports:
+      - "8080:8080"
+    volumes:
+      - master_exports:/app/exports
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  redis_data:
+  master_exports:

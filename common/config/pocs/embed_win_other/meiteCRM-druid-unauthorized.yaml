@@ -1,0 +1,25 @@
+id: meiteCRM-druid-unauthorized
+
+info:
+  name: 美特CRM druid组件 未授权访问漏洞
+  author: meiteCRM
+  severity: medium
+  tags: unauthorized
+  
+http:
+  - raw:
+      - |
+        GET /druid/websession.html HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.66 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Druid Web Session Stat'
+          - 'View JSON API'
+        condition: and
+      - type: status
+        status: 
+          - 200

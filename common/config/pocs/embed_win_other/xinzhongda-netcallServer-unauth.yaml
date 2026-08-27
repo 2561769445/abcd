@@ -1,0 +1,25 @@
+id: xinzhongda-netcallServer-unauth
+
+info:
+  name: 新中大 netcallServer 管理控制台存在未授权访问漏洞
+  author: xinzhongda
+  severity: high
+  tags: unauth,netcallServer,xinzhongda
+
+http:
+  - raw:
+      - |
+        GET /plugins/integration/integration-appsys-sms-setting.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:113.0) Gecko/20100101 Firefox/113.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'index.jsp?logout=true'
+        condition: and
+      - type: status
+        status: 
+          - 200

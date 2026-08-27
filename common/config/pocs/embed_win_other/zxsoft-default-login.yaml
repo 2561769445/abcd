@@ -1,0 +1,31 @@
+id: zxsoft-default-login
+
+info:
+  name: Cnzxsoft System - Default Login
+  author: SleepingBag945
+  severity: high
+  tags: default-login,zxsoft
+
+http:
+  - raw:
+      - |
+        POST /?q=common/login  HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: check_code=ptbh
+        Content-Type: application/x-www-form-urlencoded
+
+        name={{username}}&password={{password}}&checkcode=ptbh&doLoginSubmit=1
+
+    payloads:
+      username:
+        - 'admin'
+      password:
+        - 'zxsoft1234!@#$'
+    attack: pitchfork
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body,"1") && contains(header,"ZXSOFT_JDIS_USR_NAME=deleted") && !contains(body_1,"userpwd_error")'
+        condition: and
+

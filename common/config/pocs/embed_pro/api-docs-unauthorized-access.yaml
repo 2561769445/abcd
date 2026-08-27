@@ -1,0 +1,26 @@
+id: api-docs-unauthorized-access
+info:
+  tags: [api-docs-unauthorized-access]
+  name: API Docs UnAuthorized Access
+  author: xc
+  severity: medium
+  description: Check if the /api/v2/api-docs path is accessible without authentication, which may lead to information disclosure.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/v2/api-docs"
+      - "{{BaseURL}}/v2/api-docs"
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'definitions'
+        condition: or
+      - type: status
+        status: 
+          - 200

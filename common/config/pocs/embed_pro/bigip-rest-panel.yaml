@@ -1,0 +1,34 @@
+id: bigip-icontrol-rest
+
+info:
+  name: F5 BIG-IP iControl REST Panel - Detect
+  author: xc
+  severity: info
+  description: |
+    F5 BIG-IP iControl REST API discovered and may be vulnerable to an authentication bypass (not tested).
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N
+    cvss-score: 0
+    cwe-id: CWE-200
+  metadata:
+    max-request: 1
+    shodan-query: http.title:"BIG-IP&reg;-+Redirect" +"Server"
+  tags: panel,bigip,f5
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/mgmt/shared/authn/login"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "resterrorresponse"
+
+      - type: status
+        status:
+          - 401
+
+# digest: 490a004630440220481491999580f7cc3bc63185f4a79ad0821743a53e80282f060b4cbf5c8afb7302204a19976a51daab6c47f160f4e3778e5a2718f9ff16355ff27fc8db58c148f687:922c64590222798bb761d5b6d8e72950

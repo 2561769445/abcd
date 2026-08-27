@@ -1,0 +1,31 @@
+id: aws-s3-bucket-takeover
+
+info:
+  name: AWS Bucket Takeover Detection
+  author: aws
+  severity: medium
+  tags: takeover,aws
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "The specified bucket does not exist"
+
+      - type: dsl
+        dsl:
+          - contains(tolower(all_headers), 'x-guploader-uploadid')
+        negative: true
+    
+    extractors:
+      - type: regex
+        part: body
+        group: 1
+        regex:
+          - "<BucketName>([^\\s]+)</BucketName>"
+          - "<li>BucketName: ([^\\s]+)</li>"

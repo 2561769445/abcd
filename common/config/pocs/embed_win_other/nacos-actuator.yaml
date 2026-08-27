@@ -1,0 +1,22 @@
+id: nacos-actuator
+
+info:
+  name: nacos-actuator
+  author: sec
+  severity: high
+  tags: nacos
+
+http:
+  - raw:
+      - |
+        GET /nacos/actuator/env HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+        Accept: */*
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body, "java.runtime.version")
+        condition: and

