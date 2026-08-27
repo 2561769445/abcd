@@ -1,0 +1,41 @@
+id: minio-weakpwd
+
+info:
+  name: minio-weakpwd
+  author: minio
+  severity: high
+  tags: default-login,minio
+
+http:
+  - raw:
+      - |
+        POST /api/v1/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"accessKey":"{{username}}","secretKey":"{{password}}"}
+
+    payloads:
+      username:
+        - minioadmin
+        - admin
+        - root
+        - admin
+      password:
+        - minioadmin
+        - minioadmin
+        - admin123
+        - Root!123
+        - Huawei12#$
+    attack: pitchfork
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "Set-Cookie: token="
+        part: header
+
+      - type: status
+        status:
+          - 204

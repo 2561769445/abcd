@@ -1,0 +1,19 @@
+id: django-admin-panel
+
+info:
+  name: django-admin-panel
+  author: django
+  severity: info
+  tags: panel,django,python
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/admin/login/?next=/admin/"
+
+    matchers:
+      - type: word
+        words:
+          - "<a href=\"/admin/\">Django administration</a>"
+        condition: and
+        part: body

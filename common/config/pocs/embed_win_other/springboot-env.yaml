@@ -1,0 +1,51 @@
+id: springboot-env
+
+info:
+  name: springboot-env
+  author: env
+  severity: high
+  tags: env
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        X-Original-URL: /env 
+        Connection: close
+
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        X-Original-URL: /actuator/env 
+        Connection: close
+
+      - |
+        GET /env HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        X-Original-URL: /actuator/env 
+        Connection: close
+
+      - |
+        GET /actuator/env HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        Connection: close
+
+      - |
+        GET /actuator;/env;.css HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        Connection: close
+
+    stop-at-first-match: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body,"java.runtime.version")'
+          - '!contains(body,"Court!@#2022#@!")'
+        condition: and

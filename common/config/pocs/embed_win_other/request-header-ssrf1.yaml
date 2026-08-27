@@ -1,0 +1,47 @@
+id: request-header-ssrf1
+
+info:
+  name: request-header-ssrf1
+  author: ssrf
+  severity: high
+  tags: ssrf
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: https://www.baidu.com
+        X-Target-Url: https://www.baidu.com
+        X-Proxy-Url: https://www.baidu.com
+        x-real-url: https://www.baidu.com
+        x-screenshot-url: https://www.baidu.com
+        X-Forwarded-Host: https://www.baidu.com
+        x-proxy-final-url: https://www.baidu.com
+        x-proxy-request-url: https://www.baidu.com
+        Location: https://www.baidu.com
+        Origin: https://www.baidu.com
+        Referer: https://www.baidu.com
+        X-Origin: https://www.baidu.com
+        X-Client-IP: https://www.baidu.com
+        X-Remote-IP: https://www.baidu.com
+        X-Remote-Addr: https://www.baidu.com
+        X-Originating-IP: https://www.baidu.com
+        True-Client-IP: https://www.baidu.com
+        Originating-IP: https://www.baidu.com
+        X-Real-IP: https://www.baidu.com
+        Forwarded: https://www.baidu.com
+        Client-IP: https://www.baidu.com
+        X-Forwarded-Proto: https://www.baidu.com
+        Proxy: https://www.baidu.com
+        Redirect: https://www.baidu.com
+        X-Proxy-Host: https://www.baidu.com
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<title>百度一下，你就知道"
+          - "baidu.com"
+        condition: and

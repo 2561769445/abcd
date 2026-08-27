@@ -1,0 +1,27 @@
+id: FineReport
+
+info:
+  name: FineReport
+  author: carrypan
+  severity: info
+  description: Sensitive environment variables may not be masked
+  metadata:
+    max-request: 4
+  tags: misconfig,FineReport,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webroot/ReportServer?op=resource&resource=/com/fr/web/jquery.js"
+      - "{{BaseURL}}/WebReport/ReportServer?op=resource&resource=/com/fr/web/jquery.js"
+      - "{{BaseURL}}/seeyonreport/ReportServer?op=resource&resource=/com/fr/web/jquery.js"
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl: 
+          - 'contains(body, "jQuery=") && !contains(body, "<title>")'
+        condition: and
+
+# digest: 490a004630440220047366275efe896f379ed62aa88e8562a4217729eedb6c58246c87966e0efa01022042be407056154a4658d77f95c5cfece9800cc4fc30c35de5bb06dacca8e799a0:922c64590222798bb761d5b6d8e72950

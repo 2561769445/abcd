@@ -1,0 +1,21 @@
+id: jeecg-boot-druid-detect
+
+info:
+  name: Jeecg-Boot Druid 
+  author: SleepingBag945
+  severity: info
+  tags: jeecg
+
+http:
+  - raw:
+      - |
+        GET /druid/login.html HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "druid monitor")'
+        condition: and

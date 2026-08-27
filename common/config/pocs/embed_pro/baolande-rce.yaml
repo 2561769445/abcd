@@ -1,0 +1,28 @@
+id: baolande-rce
+
+info:
+  tags: baolande-rce
+  name: 宝蓝德rce
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/h5/static/js/chunk-vendors.js"
+
+http:
+  - raw:
+      - |
+        GET /BesEJB/spark HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Spark expects a POST containing an RPC call'
+        condition: and
+      - type: status
+        status: 
+          - 200
+

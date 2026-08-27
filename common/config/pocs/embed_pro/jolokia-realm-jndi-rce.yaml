@@ -1,0 +1,29 @@
+id: jolokia-realm-jndi-rce
+
+info:
+  name: jolokia Realm JNDI RCE
+  author: xc
+  severity: high
+  tags: jolokia,springboot,tomcat
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/jolokia/list"
+      - "{{BaseURL}}/actuator/jolokia/list"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - 'type=MBeanFactory'
+      - type: word
+        part: body
+        words:
+          - 'createJNDIRealm'

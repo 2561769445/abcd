@@ -1,0 +1,27 @@
+id: JS-infoleak
+
+info:
+  name: JS-infoleak
+  author: carrypan
+  severity: info
+  description: JS-infoleak
+  metadata:
+    max-request: 4
+  tags: misconfig,JS-infoleak,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+#    host-redirects: true
+#    max-redirects: 3
+
+#    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl: 
+          - 'contains(body, "static/js/\"") && status_code_1 == 200'
+        condition: and

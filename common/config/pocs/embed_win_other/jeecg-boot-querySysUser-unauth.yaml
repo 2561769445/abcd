@@ -1,0 +1,32 @@
+id: jeecg-boot-querySysUser-unauth
+
+info:
+  name: Jeecg Boot <= 2.4.5 - Sensitive Information Disclosure
+  author: ritikchaddha
+  severity: medium
+  tags: cve,cve2021,jeecg,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/sys/user/querySysUser?username=admin"
+      # - "{{BaseURL}}/jeecg-boot/sys/user/querySysUser?username=admin"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'username":"admin'
+          - 'success":true'
+          - 'result":{'
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - application/json
+
+      - type: status
+        status:
+          - 200
+

