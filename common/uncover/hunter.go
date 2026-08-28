@@ -90,12 +90,21 @@ func SearchHunterCore(keyword string, pageSize int, maxQueryPage int) ([]string,
 	page := 1
 	currentQueryCount := 0
 
+	// Hunter API要求 page_size>=10(否则400"页大小不合法"), 页数>=1, 兜底clamp防前端乱填
+	if pageSize < 10 {
+		pageSize = 10
+	}
+	if maxQueryPage < 1 {
+		maxQueryPage = 1
+	}
+
 	var results []string
 	var ipResult []string
 	for page <= maxQueryPage {
 		req, err := retryablehttp.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
-			gologger.Fatal().Msgf("Hunter API请求构建失败。")
+			gologger.Error().Msgf("[Hunter] API请求构建失败: %v", err)
+			return results, ipResult
 		}
 		unc := keyword
 		search := base64.URLEncoding.EncodeToString([]byte(unc))

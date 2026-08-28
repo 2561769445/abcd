@@ -13,10 +13,13 @@ import (
 	"gopkg.in/yaml.v3"
 	"io"
 	"math/rand"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -111,7 +114,7 @@ func getQuakeKeys() []string {
 		}
 	}
 	if len(apiKeys) == 0 {
-		gologger.Fatal().Msg("未获取到Quake API Key")
+		gologger.Error().Msg("未获取到Quake API Key(主控Web系统设置页可配), 跳过Quake测绘")
 		return []string{}
 	}
 
@@ -120,6 +123,19 @@ func getQuakeKeys() []string {
 
 // 从Fofa中搜索目标
 func SearchQuakeCore(keyword string, pageSize int) []string {
+	return searchQuakeCore(keyword, pageSize, 0)
+}
+
+var quakeRetry sync.Map
+
+func searchQuakeCore(keyword string, pageSize int, retried int) []string {
+	// size下限防御(0/负数会导致空查询), 上限500与免费/VIP额度对齐
+	if pageSize < 1 {
+		pageSize = 1
+	}
+	if pageSize > 500 {
+		pageSize = 500
+	}
 	opts := retryablehttp.DefaultOptionsSpraying
 	client := retryablehttp.NewClient(opts)
 
@@ -142,7 +158,8 @@ func SearchQuakeCore(keyword string, pageSize int) []string {
 
 	req, err := retryablehttp.NewRequest(http.MethodPost, url, jsonData)
 	if err != nil {
-		gologger.Fatal().Msgf("Quake API请求构建失败。")
+		gologger.Error().Msgf("Quake API请求构建失败: %v", err)
+		return nil
 	}
 	req.Header.Set("X-QuakeToken", randKey)
 	req.Header.Set("Content-Type", "application/json")
@@ -159,19 +176,34 @@ func SearchQuakeCore(keyword string, pageSize int) []string {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 401 {
-		gologger.Fatal().Msgf("[Quake] API-KEY错误。请检查。")
+		gologger.Error().Msgf("[Quake] API-KEY错误(401), 请在主控Web设置页检查Quake Key, 跳过Quake测绘。keyword: %s", keyword)
+		return results
 	}
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		gologger.Error().Msgf("[Quake] 获取Hunter 响应Body失败: %v", err.Error())
+		gologger.Error().Msgf("[Quake] 获取Quake 响应Body失败: %v", err.Error())
 		return results
 	}
 
 	var serviceInfo QuakeServiceInfo
+	// Quake限流(q3005 "调用API过于频繁", code为字符串会导致下方Unmarshal失败):
+	// 反序列化前预检, 节流退避重试(多节点共用同一把Key高发), 最多重试2次
+	bodyStr := string(respBody)
+	if retried < 2 && (strings.Contains(bodyStr, "q3005") || strings.Contains(bodyStr, "过于频繁")) {
+		if _, running := quakeRetry.LoadOrStore(keyword, true); !running {
+			wait := time.Duration(retried+1) * 8 * time.Second
+			gologger.Info().Msgf("[Quake] 触发限流, %v后重试(%d/2): %s", wait, retried+1, keyword)
+			time.Sleep(wait)
+			r := searchQuakeCore(keyword, pageSize, retried+1)
+			quakeRetry.Delete(keyword)
+			return r
+		}
+		quakeRetry.Delete(keyword)
+	}
 	err = json.Unmarshal(respBody, &serviceInfo)
 	if err != nil {
-		gologger.Error().Msg("[Quake] 响应解析失败，疑似Token失效、。Quake接口具体返回信息如下：")
+		gologger.Error().Msg("[Quake] 响应解析失败，疑似Token失效。Quake接口具体返回信息如下：")
 		fmt.Println(string(respBody))
 		return results
 	}
@@ -300,7 +332,8 @@ func IsQuakeVIP() bool {
 
 	req, err := retryablehttp.NewRequest(http.MethodGet, url, "")
 	if err != nil {
-		gologger.Fatal().Msgf("Quake API请求构建失败。")
+		gologger.Error().Msgf("Quake API请求构建失败: %v", err)
+		return false
 	}
 	req.Header.Set("X-QuakeToken", randKey)
 	req.Header.Set("Content-Type", "application/json")
@@ -312,12 +345,13 @@ func IsQuakeVIP() bool {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 401 {
-		gologger.Fatal().Msgf("[Quake] API-KEY错误。请检查。")
+		gologger.Error().Msgf("[Quake] API-KEY错误(401), 请在主控Web设置页检查Quake Key。")
+		return false
 	}
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		gologger.Error().Msgf("[Quake] 获取Hunter 响应Body失败: %v", err.Error())
+		gologger.Error().Msgf("[Quake] 获取用户信息Body失败: %v", err.Error())
 		return false
 	}
 
@@ -329,6 +363,64 @@ func IsQuakeVIP() bool {
 	}
 
 	return false
+}
+
+// SmartQuakeQuery 把裸目标(域名/IP/CIDR/URL/IP:Port)自动包装成Quake检索语法, 已是语法或关键词的透传。
+// 背景: Quake对裸字符串按全文模糊检索(与Fofa/Hunter自动识别域名不同),
+// 裸传 v2share.org 会被分词全文匹配, 拉回大量无关资产; 必须显式 domain:"xxx" / ip:"x.x.x.x"
+func SmartQuakeQuery(keyword string) string {
+	k := strings.TrimSpace(keyword)
+	if k == "" {
+		return k
+	}
+	// 已是测绘语法(key:"value" / key="value")原样透传
+	if strings.Contains(k, `:"`) || strings.Contains(k, `="`) {
+		return k
+	}
+	// URL → 取Host再判断
+	if utils.IsURL(k) {
+		if u, err := url.Parse(k); err == nil && u.Hostname() != "" {
+			k = u.Hostname()
+		}
+	}
+	switch {
+	case utils.IsIPv4(k), utils.IsCIDR(k):
+		return fmt.Sprintf("ip:%q", k)
+	case utils.IsIPRange(k):
+		// IP段对齐到CIDR边界(/24 /16 /8)则转换, 否则警告透传
+		parts := strings.SplitN(k, "-", 2)
+		s, e := net.ParseIP(strings.TrimSpace(parts[0])), net.ParseIP(strings.TrimSpace(parts[1]))
+		for _, bits := range []int{24, 16, 8} {
+			mask := net.CIDRMask(bits, 32)
+			network := s.Mask(mask)
+			if s.Equal(network) && e.Equal(lastIPOf(network, mask)) {
+				return fmt.Sprintf("ip:%q", network.String()+"/"+strconv.Itoa(bits))
+			}
+		}
+		gologger.Warning().Msgf("[Quake] IP段 %s 未对齐CIDR边界, 原样透传(结果可能不精确), 建议改用CIDR写法", k)
+		return keyword
+	case utils.IsIPPort(k), utils.IsDomainPort(k):
+		if host, _, err := net.SplitHostPort(k); err == nil && host != "" {
+			k = host
+		}
+		if utils.IsIPv4(k) {
+			return fmt.Sprintf("ip:%q", k)
+		}
+		return fmt.Sprintf("domain:%q", k)
+	case utils.IsDomain(k):
+		return fmt.Sprintf("domain:%q", k)
+	}
+	// 其余(自定义关键词等)原样透传, 保持旧行为
+	return keyword
+}
+
+// lastIPOf 计算网段的最后一个IP
+func lastIPOf(network net.IP, mask net.IPMask) net.IP {
+	last := make(net.IP, len(network))
+	for i := range network {
+		last[i] = network[i] | ^mask[i]
+	}
+	return last
 }
 
 func QuakeSearch(keywords []string) []string {
@@ -343,7 +435,7 @@ func QuakeSearch(keywords []string) []string {
 	gologger.Info().Msgf("准备从 Quake 获取数据")
 	var results []string
 	for _, keyword := range keywords {
-		result := SearchQuakeCore(keyword,
+		result := SearchQuakeCore(SmartQuakeQuery(keyword),
 			structs.GlobalConfig.QuakeSize)
 		results = append(results, result...)
 	}

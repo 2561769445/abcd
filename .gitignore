@@ -3,3 +3,9 @@ node_modules/
 /dist/
 release/
 *.exe
+
+# 内部运维脚本(含服务器凭据, 永不入库)
+deploy/vps_ssh*.py
+deploy/deploy_v*.py
+deploy/upgrade_nodes*.py
+deploy/verify_*.py

@@ -61,6 +61,13 @@ func getFOFAKeys() []string {
 var fofaRetry sync.Map // keyword -> 重试中(guard)
 
 func SearchFOFACore(keyword string, pageSize int) []string {
+	// Fofa size范围1-10000, 兜底clamp防前端乱填(0/负数直接400)
+	if pageSize < 1 {
+		pageSize = 1
+	}
+	if pageSize > 10000 {
+		pageSize = 10000
+	}
 	opts := retryablehttp.DefaultOptionsSpraying
 	client := retryablehttp.NewClient(opts)
 
@@ -71,7 +78,8 @@ func SearchFOFACore(keyword string, pageSize int) []string {
 	}
 	randKey := keys[rand.Intn(len(keys))]
 	if !strings.Contains(randKey, ":") {
-		gologger.Fatal().Msg("请核对FOFA API KEY格式。正确格式为: email:key")
+		gologger.Error().Msgf("[Fofa] API KEY格式错误(应为 email:key), 跳过该Key。请核对: %s", randKey)
+		return nil
 	}
 	tmp := strings.Split(randKey, ":")
 	email := tmp[0]
@@ -79,7 +87,8 @@ func SearchFOFACore(keyword string, pageSize int) []string {
 
 	req, err := retryablehttp.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		gologger.Fatal().Msgf("FOFA API请求构建失败。")
+		gologger.Error().Msgf("[Fofa] API请求构建失败: %v", err)
+		return nil
 	}
 	unc := keyword
 	search := base64.StdEncoding.EncodeToString([]byte(unc))

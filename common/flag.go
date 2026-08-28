@@ -410,13 +410,15 @@ func prepare() {
 			continue
 		}
 		if structs.GlobalConfig.Hunter || structs.GlobalConfig.Fofa {
-			// 从网络空间搜索引擎中获取目标
-			if !strings.Contains(tg, "=") {
+			// 从网络空间搜索引擎中获取目标: 引擎原生语法(含=)或可识别的IP/域名/CIDR/URL等裸目标均可
+			// (Fofa/Hunter服务端对裸IP/裸域名可自动识别; 平台Web表单填裸目标是常态, 不能一刀切要求语法)
+			if !strings.Contains(tg, "=") && utils.GetInputType(tg) == structs.TypeUnSupport {
 				gologger.Error().Msgf("不支持的格式: %s", tg)
 				continue
 			}
 		} else if structs.GlobalConfig.Quake {
-			if !strings.Contains(tg, ":") {
+			// Quake语法(含:)或可识别的裸目标放行, 由SmartQuakeQuery包装成 domain:"x" / ip:"x"
+			if !strings.Contains(tg, ":") && utils.GetInputType(tg) == structs.TypeUnSupport {
 				gologger.Error().Msgf("不支持的格式: %s", tg)
 				continue
 			}
