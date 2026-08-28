@@ -61,8 +61,10 @@ func Run() {
 	// 登录
 	r.POST("/api/login", handleLogin)
 
-	// 节点自助纳管: 安装脚本 + 二进制下载(安装密钥鉴权)
+	// 节点自助纳管: 安装脚本 + 卸载脚本 + 二进制下载(安装密钥鉴权)
 	r.GET("/install.sh", handleInstallScript)
+	r.GET("/uninstall.sh", handleUninstallScript)
+	r.GET("/node-deregister", handleNodeDeregister)
 	r.GET("/dl/:file", handleNodeBinary)
 
 	api := r.Group("/api", authMW())
@@ -79,6 +81,7 @@ func Run() {
 
 		api.GET("/nodes", handleListNodes)
 		api.GET("/install-cmd", handleInstallCmd)
+		api.GET("/uninstall-cmd", handleUninstallCmd)
 		api.POST("/nodes/:id/weight", handleNodeWeight)
 		api.POST("/nodes/:id/offline", handleNodeOffline)
 		api.POST("/nodes/:id/exec", handleNodeExec)
@@ -126,6 +129,17 @@ func getenv2(k, def string) string {
 		return v
 	}
 	return def
+}
+
+// masterAdvertiseAddr 主控对外地址: 节点用它与主控通信。
+// 从8080(内部监听口)发起的请求(如主控本机curl)会把节点引到HTTP口连不上Redis,
+// 统一纠正为对外入口6379(portmux); 其他Host(已含自定义端口)原样保留。
+func masterAdvertiseAddr(c *gin.Context) string {
+	host := c.Request.Host
+	if strings.HasSuffix(host, ":8080") {
+		return strings.TrimSuffix(host, ":8080") + ":6379"
+	}
+	return host
 }
 
 // handleInstallScript 生成一键安装脚本(自动嵌入主控地址)
@@ -196,12 +210,73 @@ systemctl daemon-reload && systemctl enable abcd-node && systemctl restart abcd-
 sleep 5
 echo "[5/5] status: $(systemctl is-active abcd-node)"
 echo "node [$NAME] registered to $MASTER , check Web node page"
+echo "uninstall cmd: curl -s \"http://$MASTER/uninstall.sh?k=$KEY\" | bash"
 `
-	script = strings.ReplaceAll(script, "__MASTER__", c.Request.Host)
+	script = strings.ReplaceAll(script, "__MASTER__", masterAdvertiseAddr(c))
 	script = strings.ReplaceAll(script, "__KEY__", installKey)
 	script = strings.ReplaceAll(script, "__REDISPASS__", cfg.RedisPass)
 	c.Header("Content-Type", "text/plain; charset=utf-8")
 	c.String(200, script)
+}
+
+// handleUninstallScript 生成一键卸载脚本(与install.sh同密钥鉴权)
+func handleUninstallScript(c *gin.Context) {
+	if c.Query("k") != installKey {
+		c.String(401, "invalid install key")
+		return
+	}
+	script := `#!/bin/bash
+# ABCD 节点一键卸载脚本
+# 用法: curl -s "http://MASTER/uninstall.sh?k=KEY" | bash
+# ⚠️ 卸载会停止该节点上所有正在运行的任务
+# 注: masscan为系统包不卸载(其他程序可能依赖); 重新纳管直接再跑install.sh即可
+set -e
+MASTER="__MASTER__"
+KEY="__KEY__"
+[ "$(id -u)" = 0 ] || { echo "run as root please"; exit 1; }
+NAME=$(grep -oP '(?<= -n )\S+' /etc/systemd/system/abcd-node.service 2>/dev/null | tail -1)
+echo "[1/4] stop abcd-node service..."
+systemctl stop abcd-node 2>/dev/null || true
+systemctl disable abcd-node 2>/dev/null || true
+pkill -f 'abcd-node -node-exec' 2>/dev/null || true
+echo "[2/4] remove files (binary/service/dl-cache/task-tmp)..."
+rm -f /etc/systemd/system/abcd-node.service
+systemctl daemon-reload
+rm -f /opt/abcd-node
+rm -rf /opt/abcd-node-dl
+rm -f /tmp/abcd-task-*.json
+echo "[3/4] deregister from master..."
+if [ -n "$NAME" ]; then
+  R=$(curl -s --max-time 10 "http://$MASTER/node-deregister?k=$KEY&name=$NAME" || true)
+  echo "  $R"
+else
+  echo "  (service file not found, skip deregister; 节点行1小时后自动过期)"
+fi
+echo "[4/4] uninstall done."
+`
+	script = strings.ReplaceAll(script, "__MASTER__", masterAdvertiseAddr(c))
+	script = strings.ReplaceAll(script, "__KEY__", installKey)
+	c.Header("Content-Type", "text/plain; charset=utf-8")
+	c.String(200, script)
+}
+
+// handleNodeDeregister 卸载脚本回调: 清Redis心跳+删PG节点行(安装密钥鉴权, 免admin token)
+func handleNodeDeregister(c *gin.Context) {
+	if c.Query("k") != installKey {
+		c.String(401, "invalid install key")
+		return
+	}
+	name := c.Query("name")
+	if name == "" || len(name) > 64 || strings.ContainsAny(name, " '\"\\") {
+		c.String(400, "bad node name")
+		return
+	}
+	rdb.HDel(c, cluster.HashNodes, name)
+	if _, err := db.Exec(`DELETE FROM nodes WHERE id=$1`, name); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"ok": true, "node": name, "msg": "deregistered"})
 }
 
 // handleNodeBinary 下发节点二进制
@@ -227,6 +302,12 @@ func handleNodeBinary(c *gin.Context) {
 // handleInstallCmd 返回一键纳管命令(节点管理页展示用)
 func handleInstallCmd(c *gin.Context) {
 	cmd := "curl -s \"http://" + c.Request.Host + "/install.sh?k=" + installKey + "\" | bash"
+	c.JSON(200, gin.H{"cmd": cmd})
+}
+
+// handleUninstallCmd 返回一键卸载命令(节点管理页展示用)
+func handleUninstallCmd(c *gin.Context) {
+	cmd := "curl -s \"http://" + c.Request.Host + "/uninstall.sh?k=" + installKey + "\" | bash"
 	c.JSON(200, gin.H{"cmd": cmd})
 }
 

@@ -10,6 +10,13 @@
       <div style="color:var(--muted);font-size:12px;margin-top:6px">
         批量: for h in $(cat ips.txt); do ssh root@$h '<span style="color:#67e8f9">把上面命令贴这里</span>' &amp; done; wait — 装完的节点自动参与调度, 无需任何配置
       </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:12px;font-weight:600;color:var(--muted)">🗑️ 一键卸载 <span style="font-weight:400">(在被卸载节点的root执行: 停服务+删文件+自动从主控注销)</span></div>
+          <el-button size="small" text type="danger" @click="copyUnCmd"><el-icon><CopyDocument /></el-icon>&nbsp;复制卸载命令</el-button>
+        </div>
+        <div class="cmd-line mono" style="margin-top:4px;font-size:11px;opacity:.8">{{ uninstallCmd || '加载中...' }}</div>
+      </div>
     </div>
     <div class="toolbar"><el-button type="primary" plain @click="load"><el-icon><Refresh /></el-icon>&nbsp;刷新</el-button></div>
     <el-row :gutter="14">
@@ -59,13 +66,23 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, fmtTime } from '../api'
 const rows = ref([])
 const installCmd = ref('')
+const uninstallCmd = ref('')
 let timer
 async function load() { try { rows.value = (await api.get('/nodes')) || [] } catch {} }
 async function loadCmd() { try { const r = await api.get('/install-cmd'); installCmd.value = r.cmd } catch {} }
+async function loadUnCmd() { try { const r = await api.get('/uninstall-cmd'); uninstallCmd.value = r.cmd } catch {} }
 async function copyCmd() {
   try { await navigator.clipboard.writeText(installCmd.value); ElMessage.success('已复制, 去新服务器粘贴执行') }
   catch (e) {
     const ta = document.createElement('textarea'); ta.value = installCmd.value
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove()
+    ElMessage.success('已复制')
+  }
+}
+async function copyUnCmd() {
+  try { await navigator.clipboard.writeText(uninstallCmd.value); ElMessage.success('已复制卸载命令, 在要卸载的节点执行') }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = uninstallCmd.value
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove()
     ElMessage.success('已复制')
   }
@@ -86,7 +103,7 @@ async function del(n) {
   await api.delete(`/nodes/${n.id}`); ElMessage.success('已删除'); load()
 }
 const barColor = v => v > 80 ? '#f87171' : v > 60 ? '#fbbf24' : '#22d3ee'
-onMounted(() => { load(); loadCmd(); timer = setInterval(load, 5000) })
+onMounted(() => { load(); loadCmd(); loadUnCmd(); timer = setInterval(load, 5000) })
 onUnmounted(() => clearInterval(timer))
 </script>
 <style scoped>
